@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value with context %}{% block content %}
+<h2>Contexte</h2>{{ value('Contexte organisationnel','context') }}{{ value('Demandeur','requester') }}
+<h2>Besoin</h2>{{ value('Problème ou opportunité','problem') }}{{ value('Résultats souhaités','desired_outcomes') }}
+<h2>Cadre initial</h2>{{ value('Périmètre initial','initial_scope') }}{{ value('Contraintes connues','constraints') }}{% endblock %}

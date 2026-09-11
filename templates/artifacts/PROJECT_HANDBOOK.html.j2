@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Approche de gestion</h2>{{ value('Approche de gestion','management_approach') }}{{ value('Adaptation de PM²','tailoring') }}
+<h2>Gouvernance</h2>{{ value('Rôles et responsabilités','roles') }}{{ value('Décision et escalade','decision_process') }}
+<h2>Pilotage</h2>{{ value('Rapports et réunions','reporting') }}{{ value('Gestion des changements','change_control') }}{{ value('Gestion de configuration','configuration') }}
+<h2>Assurance et information</h2>{{ value('Assurance qualité','quality_assurance') }}{{ value('Gestion de l’information','information_management') }}{{ records('Parties prenantes',stakeholders) }}{% endblock %}

@@ -1,0 +1,12 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Justification et objectifs
+{{ value('Justification','justification') }}{{ value('Objectifs mesurables','objectives') }}
+## Périmètre
+{{ value('Dans le périmètre','scope_in') }}{{ value('Hors périmètre','scope_out') }}
+## Résultats
+{{ value('Exigences de haut niveau','high_level_requirements') }}{{ value('Livrables principaux','key_deliverables') }}
+## Cadre
+{{ value('Contraintes','constraints') }}{{ value('Hypothèses','assumptions') }}{{ value('Jalons','milestones') }}
+## Gouvernance et autorisation
+{{ value('Organisation et responsabilités','governance') }}{{ value('Autorisation du projet','approval') }}
+{{ records('Exigences structurées', requirements) }}{{ records('Livrables structurés', deliverables) }}{{ validation() }}

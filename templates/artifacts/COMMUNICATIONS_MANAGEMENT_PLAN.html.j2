@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Objectifs et principes</h2>{{ value('Objectifs de communication','communication_objectives') }}{{ value('Principes','principles') }}
+<h2>Publics</h2>{{ value('Publics et besoins','audiences') }}{{ value('Confidentialité','confidentiality') }}
+<h2>Dispositif</h2>{{ value('Canaux et formats','channels') }}{{ value('Calendrier et fréquence','calendar') }}{{ value('Responsabilités','ownership') }}
+<h2>Évaluation</h2>{{ value('Retour et efficacité','feedback') }}{{ value('Conservation des communications','records') }}{{ records('Communications planifiées',communications) }}{% endblock %}

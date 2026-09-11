@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Impacts et préparation</h2>{{ value('Analyse des impacts','impact_analysis') }}{{ value('État de préparation','readiness') }}
+<h2>Conduite du changement</h2>{{ value('Actions de changement','change_actions') }}{{ value('Communication du changement','communication') }}{{ value('Développement des compétences','training') }}
+<h2>Adoption</h2>{{ value('Mesures d’adoption','adoption_measures') }}{{ value('Gestion des résistances','resistance') }}{{ value('Pérennisation','sustainability') }}{{ records('Activités de mise en œuvre',implementation_activities) }}{% endblock %}

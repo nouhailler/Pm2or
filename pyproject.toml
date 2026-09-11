@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pm2-desktop"
+version = "0.1.0"
+description = "Application desktop hors ligne de gestion de projets PM² 3.1"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "EUPL-1.2"}
+authors = [{name = "PM² Desktop contributors"}]
+dependencies = [
+  "PySide6>=6.7,<7",
+  "SQLAlchemy>=2.0,<3",
+  "alembic>=1.13,<2",
+  "pydantic>=2.8,<3",
+  "PyYAML>=6.0,<7",
+  "Jinja2>=3.1,<4",
+  "python-docx>=1.1,<2",
+  "reportlab>=4.2,<5",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2,<9",
+  "pytest-qt>=4.4,<5",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "pyinstaller>=6.10",
+  "types-PyYAML>=6.0",
+]
+
+[project.scripts]
+pm2-desktop = "pm2.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pm2"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"04_PM2_METHODOLOGY.yaml" = "pm2/resources/PM2_METHODOLOGY.yaml"
+"templates" = "pm2/templates"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+qt_api = "pyside6"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["pm2.domain", "pm2.application", "pm2.methodology"]
+
+[[tool.mypy.overrides]]
+module = ["reportlab.*"]
+ignore_missing_imports = true
+
+[tool.pyinstaller]
+entrypoint = "src/pm2/__main__.py"

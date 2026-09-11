@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>{{ artifact.title }}</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:1100px;margin:40px auto;color:#172033;line-height:1.45}
+h1,h2,h3{color:#254e70}table{border-collapse:collapse;width:100%;margin:12px 0 24px}
+th,td{border:1px solid #aeb8c4;padding:7px;text-align:left;vertical-align:top}th{background:#e8eef8}
+.purpose{padding:12px;background:#eef4f8;border-left:4px solid #2f6b91}.empty{color:#687887;font-style:italic}
+.ERROR{color:#9b1c1c}.WARNING{color:#8a5500}.INFO{color:#1c5a87}footer{margin-top:35px;border-top:1px solid #ccd3db;padding-top:10px;color:#5d6876}
+</style></head><body>
+<h1>{{ artifact.title }}</h1><p class="purpose">{{ artifact_purpose }}</p>
+<table><tr><th>Projet</th><td>{{ project.reference }} — {{ project.name }}</td></tr>
+<tr><th>Code / version</th><td>{{ artifact.code }} / {{ artifact.version }}</td></tr>
+<tr><th>Statut</th><td>{{ artifact.status }}</td></tr><tr><th>Auteur</th><td>{{ artifact.author or '—' }}</td></tr>
+<tr><th>Réviseur / approbateur</th><td>{{ artifact.reviewer or '—' }} / {{ artifact.approver or '—' }}</td></tr>
+<tr><th>Créé / modifié le</th><td>{{ artifact.created_at or '—' }} / {{ artifact.updated_at or '—' }}</td></tr>
+<tr><th>Approuvé le</th><td>{{ artifact.approval_date or '—' }}</td></tr>
+<tr><th>Référence de base</th><td>{{ 'Oui' if artifact.baseline else 'Non' }}</td></tr>
+<tr><th>Généré le</th><td>{{ generated_at }}</td></tr></table>
+{% block content %}{% endblock %}
+<h2>Validation PM²</h2>{% if validations %}<ul>{% for p in validations %}<li class="{{ p.severity }}"><b>{{ p.severity }} {{ p.code }}</b> — {{ p.message }}</li>{% endfor %}</ul>{% else %}<p>Aucun problème détecté.</p>{% endif %}
+<footer>Généré par PM² Desktop V0.1 depuis les données structurées du projet.</footer>
+</body></html>

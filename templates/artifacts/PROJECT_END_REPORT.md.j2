@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Synthèse et objectifs
+{{ value('Synthèse exécutive','executive_summary') }}{{ value('Atteinte des objectifs','objectives_achievement') }}
+## Performance globale
+{{ value('Périmètre et livrables','scope_performance') }}{{ value('Échéancier','schedule_performance') }}{{ value('Coûts','cost_performance') }}{{ value('Qualité','quality_performance') }}
+## Résultats et transfert
+{{ value('Acceptation finale','acceptance') }}{{ value('Perspective des bénéfices','benefits_outlook') }}{{ value('Transition et exploitation','transition_outcome') }}
+## Clôture
+{{ value('Éléments transférés','open_items') }}{{ value('Synthèse des leçons','lessons_summary') }}{{ value('Fermeture administrative','administrative_closure') }}
+{{ records('Livrables',deliverables) }}{{ records('Leçons apprises',lessons_learned) }}{{ validation() }}

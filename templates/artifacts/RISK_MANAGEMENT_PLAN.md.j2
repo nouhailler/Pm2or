@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Cadre et identification
+{{ value('Catégories de risques','categories') }}{{ value('Identification','identification') }}
+## Évaluation
+{{ value('Échelle de probabilité','probability_scale') }}{{ value('Échelle d’impact','impact_scale') }}{{ value('Tolérance','tolerance') }}
+## Réponse
+{{ value('Stratégies de réponse','strategies') }}{{ value('Attribution','ownership') }}{{ value('Contingences','contingency') }}
+## Suivi
+{{ value('Cadence de revue','review_cadence') }}{{ value('Escalade et rapports','escalation') }}
+{{ records('Registre des risques',risks) }}{{ validation() }}

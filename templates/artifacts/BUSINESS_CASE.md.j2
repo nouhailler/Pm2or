@@ -1,0 +1,16 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Synthèse
+{{ value('Résumé exécutif','executive_summary') }}
+{{ value('Alignement stratégique','strategic_alignment') }}
+## Analyse des options
+{{ value('Options étudiées','options') }}
+{{ value('Option recommandée','recommended_option') }}
+## Viabilité
+{{ value('Bénéfices attendus','benefits') }}
+{{ value('Coûts estimés','costs') }}
+{{ value('Risques métier','business_risks') }}
+## Feuille de route
+{{ value('Échéancier de haut niveau','roadmap') }}
+{{ value('Mesures de succès','success_measures') }}
+{{ records('Risques actuellement enregistrés', risks) }}
+{{ validation() }}

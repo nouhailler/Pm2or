@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Période et synthèse
+{{ value('Période couverte','reporting_period') }}{{ value('Synthèse exécutive','executive_summary') }}
+## Performance
+{{ value('Périmètre et livrables','scope_status') }}{{ value('Échéancier','schedule_status') }}{{ value('Coûts','cost_status') }}{{ value('Qualité','quality_status') }}
+## Pilotage
+{{ value('Risques et problèmes','risk_issue_summary') }}{{ value('Modifications','change_summary') }}{{ value('Décisions attendues','decisions_needed') }}
+## Prévisions
+{{ value('Prévisions','forecast') }}{{ value('Travaux de la prochaine période','next_period') }}
+{{ records('Risques ouverts',risks) }}{{ records('Problèmes ouverts',issues) }}{{ records('Modifications',changes) }}{{ validation() }}

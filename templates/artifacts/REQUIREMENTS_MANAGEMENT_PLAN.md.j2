@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Cycle des besoins
+{{ value('Recueil','elicitation') }}{{ value('Analyse et documentation','analysis') }}{{ value('Priorisation','prioritisation') }}
+## Contrôle
+{{ value('Revue et approbation','approval') }}{{ value('Gestion des changements','change_process') }}{{ value('Traçabilité','traceability') }}
+## Vérification et acceptation
+{{ value('Méthodes de vérification','verification') }}{{ value('Lien avec l’acceptation','acceptance_link') }}
+{{ records('Exigences structurées',requirements) }}{{ records('Tests d’acceptation',acceptance_tests) }}{{ validation() }}

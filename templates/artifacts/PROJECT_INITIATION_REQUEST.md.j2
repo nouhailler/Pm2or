@@ -1,0 +1,11 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, validation with context %}{{ metadata() }}
+## Contexte
+{{ value('Contexte organisationnel', 'context') }}
+{{ value('Demandeur', 'requester') }}
+## Besoin
+{{ value('Problème ou opportunité', 'problem') }}
+{{ value('Résultats souhaités', 'desired_outcomes') }}
+## Cadre initial
+{{ value('Périmètre initial', 'initial_scope') }}
+{{ value('Contraintes connues', 'constraints') }}
+{{ validation() }}

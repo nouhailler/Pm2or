@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Contexte de collecte</h2>{{ value('Méthode de collecte','collection_method') }}{{ value('Contributeurs','participants') }}
+<h2>Expérience</h2>{{ value('Réussites et bonnes pratiques','successes') }}{{ value('Difficultés et écueils','challenges') }}{{ value('Causes profondes','root_causes') }}
+<h2>Capitalisation</h2>{{ value('Leçons formulées','lessons') }}{{ value('Recommandations','recommendations') }}{{ value('Responsables et suivi','follow_up') }}{{ records('Leçons structurées',lessons_learned) }}{% endblock %}

@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Approche et responsabilités</h2>{{ value('Approche d’acceptation','acceptance_approach') }}{{ value('Rôles d’acceptation','roles') }}
+<h2>Évaluation</h2>{{ value('Définition des critères','criteria_method') }}{{ value('Méthode de test','test_method') }}{{ value('Preuves attendues','evidence') }}
+<h2>Décision</h2>{{ value('Calendrier d’acceptation','schedule') }}{{ value('Décision et réserves','decision_process') }}{{ records('Livrables soumis à acceptation',deliverables) }}{{ records('Critères enregistrés',acceptance_criteria) }}{% endblock %}

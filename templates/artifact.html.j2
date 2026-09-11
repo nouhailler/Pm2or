@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>{{ artifact.title }}</title>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:1100px;margin:40px auto;color:#172033;line-height:1.45}
+    h1,h2{color:#254e70} table{border-collapse:collapse;width:100%;margin:12px 0 24px}
+    th,td{border:1px solid #aeb8c4;padding:7px;text-align:left;vertical-align:top} th{background:#e8eef8}
+    .meta{max-width:720px}.ERROR{color:#9b1c1c}.WARNING{color:#8a5500}.INFO{color:#1c5a87}
+    footer{margin-top:35px;border-top:1px solid #ccd3db;padding-top:10px;color:#5d6876;font-size:.9em}
+  </style>
+</head>
+<body>
+<h1>{{ artifact.title }}</h1>
+<table class="meta">
+  <tr><th>Projet</th><td>{{ project.reference }} — {{ project.name }}</td></tr>
+  <tr><th>Code / version</th><td>{{ artifact.code }} / {{ artifact.version }}</td></tr>
+  <tr><th>Statut</th><td>{{ artifact.status }}</td></tr>
+  <tr><th>Auteur</th><td>{{ artifact.author or '—' }}</td></tr>
+  <tr><th>Réviseur / approbateur</th><td>{{ artifact.reviewer or '—' }} / {{ artifact.approver or '—' }}</td></tr>
+  <tr><th>Généré le</th><td>{{ generated_at }}</td></tr>
+</table>
+<h2>Projet</h2><p>{{ project.description or 'Aucune description.' }}</p>
+{% for items, title in [(requirements, 'Exigences'), (deliverables, 'Livrables'), (risks, 'Risques'), (issues, 'Problèmes'), (decisions, 'Décisions'), (changes, 'Modifications')] %}
+<h2>{{ title }}</h2>
+{% if items %}<table><thead><tr><th>Code</th><th>Titre</th><th>Statut</th></tr></thead><tbody>
+{% for item in items %}<tr><td>{{ item.code }}</td><td>{{ item.title or item.name }}</td><td>{{ item.status }}</td></tr>{% endfor %}
+</tbody></table>{% else %}<p>Aucun élément.</p>{% endif %}
+{% endfor %}
+<h2>Validation PM²</h2>
+{% if validations %}<ul>{% for problem in validations %}<li class="{{ problem.severity }}"><strong>{{ problem.severity }} {{ problem.code }}</strong> — {{ problem.message }}</li>{% endfor %}</ul>{% else %}<p>Aucun problème détecté.</p>{% endif %}
+<footer>Généré par PM² Desktop V0.1 à partir des données structurées du projet.</footer>
+</body></html>

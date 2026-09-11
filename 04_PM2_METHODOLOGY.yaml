@@ -1,0 +1,889 @@
+methodology:
+  id: pm2
+  name: PM²
+  version: "3.1"
+  language: fr
+  source: "Le Guide Méthodologie PM² v3.1 — version française fournie"
+  machine_readable_contract: true
+  implementation_policy:
+    - "Les codes, phases, gates, rôles, responsabilités, activités et artefacts définis ici sont la source de vérité applicative V0.1."
+    - "Les champs non explicitement définis par le guide mais nécessaires au fonctionnement logiciel sont des conventions d'implémentation et ne doivent pas être présentés comme des exigences PM² officielles."
+    - "La méthodologie doit être chargée depuis ce fichier et non codée en dur dans l'interface."
+
+lifecycle:
+  phases:
+    - code: LAUNCH
+      name: Lancement
+      order: 1
+      purpose: "Définir les résultats souhaités, établir la justification et définir le périmètre initial."
+      source_section: "3.2.1 / 5"
+    - code: PLANNING
+      name: Planification
+      order: 2
+      purpose: "Transformer l'objectif du projet en un plan précis et réalisable prêt à être exécuté."
+      source_section: "3.2.2 / 6"
+    - code: EXECUTION
+      name: Exécution
+      order: 3
+      purpose: "Produire les livrables du projet et préparer leur introduction dans l'organisation cliente."
+      source_section: "3.2.3 / 7"
+    - code: CLOSING
+      name: Clôture
+      order: 4
+      purpose: "Coordonner l'acceptation finale, documenter l'expérience, transférer les livrables et fermer administrativement le projet."
+      source_section: "3.2.4 / 8"
+  transversal:
+    - code: MONITORING_CONTROL
+      name: Suivi et Contrôle
+      purpose: "Superviser les travaux, mesurer les progrès, contrôler les écarts, gérer les changements, risques et problèmes et prendre les mesures correctives."
+      source_section: "3.2.5 / 9"
+
+status_model:
+  project: [DRAFT, LAUNCH, PLANNING, EXECUTION, CLOSING, CLOSED, ARCHIVED]
+  artifact: [DRAFT, IN_REVIEW, APPROVED, BASELINED, SUPERSEDED, ARCHIVED]
+  gate: [NOT_READY, READY_FOR_REVIEW, APPROVED, REJECTED]
+
+roles:
+  standard:
+    - code: AGB
+      name: Organe de Gouvernance Approprié
+    - code: PSC
+      name: Comité de Pilotage
+    - code: PO
+      name: Porteur du Projet
+    - code: SP
+      name: Maître d'Œuvre
+    - code: BM
+      name: Responsable MOA
+    - code: PM
+      name: Chef de Projet
+    - code: BIG
+      name: Groupe de Mise en Œuvre Organisationnelle
+    - code: PCT
+      name: Équipe Centrale du Projet
+    - code: PST
+      name: Équipe d'Assistance Projet
+    - code: PMA
+      name: Assistant du Chef de Projet
+    - code: PQA
+      name: Assurance Qualité
+    - code: UR
+      name: Représentants Utilisateurs
+    - code: BA
+      name: Analyste fonctionnel
+    - code: CPM
+      name: Chef de Projet externe
+  support:
+    - code: PSO
+      name: Bureau de Soutien aux Projets
+      optional: true
+      note: "Le guide précise que toutes les organisations ne disposent pas d'un PSO."
+  operational_custom:
+    allowed: true
+    note: "Le guide prévoit des rôles opérationnels et des rôles spécifiques au domaine en complément des rôles PM² standard."
+
+responsibility_types:
+  R:
+    name: Responsable
+    cardinality: many
+  Cm:
+    name: Comptable
+    cardinality: max_one
+  S:
+    name: Support
+    cardinality: many
+  C:
+    name: Consulté
+    cardinality: many
+  I:
+    name: Informé
+    cardinality: many
+  NA:
+    name: Non applicable
+    cardinality: many
+
+ram_matrix:
+  columns: [AGB, PSC, PO, BM, BIG, SP, PM, PCT]
+  note: "Matrice issue du résumé des activités et artefacts PM² de l'annexe E. NA correspond aux n.a. du guide."
+  activities:
+    LA-001:
+      name: Demande d'Initiation de Projet
+      responsibilities: {AGB: I, PSC: NA, PO: Cm, BM: R, BIG: S, SP: C, PM: I, PCT: NA}
+    LA-002:
+      name: Étude d'Opportunité
+      responsibilities: {AGB: I, PSC: C, PO: Cm, BM: R, BIG: C, SP: S, PM: S, PCT: NA}
+    LA-003:
+      name: Charte du Projet
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S, BIG: C, SP: S, PM: R, PCT: C}
+    PL-001:
+      name: Réunion de lancement
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S, BIG: C, SP: C, PM: R, PCT: C}
+    PL-002:
+      name: Manuel du projet
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S, BIG: C, SP: I, PM: R, PCT: C}
+    PL-003:
+      name: Matrice des Parties Prenantes
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S, BIG: C, SP: I, PM: R, PCT: C}
+    PL-004:
+      name: Plan de travail du projet
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S/C, BIG: C, SP: C, PM: R, PCT: S/C}
+    PL-005:
+      name: Plan d'Externalisation
+      responsibilities: {AGB: Cm, PSC: C, PO: C, BM: C, BIG: I, SP: S, PM: R, PCT: I}
+    PL-006:
+      name: Plan d'Acceptation des Livrables
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S, BIG: I, SP: C, PM: R, PCT: C}
+    PL-007:
+      name: Plan de Transition
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: C, BIG: C, SP: C, PM: R, PCT: C}
+    PL-008:
+      name: Plan de Mise en Œuvre Organisationnelle
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: R, BIG: C, SP: I, PM: S, PCT: I}
+    PL-009:
+      name: Plan de gestion des besoins
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: C, SP: I, PM: R, PCT: S}
+    PL-010:
+      name: Plan de gestion des modifications
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: I, SP: I, PM: R, PCT: I}
+    PL-011:
+      name: Plan de gestion des risques
+      responsibilities: {AGB: I, PSC: C, PO: Cm, BM: C, BIG: I, SP: I, PM: R, PCT: I}
+    PL-012:
+      name: Plan de gestion des problèmes
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: C, SP: I, PM: R, PCT: C}
+    PL-013:
+      name: Plan de gestion de la qualité
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: C, BIG: C, SP: C, PM: R, PCT: C}
+    PL-014:
+      name: Plan de communication
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S, BIG: C, SP: I, PM: R, PCT: C}
+    EX-001:
+      name: Réunion de lancement de la Phase d'Exécution
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S/C, BIG: C, SP: C, PM: R, PCT: C}
+    EX-002:
+      name: Coordination du projet
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S, BIG: I, SP: I, PM: R, PCT: I}
+    EX-003:
+      name: Assurance qualité
+      responsibilities: {AGB: I, PSC: I, PO: I, BM: S, BIG: C, SP: I, PM: Cm, PCT: R}
+    EX-004:
+      name: Rapports sur le projet
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S/C, BIG: I, SP: I/C, PM: R, PCT: C}
+    EX-005:
+      name: Distribution de l'information
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: I, SP: I, PM: R, PCT: C}
+    MC-001:
+      name: Surveiller la performance
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: C, SP: I, PM: R, PCT: C}
+    MC-002:
+      name: Contrôle de l'échéancier
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: C, SP: I, PM: R, PCT: C}
+    MC-003:
+      name: Contrôle des coûts
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: C, SP: I, PM: R, PCT: C}
+    MC-004:
+      name: Gérer les parties prenantes
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S/C, BIG: I, SP: C, PM: R, PCT: I}
+    MC-005:
+      name: Gérer les besoins
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: C, BIG: C, SP: I, PM: R, PCT: S}
+    MC-006:
+      name: Gérer les modifications
+      responsibilities: {AGB: I, PSC: C, PO: Cm, BM: S, BIG: I, SP: I, PM: R, PCT: C}
+    MC-007:
+      name: Gérer les risques
+      responsibilities: {AGB: I, PSC: C, PO: Cm, BM: S/C, BIG: C, SP: I, PM: R, PCT: C}
+    MC-008:
+      name: Gérer les problèmes et les décisions
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S, BIG: C, SP: I, PM: R, PCT: C}
+    MC-009:
+      name: Gérer la qualité
+      responsibilities: {AGB: I, PSC: I, PO: I, BM: S/C, BIG: C, SP: Cm, PM: R, PCT: C}
+    MC-010:
+      name: Gérer l'acceptation des livrables
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: S, BIG: C, SP: C, PM: R, PCT: C}
+    MC-011:
+      name: Gérer la mise en œuvre
+      responsibilities: {AGB: I, PSC: I, PO: Cm, BM: R, BIG: C, SP: I, PM: S, PCT: I}
+    MC-012:
+      name: Gérer la transition
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: C, BIG: C, SP: C, PM: R, PCT: C}
+    MC-013:
+      name: Gérer l'externalisation
+      responsibilities: {AGB: Cm, PSC: C, PO: C, BM: C, BIG: I, SP: S, PM: R, PCT: I}
+    CL-001:
+      name: Réunion de fin de projet
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S, BIG: C, SP: C, PM: R, PCT: C}
+    CL-002:
+      name: Rapport de fin de projet
+      responsibilities: {AGB: I, PSC: Cm, PO: C, BM: S, BIG: C, SP: C, PM: R, PCT: C}
+    CL-003:
+      name: Fermeture administrative
+      responsibilities: {AGB: I, PSC: C, PO: Cm, BM: C, BIG: I, SP: C, PM: R, PCT: I}
+
+activities:
+  - code: LA-001
+    phase: LAUNCH
+    name: Demande d'Initiation de Projet
+    objective: "Formaliser le contexte, le besoin/problème/opportunité et les résultats souhaités."
+    inputs: []
+    outputs: [PROJECT_INITIATION_REQUEST]
+    related_artifacts: [PROJECT_INITIATION_REQUEST]
+    source_section: "5.2"
+  - code: LA-002
+    phase: LAUNCH
+    name: Étude d'Opportunité
+    objective: "Documenter la justification du projet, les besoins budgétaires, le contexte, les alternatives et une feuille de route de haut niveau."
+    inputs: [PROJECT_INITIATION_REQUEST]
+    outputs: [BUSINESS_CASE]
+    related_artifacts: [BUSINESS_CASE]
+    source_section: "5.3"
+  - code: LA-003
+    phase: LAUNCH
+    name: Charte du Projet
+    objective: "Définir le projet en termes de périmètre, coût, temps, qualité, besoins de haut niveau, risques, contraintes, jalons et livrables."
+    inputs: [PROJECT_INITIATION_REQUEST, BUSINESS_CASE]
+    outputs: [PROJECT_CHARTER]
+    related_artifacts: [PROJECT_CHARTER]
+    source_section: "5.4"
+  - code: PL-001
+    phase: PLANNING
+    name: Réunion de lancement
+    objective: "Commencer officiellement la Phase de Planification."
+    inputs: [PROJECT_CHARTER]
+    outputs: [MEETING_MINUTES]
+    related_artifacts: [MEETING_MINUTES]
+    source_section: "6.1"
+  - code: PL-002
+    phase: PLANNING
+    name: Manuel du projet
+    objective: "Définir l'approche de gestion du projet, les rôles et responsabilités et les dispositions de gestion."
+    inputs: [PROJECT_CHARTER]
+    outputs: [PROJECT_HANDBOOK]
+    related_artifacts: [PROJECT_HANDBOOK]
+    source_section: "6.2"
+  - code: PL-003
+    phase: PLANNING
+    name: Matrice des Parties Prenantes
+    objective: "Identifier les intervenants clés, leurs coordonnées, leurs rôles et éventuellement leur catégorisation."
+    inputs: [BUSINESS_CASE, PROJECT_CHARTER, MEETING_MINUTES]
+    outputs: [STAKEHOLDER_MATRIX]
+    related_artifacts: [STAKEHOLDER_MATRIX]
+    source_section: "6.3"
+  - code: PL-004
+    phase: PLANNING
+    name: Plan de travail du projet
+    objective: "Décomposer, organiser et planifier les activités et livrables, avec efforts, coûts et échéancier."
+    inputs: [BUSINESS_CASE, PROJECT_CHARTER]
+    outputs: [WORK_PLAN]
+    related_artifacts: [WORK_PLAN]
+    source_section: "6.4"
+  - code: PL-005
+    phase: PLANNING
+    name: Plan d'Externalisation
+    objective: "Planifier et contrôler les activités confiées à des sous-traitants lorsque l'externalisation est applicable."
+    inputs: [PROJECT_CHARTER, PROJECT_HANDBOOK]
+    outputs: [OUTSOURCING_PLAN]
+    related_artifacts: [OUTSOURCING_PLAN]
+    source_section: "6.5"
+    optional: true
+  - code: PL-006
+    phase: PLANNING
+    name: Plan d'Acceptation des Livrables
+    objective: "Définir les critères, responsabilités, activités, échéancier et ressources nécessaires à l'acceptation officielle des livrables."
+    inputs: [PROJECT_CHARTER, PROJECT_HANDBOOK, WORK_PLAN, REQUIREMENTS_MANAGEMENT_PLAN, QUALITY_MANAGEMENT_PLAN]
+    outputs: [DELIVERABLE_ACCEPTANCE_PLAN]
+    related_artifacts: [DELIVERABLE_ACCEPTANCE_PLAN]
+    source_section: "6.6"
+  - code: PL-007
+    phase: PLANNING
+    name: Plan de Transition
+    objective: "Définir les objectifs, prérequis, activités et responsabilités de transition vers l'état post-projet."
+    inputs: [BUSINESS_CASE, PROJECT_CHARTER, WORK_PLAN, CHANGE_MANAGEMENT_PLAN, ORGANISATIONAL_IMPLEMENTATION_PLAN]
+    outputs: [TRANSITION_PLAN]
+    related_artifacts: [TRANSITION_PLAN]
+    source_section: "6.7"
+    optional: true
+  - code: PL-008
+    phase: PLANNING
+    name: Plan de Mise en Œuvre Organisationnelle
+    objective: "Analyser l'impact sur les processus, la culture et les personnes et planifier les activités de mise en œuvre et de changement."
+    inputs: [BUSINESS_CASE, PROJECT_CHARTER, PROJECT_HANDBOOK, WORK_PLAN, TRANSITION_PLAN, QUALITY_MANAGEMENT_PLAN]
+    outputs: [ORGANISATIONAL_IMPLEMENTATION_PLAN]
+    related_artifacts: [ORGANISATIONAL_IMPLEMENTATION_PLAN]
+    source_section: "6.8"
+    optional: true
+  - code: PL-009
+    phase: PLANNING
+    name: Plan de gestion des besoins
+    objective: "Définir comment les besoins sont documentés, suivis, contrôlés et vérifiés."
+    inputs: [PROJECT_CHARTER, STAKEHOLDER_MATRIX]
+    outputs: [REQUIREMENTS_MANAGEMENT_PLAN]
+    related_artifacts: [REQUIREMENTS_MANAGEMENT_PLAN]
+    source_section: "6.2.2 / 9.5"
+  - code: PL-010
+    phase: PLANNING
+    name: Plan de gestion des modifications
+    objective: "Définir le processus de demande, analyse, approbation, planification, contrôle et communication des changements."
+    inputs: [PROJECT_CHARTER, PROJECT_HANDBOOK]
+    outputs: [CHANGE_MANAGEMENT_PLAN]
+    related_artifacts: [CHANGE_MANAGEMENT_PLAN]
+    source_section: "6.2.2 / 9.6"
+  - code: PL-011
+    phase: PLANNING
+    name: Plan de gestion des risques
+    objective: "Définir l'approche de gestion, d'évaluation, de réponse, de tolérance et d'escalade des risques."
+    inputs: [PROJECT_CHARTER, PROJECT_HANDBOOK]
+    outputs: [RISK_MANAGEMENT_PLAN]
+    related_artifacts: [RISK_MANAGEMENT_PLAN]
+    source_section: "6.2.2 / 9.7"
+  - code: PL-012
+    phase: PLANNING
+    name: Plan de gestion des problèmes
+    objective: "Définir le processus d'identification, évaluation, attribution, résolution, contrôle et escalade des problèmes."
+    inputs: [PROJECT_CHARTER, PROJECT_HANDBOOK]
+    outputs: [ISSUE_MANAGEMENT_PLAN]
+    related_artifacts: [ISSUE_MANAGEMENT_PLAN]
+    source_section: "6.2.2 / 9.8"
+  - code: PL-013
+    phase: PLANNING
+    name: Plan de gestion de la qualité
+    objective: "Définir les activités de planification, assurance, contrôle et amélioration de la qualité ainsi que la configuration."
+    inputs: [PROJECT_CHARTER, PROJECT_HANDBOOK]
+    outputs: [QUALITY_MANAGEMENT_PLAN]
+    related_artifacts: [QUALITY_MANAGEMENT_PLAN]
+    source_section: "6.2.2 / 9.9"
+  - code: PL-014
+    phase: PLANNING
+    name: Plan de communication
+    objective: "Définir les besoins, méthodes et fréquences de communication avec les parties prenantes."
+    inputs: [PROJECT_CHARTER, STAKEHOLDER_MATRIX]
+    outputs: [COMMUNICATIONS_MANAGEMENT_PLAN]
+    related_artifacts: [COMMUNICATIONS_MANAGEMENT_PLAN]
+    source_section: "6.2.2 / 9.4"
+  - code: EX-001
+    phase: EXECUTION
+    name: Réunion de lancement de la Phase d'Exécution
+    objective: "Commencer officiellement la Phase d'Exécution."
+    inputs: [PROJECT_HANDBOOK, WORK_PLAN]
+    outputs: [MEETING_MINUTES]
+    related_artifacts: [MEETING_MINUTES]
+    source_section: "7.1"
+  - code: EX-002
+    phase: EXECUTION
+    name: Coordination du projet
+    objective: "Diriger et coordonner les activités, affecter les tâches, fournir les informations, vérifier les tâches et les livrables intermédiaires."
+    inputs: [PROJECT_HANDBOOK, WORK_PLAN]
+    outputs: [WORK_PLAN]
+    related_artifacts: [WORK_PLAN]
+    source_section: "7.2"
+  - code: EX-003
+    phase: EXECUTION
+    name: Assurance qualité
+    objective: "Fournir des preuves que les activités et livrables respectent les normes, méthodes et critères de qualité."
+    inputs: [QUALITY_MANAGEMENT_PLAN, WORK_PLAN]
+    outputs: [QUALITY_REPORT]
+    related_artifacts: [QUALITY_MANAGEMENT_PLAN, QUALITY_REPORT]
+    source_section: "7.3"
+  - code: EX-004
+    phase: EXECUTION
+    name: Rapports sur le projet
+    objective: "Communiquer des informations consolidées sur la performance du projet."
+    inputs: [PROJECT_HANDBOOK, WORK_PLAN, COMMUNICATIONS_MANAGEMENT_PLAN, RISK_REGISTER, ISSUE_REGISTER, CHANGE_REGISTER]
+    outputs: [PROJECT_REPORT]
+    related_artifacts: [PROJECT_REPORT]
+    source_section: "7.4"
+  - code: EX-005
+    phase: EXECUTION
+    name: Distribution de l'information
+    objective: "Tenir les intervenants informés conformément au plan de communication et à leurs besoins."
+    inputs: [COMMUNICATIONS_MANAGEMENT_PLAN, WORK_PLAN, PROJECT_REPORT, MEETING_MINUTES]
+    outputs: [COMMUNICATION_LOG]
+    related_artifacts: [COMMUNICATIONS_MANAGEMENT_PLAN, PROJECT_REPORT]
+    source_section: "7.5"
+  - code: MC-001
+    phase: MONITORING_CONTROL
+    name: Surveiller la performance
+    objective: "Mesurer les activités et évaluer la performance par rapport aux plans."
+    inputs: [WORK_PLAN, PROJECT_REPORT]
+    outputs: [PERFORMANCE_STATUS]
+    source_section: "9.3"
+  - code: MC-002
+    phase: MONITORING_CONTROL
+    name: Contrôle de l'échéancier
+    objective: "Surveiller l'avancement temporel et prendre les mesures correctives nécessaires."
+    inputs: [WORK_PLAN, PERFORMANCE_STATUS]
+    outputs: [WORK_PLAN]
+    source_section: "9.3"
+  - code: MC-003
+    phase: MONITORING_CONTROL
+    name: Contrôle des coûts
+    objective: "Surveiller les coûts et contrôler les écarts par rapport à la référence."
+    inputs: [WORK_PLAN, PERFORMANCE_STATUS]
+    outputs: [COST_STATUS]
+    source_section: "9.3"
+  - code: MC-004
+    phase: MONITORING_CONTROL
+    name: Gérer les parties prenantes
+    objective: "Analyser et gérer continuellement les attentes, attitudes, intérêts et influence des parties prenantes."
+    inputs: [PROJECT_HANDBOOK, STAKEHOLDER_MATRIX, COMMUNICATIONS_MANAGEMENT_PLAN, TRANSITION_PLAN, DELIVERABLE_ACCEPTANCE_PLAN, ORGANISATIONAL_IMPLEMENTATION_PLAN]
+    outputs: [STAKEHOLDER_STATUS]
+    source_section: "9.4"
+  - code: MC-005
+    phase: MONITORING_CONTROL
+    name: Gérer les besoins
+    objective: "Gérer les besoins, leur vérification et leurs changements pendant le cycle de vie."
+    inputs: [PROJECT_INITIATION_REQUEST, PROJECT_CHARTER, REQUIREMENTS_MANAGEMENT_PLAN, DELIVERABLE_ACCEPTANCE_PLAN, STAKEHOLDER_MATRIX, WORK_PLAN, CHANGE_REGISTER]
+    outputs: [REQUIREMENT_STATUS, WORK_PLAN]
+    source_section: "9.5"
+  - code: MC-006
+    phase: MONITORING_CONTROL
+    name: Gérer les modifications
+    objective: "Identifier, documenter, évaluer, prioriser, approuver, planifier, contrôler et communiquer les changements."
+    inputs: [BUSINESS_CASE, PROJECT_CHARTER, CHANGE_MANAGEMENT_PLAN, WORK_PLAN, COMMUNICATIONS_MANAGEMENT_PLAN]
+    outputs: [CHANGE_REGISTER, WORK_PLAN]
+    source_section: "9.6"
+  - code: MC-007
+    phase: MONITORING_CONTROL
+    name: Gérer les risques
+    objective: "Identifier, évaluer, traiter, surveiller et escalader les risques conformément au processus défini."
+    inputs: [RISK_MANAGEMENT_PLAN, WORK_PLAN]
+    outputs: [RISK_REGISTER, WORK_PLAN]
+    source_section: "9.7"
+  - code: MC-008
+    phase: MONITORING_CONTROL
+    name: Gérer les problèmes et les décisions
+    objective: "Identifier, évaluer, attribuer et résoudre les problèmes et documenter les décisions associées."
+    inputs: [ISSUE_MANAGEMENT_PLAN, WORK_PLAN, ISSUE_REGISTER, DECISION_REGISTER, MEETING_MINUTES]
+    outputs: [ISSUE_REGISTER, DECISION_REGISTER, WORK_PLAN]
+    source_section: "9.8"
+  - code: MC-009
+    phase: MONITORING_CONTROL
+    name: Gérer la qualité
+    objective: "Planifier, assurer, contrôler et améliorer la qualité et gérer la configuration des artefacts."
+    inputs: [QUALITY_MANAGEMENT_PLAN, WORK_PLAN]
+    outputs: [QUALITY_REPORT]
+    source_section: "9.9"
+  - code: MC-010
+    phase: MONITORING_CONTROL
+    name: Gérer l'acceptation des livrables
+    objective: "Vérifier que chaque livrable répond aux objectifs et critères prédéfinis et documenter son acceptation."
+    inputs: [DELIVERABLE_ACCEPTANCE_PLAN, WORK_PLAN, QUALITY_MANAGEMENT_PLAN, OUTSOURCING_PLAN]
+    outputs: [ACCEPTANCE_RECORD, DECISION_REGISTER]
+    source_section: "9.10"
+  - code: MC-011
+    phase: MONITORING_CONTROL
+    name: Gérer la mise en œuvre
+    objective: "Suivre et contrôler les activités de mise en œuvre organisationnelle."
+    inputs: [ORGANISATIONAL_IMPLEMENTATION_PLAN, WORK_PLAN, TRANSITION_PLAN]
+    outputs: [IMPLEMENTATION_STATUS, WORK_PLAN]
+    source_section: "9.12"
+    optional: true
+  - code: MC-012
+    phase: MONITORING_CONTROL
+    name: Gérer la transition
+    objective: "Assurer une transition contrôlée vers le nouvel état et le transfert correct des livrables."
+    inputs: [TRANSITION_PLAN, WORK_PLAN, COMMUNICATIONS_MANAGEMENT_PLAN, DELIVERABLE_ACCEPTANCE_PLAN, ORGANISATIONAL_IMPLEMENTATION_PLAN]
+    outputs: [TRANSITION_STATUS]
+    source_section: "9.11"
+    optional: true
+  - code: MC-013
+    phase: MONITORING_CONTROL
+    name: Gérer l'externalisation
+    objective: "Surveiller et contrôler les activités, livrables et obligations liés aux sous-traitants."
+    inputs: [OUTSOURCING_PLAN, WORK_PLAN, PROJECT_REPORT]
+    outputs: [OUTSOURCING_STATUS]
+    source_section: "9.13"
+    optional: true
+  - code: CL-001
+    phase: CLOSING
+    name: Réunion de fin de projet
+    objective: "Examiner la performance globale, celle de l'équipe et des sous-traitants et documenter les leçons apprises."
+    inputs: [PROJECT_REPORT, QUALITY_REPORT, WORK_PLAN, LESSONS_LEARNED]
+    outputs: [MEETING_MINUTES, LESSONS_LEARNED]
+    source_section: "8.1"
+  - code: CL-002
+    phase: CLOSING
+    name: Rapport de fin de projet
+    objective: "Documenter l'expérience, la performance, les bonnes pratiques, les écueils et les leçons apprises."
+    inputs: [PROJECT_REPORT, QUALITY_REPORT, LESSONS_LEARNED]
+    outputs: [PROJECT_END_REPORT]
+    related_artifacts: [PROJECT_END_REPORT, LESSONS_LEARNED]
+    source_section: "8.2"
+  - code: CL-003
+    phase: CLOSING
+    name: Fermeture administrative
+    objective: "Vérifier l'acceptation, transférer les livrables, organiser et archiver les documents, libérer les ressources et obtenir l'approbation finale du PO."
+    inputs: [PROJECT_END_REPORT, PROJECT_HANDBOOK, WORK_PLAN]
+    outputs: [PROJECT_ARCHIVE, PROJECT_ACCEPTANCE_NOTE]
+    source_section: "8.4"
+
+artifacts:
+  PROJECT_INITIATION_REQUEST:
+    name: Demande d'Initiation de Projet
+    phase: LAUNCH
+    required: true
+  BUSINESS_CASE:
+    name: Étude d'Opportunité
+    phase: LAUNCH
+    required: true
+  PROJECT_CHARTER:
+    name: Charte du Projet
+    phase: LAUNCH
+    required: true
+  PROJECT_HANDBOOK:
+    name: Manuel du Projet
+    phase: PLANNING
+    required: true
+  STAKEHOLDER_MATRIX:
+    name: Matrice des Parties Prenantes
+    phase: PLANNING
+    required: true
+  WORK_PLAN:
+    name: Plan de Travail du Projet
+    phase: PLANNING
+    required: true
+    baseline: true
+  OUTSOURCING_PLAN:
+    name: Plan d'Externalisation
+    phase: PLANNING
+    required: false
+  DELIVERABLE_ACCEPTANCE_PLAN:
+    name: Plan d'Acceptation des Livrables
+    phase: PLANNING
+    required: true
+  TRANSITION_PLAN:
+    name: Plan de Transition
+    phase: PLANNING
+    required: false
+  ORGANISATIONAL_IMPLEMENTATION_PLAN:
+    name: Plan de Mise en Œuvre Organisationnelle
+    phase: PLANNING
+    required: false
+  REQUIREMENTS_MANAGEMENT_PLAN:
+    name: Plan de Gestion des Besoins
+    phase: PLANNING
+    required: true
+  CHANGE_MANAGEMENT_PLAN:
+    name: Plan de Gestion des Modifications
+    phase: PLANNING
+    required: true
+  RISK_MANAGEMENT_PLAN:
+    name: Plan de Gestion des Risques
+    phase: PLANNING
+    required: true
+  ISSUE_MANAGEMENT_PLAN:
+    name: Plan de Gestion des Problèmes
+    phase: PLANNING
+    required: true
+  QUALITY_MANAGEMENT_PLAN:
+    name: Plan de Gestion de la Qualité
+    phase: PLANNING
+    required: true
+  COMMUNICATIONS_MANAGEMENT_PLAN:
+    name: Plan de Communication
+    phase: PLANNING
+    required: true
+  PROJECT_REPORT:
+    name: Rapport sur le Projet
+    phase: EXECUTION
+    required: true
+  QUALITY_REPORT:
+    name: Rapport Qualité
+    phase: EXECUTION
+    required: true
+  MEETING_MINUTES:
+    name: Procès-Verbal / Minutes de réunion
+    phase: EXECUTION
+    required: true
+  PROJECT_END_REPORT:
+    name: Rapport de Fin de Projet
+    phase: CLOSING
+    required: true
+  LESSONS_LEARNED:
+    name: Leçons Apprises
+    phase: CLOSING
+    required: true
+
+registers:
+  - code: RISK_REGISTER
+    name: Registre des Risques
+    phase: LAUNCH
+    lifecycle: "LAUNCH..CLOSING"
+  - code: ISSUE_REGISTER
+    name: Registre des Problèmes
+    phase: LAUNCH
+    lifecycle: "LAUNCH..CLOSING"
+  - code: DECISION_REGISTER
+    name: Registre des Décisions
+    phase: LAUNCH
+    lifecycle: "LAUNCH..CLOSING"
+  - code: CHANGE_REGISTER
+    name: Registre des Modifications
+    phase: PLANNING
+    lifecycle: "PLANNING..CLOSING"
+
+monitoring_control:
+  continuous: true
+  intensity_note: "Le guide indique que le Suivi et Contrôle est mené tout au long du cycle de vie et atteint son intensité maximale pendant l'Exécution."
+  activities:
+    - MC-001
+    - MC-002
+    - MC-003
+    - MC-004
+    - MC-005
+    - MC-006
+    - MC-007
+    - MC-008
+    - MC-009
+    - MC-010
+    - MC-011
+    - MC-012
+    - MC-013
+
+gates:
+  - code: RFP
+    name: RfP
+    label: Prêt pour la Planification
+    from_phase: LAUNCH
+    to_phase: PLANNING
+    review_point: "Fin de la Phase de Lancement"
+    approver_roles: [PSC, AGB]
+    responsible_role: PM
+    checklist:
+      - id: RFP-01
+        description: "Demande d'Initiation de Projet établie"
+        type: artifact
+        artifact: PROJECT_INITIATION_REQUEST
+        required: true
+      - id: RFP-02
+        description: "Étude d'Opportunité établie"
+        type: artifact
+        artifact: BUSINESS_CASE
+        required: true
+      - id: RFP-03
+        description: "Charte du Projet établie et soumise à approbation"
+        type: artifact
+        artifact: PROJECT_CHARTER
+        required: true
+      - id: RFP-04
+        description: "Décision de poursuivre vers la Planification"
+        type: decision
+        required: true
+    source_section: "5.5"
+  - code: RFE
+    name: RfE
+    label: Prêt pour l'Exécution
+    from_phase: PLANNING
+    to_phase: EXECUTION
+    review_point: "Fin de la Phase de Planification"
+    approver_roles: [PSC]
+    escalation_roles: [AGB]
+    responsible_role: PM
+    checklist:
+      - id: RFE-01
+        description: "Objectifs de la Phase de Planification atteints"
+        type: phase_objective
+        required: true
+      - id: RFE-02
+        description: "Manuel du Projet disponible"
+        type: artifact
+        artifact: PROJECT_HANDBOOK
+        required: true
+      - id: RFE-03
+        description: "Matrice des Parties Prenantes disponible"
+        type: artifact
+        artifact: STAKEHOLDER_MATRIX
+        required: true
+      - id: RFE-04
+        description: "Plan de Travail approuvé et servant de référence"
+        type: artifact
+        artifact: WORK_PLAN
+        required: true
+      - id: RFE-05
+        description: "Plan d'Acceptation des Livrables disponible"
+        type: artifact
+        artifact: DELIVERABLE_ACCEPTANCE_PLAN
+        required: true
+      - id: RFE-06
+        description: "Plans de gestion nécessaires au projet établis"
+        type: artifact_group
+        required: true
+      - id: RFE-07
+        description: "Livrables du projet identifiés"
+        type: data
+        required: true
+      - id: RFE-08
+        description: "Écarts importants par rapport à l'Étude d'Opportunité ou à la Charte traités et, si nécessaire, soumis à l'AGB"
+        type: variance_review
+        required: true
+    source_section: "6.9"
+  - code: RFC
+    name: RfC
+    label: Prêt pour la Clôture
+    from_phase: EXECUTION
+    to_phase: CLOSING
+    review_point: "Fin de la Phase d'Exécution"
+    approver_roles: [PSC]
+    responsible_role: PM
+    acceptance_role: PO
+    checklist:
+      - id: RFC-01
+        description: "Objectifs de la Phase d'Exécution atteints"
+        type: phase_objective
+        required: true
+      - id: RFC-02
+        description: "Activités prévues réalisées ou correctement traitées"
+        type: work_plan
+        required: true
+      - id: RFC-03
+        description: "Exigences satisfaites"
+        type: requirements
+        required: true
+      - id: RFC-04
+        description: "Livrables entièrement réalisés"
+        type: deliverables
+        required: true
+      - id: RFC-05
+        description: "Livrables acceptés au moins provisoirement par le Porteur du Projet"
+        type: acceptance
+        required: true
+      - id: RFC-06
+        description: "Transition finalisée ou correctement engagée"
+        type: transition
+        required: true
+      - id: RFC-07
+        description: "Résultats mis à disposition des utilisateurs finaux"
+        type: delivery
+        required: true
+    source_section: "7.6"
+
+validation_rules:
+  severity: [ERROR, WARNING, INFO]
+  rules:
+    - id: PM2-PROJECT-001
+      severity: ERROR
+      applies_to: project
+      condition: "name != null && reference != null && methodology_id == 'pm2'"
+      message: "Le projet doit avoir un nom, une référence et la méthodologie PM²."
+    - id: PM2-GOV-001
+      severity: ERROR
+      applies_to: governance
+      condition: "exactly_one_active_role('PM')"
+      message: "Un seul Chef de Projet (PM) actif doit être désigné."
+    - id: PM2-GOV-002
+      severity: ERROR
+      applies_to: governance
+      condition: "exactly_one_active_role('PO')"
+      message: "Un seul Porteur de Projet (PO) actif doit être désigné."
+    - id: PM2-RAM-001
+      severity: ERROR
+      applies_to: responsibility_assignment
+      condition: "max_one('R', subject) && max_one('Cm', subject)"
+      message: "Un sujet ne peut avoir qu'un Responsable R et qu'un Comptable Cm."
+    - id: PM2-WP-001
+      severity: ERROR
+      applies_to: work_plan
+      condition: "baseline_exists_before_execution"
+      message: "Le Plan de Travail doit être approuvé/baseliné avant l'Exécution."
+    - id: PM2-WP-002
+      severity: WARNING
+      applies_to: work_plan
+      condition: "all_project_activities_are_planned"
+      message: "Toutes les activités identifiées doivent être intégrées au Plan de Travail."
+    - id: PM2-REQ-001
+      severity: WARNING
+      applies_to: requirement
+      condition: "verification_method != null"
+      message: "Le besoin devrait disposer d'une méthode de vérification."
+    - id: PM2-DEL-001
+      severity: ERROR
+      applies_to: deliverable
+      condition: "acceptance_coverage_exists"
+      message: "Chaque livrable doit être couvert par le processus d'acceptation."
+    - id: PM2-DEL-002
+      severity: ERROR
+      applies_to: acceptance
+      condition: "criteria_count > 0"
+      message: "Un livrable ne peut être accepté sans critères d'acceptation."
+    - id: PM2-ACTION-001
+      severity: WARNING
+      applies_to: action
+      condition: "owner != null"
+      message: "Toute action devrait avoir un responsable."
+    - id: PM2-RISK-001
+      severity: WARNING
+      applies_to: risk
+      condition: "tolerance_evaluated == true"
+      message: "La tolérance au risque doit être évaluée."
+    - id: PM2-CHANGE-001
+      severity: ERROR
+      applies_to: change
+      condition: "status != 'IMPLEMENTING' || approved == true"
+      message: "Une modification ne peut passer à l'implémentation qu'après approbation."
+    - id: PM2-GATE-001
+      severity: ERROR
+      applies_to: gate
+      condition: "all_required_checklist_items_pass == true"
+      message: "Un gate ne peut être approuvé si un élément obligatoire de sa checklist échoue."
+    - id: PM2-GATE-002
+      severity: ERROR
+      applies_to: gate
+      condition: "phase == gate.from_phase"
+      message: "Un gate ne peut être évalué que depuis sa phase source."
+    - id: PM2-TRACE-001
+      severity: WARNING
+      applies_to: traceability
+      condition: "no_orphan_critical_entities"
+      message: "Les éléments critiques ne devraient pas rester orphelins dans la chaîne de traçabilité."
+    - id: PM2-BASELINE-001
+      severity: ERROR
+      applies_to: baseline
+      condition: "only_one_current_baseline_per_artifact_type"
+      message: "Un seul état de référence courant doit être actif par artefact baseliné."
+    - id: PM2-CLOSE-001
+      severity: ERROR
+      applies_to: closing
+      condition: "all_required_deliverables_accepted_or_dispositioned"
+      message: "La clôture exige que les livrables soient acceptés ou qu'une disposition formelle soit enregistrée."
+    - id: PM2-CLOSE-002
+      severity: ERROR
+      applies_to: closing
+      condition: "final_report_exists && lessons_learned_exists"
+      message: "Le rapport de fin de projet et les leçons apprises doivent être disponibles avant la fermeture administrative."
+
+traceability:
+  mandatory_chains:
+    - chain: [PROJECT_CHARTER, WORK_PLAN, TASK]
+      description: "La Charte définit le cadre et le Plan de Travail détaille le travail à réaliser."
+    - chain: [REQUIREMENT, TASK]
+      description: "Les besoins doivent être reliés au travail permettant leur réalisation et leur vérification."
+    - chain: [REQUIREMENT, DELIVERABLE, ACCEPTANCE_CRITERION, ACCEPTANCE]
+      description: "Traçabilité de l'exigence jusqu'à l'acceptation."
+    - chain: [RISK, RISK_ACTION, TASK]
+      description: "Les actions de réponse aux risques doivent pouvoir être planifiées."
+    - chain: [ISSUE, ISSUE_ACTION, TASK]
+      description: "Les actions de résolution des problèmes doivent pouvoir être planifiées."
+    - chain: [CHANGE_REQUEST, CHANGE_IMPACT, TASK]
+      description: "Les impacts d'un changement doivent pouvoir être reliés au Plan de Travail."
+    - chain: [DELIVERABLE, TRANSITION_ACTIVITY]
+      description: "Les livrables concernés doivent pouvoir être reliés aux activités de transition."
+
+optional_features:
+  outsourcing:
+    enabled_when: "project.outsourcing_required == true"
+  transition:
+    enabled_when: "project.transition_required == true"
+  organisational_implementation:
+    enabled_when: "project.organisation_implementation_required == true"
+
+source_notes:
+  exact_from_guide:
+    - "PM² est adaptable aux besoins spécifiques du projet."
+    - "Les quatre phases sont Lancement, Planification, Exécution et Clôture, avec Suivi et Contrôle pendant toute la durée du projet."
+    - "RfP intervient à la fin du Lancement, RfE à la fin de la Planification et RfC à la fin de l'Exécution."
+    - "Le Plan de Travail approuvé sert de référence au suivi et au contrôle et doit être tenu à jour."
+    - "Chaque livrable doit être officiellement accepté selon le processus d'acceptation."
+  implementation_conventions:
+    - "Les identifiants techniques de données comme PERFORMANCE_STATUS, COST_STATUS ou STAKEHOLDER_STATUS sont des objets applicatifs et non des artefacts PM² nommés dans le guide."
+    - "Les règles de cardinalité, les expressions de validation et les statuts logiciels sont des contraintes de l'application V0.1 destinées à rendre la méthodologie exécutable."

@@ -1,0 +1,41 @@
+# {{ artifact.title }}
+
+| Métadonnée | Valeur |
+|---|---|
+| Projet | {{ project.reference }} — {{ project.name }} |
+| Code | {{ artifact.code }} |
+| Version | {{ artifact.version }} |
+| Statut | {{ artifact.status }} |
+| Auteur | {{ artifact.author or '—' }} |
+| Réviseur | {{ artifact.reviewer or '—' }} |
+| Approbateur | {{ artifact.approver or '—' }} |
+| Généré le | {{ generated_at }} |
+
+## Projet
+
+{{ project.description or 'Aucune description.' }}
+
+Phase : **{{ project.phase }}** — Budget : **{{ project.budget }} {{ project.currency }}**
+
+{% for key, title in [('requirements', 'Exigences'), ('deliverables', 'Livrables'), ('risks', 'Risques'), ('issues', 'Problèmes'), ('decisions', 'Décisions'), ('changes', 'Modifications')] %}
+## {{ title }}
+
+{% if context is defined %}{% endif %}{% set items = namespace(value=[]) %}
+{% if key == 'requirements' %}{% set items.value = requirements %}{% elif key == 'deliverables' %}{% set items.value = deliverables %}{% elif key == 'risks' %}{% set items.value = risks %}{% elif key == 'issues' %}{% set items.value = issues %}{% elif key == 'decisions' %}{% set items.value = decisions %}{% else %}{% set items.value = changes %}{% endif %}
+{% if items.value %}
+| Code | Titre | Statut |
+|---|---|---|
+{% for item in items.value %}| {{ item.code }} | {{ item.title or item.name }} | {{ item.status }} |
+{% endfor %}
+{% else %}Aucun élément.
+{% endif %}
+{% endfor %}
+## Validation PM²
+
+{% if validations %}
+{% for problem in validations %}- **{{ problem.severity }}** `{{ problem.code }}` — {{ problem.message }}
+{% endfor %}
+{% else %}Aucun problème détecté.
+{% endif %}
+
+_Généré par PM² Desktop V0.1 à partir des données structurées du projet._

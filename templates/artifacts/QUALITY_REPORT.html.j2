@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Période et synthèse</h2>{{ value('Période couverte','reporting_period') }}{{ value('Synthèse qualité','quality_summary') }}
+<h2>Assurance</h2>{{ value('Activités d’assurance réalisées','assurance_completed') }}{{ value('Résultats de revue/audit','audit_results') }}
+<h2>Contrôles et constats</h2>{{ value('Résultats des contrôles','control_results') }}{{ value('Constats et non-conformités','findings') }}
+<h2>Actions et tendances</h2>{{ value('Actions correctives','corrective_actions') }}{{ value('Tendances','trends') }}{{ value('Recommandations','recommendations') }}{{ records('Contrôles qualité structurés',quality_controls) }}{% endblock %}

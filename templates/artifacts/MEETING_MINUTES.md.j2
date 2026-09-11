@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Réunion
+{{ value('Référence et date','meeting_reference') }}{{ value('Objet','purpose') }}{{ value('Présidence','chair') }}
+## Participants et ordre du jour
+{{ value('Présents et excusés','participants') }}{{ value('Ordre du jour','agenda') }}
+## Compte rendu
+{{ value('Points discutés','discussion') }}{{ value('Décisions prises','decisions') }}{{ value('Actions convenues','actions') }}
+## Approbation
+{{ value('Prochaine réunion','next_meeting') }}{{ value('Approbation du procès-verbal','minutes_approval') }}
+{{ records('Réunions structurées',meetings) }}{{ records('Décisions du projet',decisions) }}{{ validation() }}

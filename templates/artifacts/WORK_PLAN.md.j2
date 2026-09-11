@@ -1,0 +1,13 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, validation with context %}{{ metadata() }}
+## Référence
+{{ value('Base de planification','planning_basis') }}{{ value('Politique de référence','baseline_policy') }}
+## Organisation du travail
+{{ value('Approche WBS','wbs_approach') }}{{ value('Plan de ressources','resource_plan') }}
+## Contrôle
+{{ value('Contrôle de l’échéancier','schedule_control') }}{{ value('Contrôle des coûts','cost_control') }}{{ value('Mesure de l’avancement','progress_measurement') }}
+## WBS structurée
+{% if wbs %}| Code | Élément | Type | Parent |
+|---|---|---|---|
+{% for n in wbs %}| {{ n.code }} | {{ n.name }} | {{ n.node_type }} | {{ n.parent_id or '—' }} |
+{% endfor %}{% else %}Aucun élément WBS.{% endif %}
+{{ validation() }}

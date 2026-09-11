@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Cadre et identification</h2>{{ value('Catégories de risques','categories') }}{{ value('Identification','identification') }}
+<h2>Évaluation</h2>{{ value('Échelle de probabilité','probability_scale') }}{{ value('Échelle d’impact','impact_scale') }}{{ value('Tolérance','tolerance') }}
+<h2>Réponse</h2>{{ value('Stratégies de réponse','strategies') }}{{ value('Attribution','ownership') }}{{ value('Contingences','contingency') }}
+<h2>Suivi</h2>{{ value('Cadence de revue','review_cadence') }}{{ value('Escalade et rapports','escalation') }}{{ records('Registre des risques',risks) }}{% endblock %}

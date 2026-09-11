@@ -1,0 +1,48 @@
+{% macro metadata() -%}
+# {{ artifact.title }}
+
+> {{ artifact_purpose }}
+
+| Métadonnée | Valeur |
+|---|---|
+| Projet | {{ project.reference }} — {{ project.name }} |
+| Code | {{ artifact.code }} |
+| Version | {{ artifact.version }} |
+| Statut | {{ artifact.status }} |
+| Auteur | {{ artifact.author or '—' }} |
+| Réviseur | {{ artifact.reviewer or '—' }} |
+| Approbateur | {{ artifact.approver or '—' }} |
+| Créé le | {{ artifact.created_at or '—' }} |
+| Modifié le | {{ artifact.updated_at or '—' }} |
+| Approuvé le | {{ artifact.approval_date or '—' }} |
+| Référence de base | {{ 'Oui' if artifact.baseline else 'Non' }} |
+| Généré le | {{ generated_at }} |
+{%- endmacro %}
+
+{% macro value(label, code) -%}
+### {{ label }}
+
+{{ artifact_data.get(code) or 'Non renseigné.' }}
+{%- endmacro %}
+
+{% macro records(title, items) -%}
+## {{ title }}
+
+{% if items %}
+| Code | Élément | Statut |
+|---|---|---|
+{% for item in items %}| {{ item.code | default('—') }} | {{ item.title | default(item.name) | default('—') }} | {{ item.status | default('—') }} |
+{% endfor %}
+{% else %}Aucun élément enregistré.
+{% endif %}
+{%- endmacro %}
+
+{% macro validation() -%}
+## Validation PM²
+
+{% if validations %}{% for problem in validations %}- **{{ problem.severity }}** `{{ problem.code }}` — {{ problem.message }}
+{% endfor %}{% else %}Aucun problème détecté.
+{% endif %}
+
+_Généré par PM² Desktop V0.1 depuis les données structurées du projet._
+{%- endmacro %}

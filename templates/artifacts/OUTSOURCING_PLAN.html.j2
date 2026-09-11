@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value with context %}{% block content %}
+<h2>Périmètre et stratégie</h2>{{ value('Travaux externalisés','outsourced_scope') }}{{ value('Stratégie d’externalisation','sourcing_strategy') }}
+<h2>Sélection</h2>{{ value('Processus d’acquisition','procurement_process') }}{{ value('Critères de sélection','selection_criteria') }}
+<h2>Pilotage et sortie</h2>{{ value('Gouvernance fournisseur','supplier_governance') }}{{ value('Suivi des obligations','contract_monitoring') }}{{ value('Stratégie de sortie','exit_strategy') }}{% endblock %}

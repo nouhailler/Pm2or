@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Objectifs et prérequis</h2>{{ value('Objectifs de transition','transition_objectives') }}{{ value('Prérequis','prerequisites') }}
+<h2>Transfert</h2>{{ value('Transfert des livrables','handover') }}{{ value('Migration des données','data_migration') }}{{ value('Formation','training') }}
+<h2>Exploitation</h2>{{ value('Préparation opérationnelle','operational_readiness') }}{{ value('Support post-transition','support_model') }}{{ value('Repli et continuité','rollback') }}{{ records('Activités de transition',transition_activities) }}{% endblock %}

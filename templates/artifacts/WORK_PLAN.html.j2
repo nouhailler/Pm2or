@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value with context %}{% block content %}
+<h2>Référence</h2>{{ value('Base de planification','planning_basis') }}{{ value('Politique de référence','baseline_policy') }}
+<h2>Organisation du travail</h2>{{ value('Approche WBS','wbs_approach') }}{{ value('Plan de ressources','resource_plan') }}
+<h2>Contrôle</h2>{{ value('Contrôle de l’échéancier','schedule_control') }}{{ value('Contrôle des coûts','cost_control') }}{{ value('Mesure de l’avancement','progress_measurement') }}
+<h2>WBS structurée</h2>{% if wbs %}<table><tr><th>Code</th><th>Élément</th><th>Type</th><th>Parent</th></tr>{% for n in wbs %}<tr><td>{{ n.code }}</td><td>{{ n.name }}</td><td>{{ n.node_type }}</td><td>{{ n.parent_id or '—' }}</td></tr>{% endfor %}</table>{% else %}<p class="empty">Aucun élément WBS.</p>{% endif %}{% endblock %}

@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Soumission et classification
+{{ value('Soumission et enregistrement','submission') }}{{ value('Classification et priorité','classification') }}
+## Analyse
+{{ value('Analyse d’impact','impact_analysis') }}{{ value('Recommandation','recommendation') }}
+## Décision
+{{ value('Autorités d’approbation','approval_authority') }}{{ value('Règles de décision','decision_rules') }}
+## Mise en œuvre
+{{ value('Contrôle de mise en œuvre','implementation_control') }}{{ value('Vérification','verification') }}{{ value('Communication','communication') }}
+{{ records('Registre des modifications',changes) }}{{ validation() }}

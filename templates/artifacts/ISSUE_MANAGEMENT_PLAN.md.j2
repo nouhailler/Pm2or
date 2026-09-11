@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Enregistrement
+{{ value('Identification et journalisation','identification') }}{{ value('Classification et priorité','classification') }}
+## Résolution
+{{ value('Attribution','assignment') }}{{ value('Analyse','analysis') }}{{ value('Planification et résolution','resolution_process') }}
+## Contrôle
+{{ value('Suivi','monitoring') }}{{ value('Escalade','escalation') }}{{ value('Vérification et clôture','closure') }}
+{{ records('Registre des problèmes',issues) }}{{ validation() }}

@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Enregistrement</h2>{{ value('Identification et journalisation','identification') }}{{ value('Classification et priorité','classification') }}
+<h2>Résolution</h2>{{ value('Attribution','assignment') }}{{ value('Analyse','analysis') }}{{ value('Planification et résolution','resolution_process') }}
+<h2>Contrôle</h2>{{ value('Suivi','monitoring') }}{{ value('Escalade','escalation') }}{{ value('Vérification et clôture','closure') }}{{ records('Registre des problèmes',issues) }}{% endblock %}

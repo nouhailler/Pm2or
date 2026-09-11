@@ -1,0 +1,11 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, validation with context %}{{ metadata() }}
+## Méthode
+{{ value('Méthode d’identification','identification_method') }}{{ value('Méthode de classification','classification_method') }}
+## Engagement
+{{ value('Principes d’engagement','engagement_principles') }}{{ value('Informations sensibles','sensitive_information') }}
+## Matrice structurée
+{% if stakeholders %}| Nom | Organisation | Fonction | Intérêt | Influence | Engagement | Stratégie |
+|---|---|---|---|---|---|---|
+{% for s in stakeholders %}| {{ s.name }} | {{ s.organisation or '—' }} | {{ s.function or '—' }} | {{ s.interest or '—' }} | {{ s.influence or '—' }} | {{ s.engagement_level or '—' }} | {{ s.strategy or '—' }} |
+{% endfor %}{% else %}Aucune partie prenante enregistrée.{% endif %}
+{{ validation() }}

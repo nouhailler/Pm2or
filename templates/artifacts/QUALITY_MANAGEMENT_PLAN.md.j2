@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Objectifs et normes
+{{ value('Objectifs qualité','quality_objectives') }}{{ value('Normes et référentiels','standards') }}
+## Assurance
+{{ value('Activités d’assurance','assurance_activities') }}{{ value('Revues et audits','reviews') }}
+## Contrôle
+{{ value('Contrôles','control_activities') }}{{ value('Alignement avec l’acceptation','acceptance_alignment') }}
+## Amélioration
+{{ value('Traitement des non-conformités','nonconformity') }}{{ value('Gestion de configuration','configuration') }}{{ value('Amélioration continue','improvement') }}
+{{ records('Contrôles qualité',quality_controls) }}{{ validation() }}

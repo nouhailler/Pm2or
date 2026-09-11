@@ -1,0 +1,6 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Justification et objectifs</h2>{{ value('Justification','justification') }}{{ value('Objectifs mesurables','objectives') }}
+<h2>Périmètre</h2>{{ value('Dans le périmètre','scope_in') }}{{ value('Hors périmètre','scope_out') }}
+<h2>Résultats</h2>{{ value('Exigences de haut niveau','high_level_requirements') }}{{ value('Livrables principaux','key_deliverables') }}
+<h2>Cadre</h2>{{ value('Contraintes','constraints') }}{{ value('Hypothèses','assumptions') }}{{ value('Jalons','milestones') }}
+<h2>Gouvernance et autorisation</h2>{{ value('Organisation et responsabilités','governance') }}{{ value('Autorisation du projet','approval') }}{{ records('Exigences structurées',requirements) }}{{ records('Livrables structurés',deliverables) }}{% endblock %}

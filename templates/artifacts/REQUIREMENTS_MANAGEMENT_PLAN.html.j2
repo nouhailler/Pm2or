@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Cycle des besoins</h2>{{ value('Recueil','elicitation') }}{{ value('Analyse et documentation','analysis') }}{{ value('Priorisation','prioritisation') }}
+<h2>Contrôle</h2>{{ value('Revue et approbation','approval') }}{{ value('Gestion des changements','change_process') }}{{ value('Traçabilité','traceability') }}
+<h2>Vérification et acceptation</h2>{{ value('Méthodes de vérification','verification') }}{{ value('Lien avec l’acceptation','acceptance_link') }}{{ records('Exigences structurées',requirements) }}{{ records('Tests d’acceptation',acceptance_tests) }}{% endblock %}

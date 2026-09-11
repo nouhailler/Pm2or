@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Période et synthèse
+{{ value('Période couverte','reporting_period') }}{{ value('Synthèse qualité','quality_summary') }}
+## Assurance
+{{ value('Activités d’assurance réalisées','assurance_completed') }}{{ value('Résultats de revue/audit','audit_results') }}
+## Contrôles et constats
+{{ value('Résultats des contrôles','control_results') }}{{ value('Constats et non-conformités','findings') }}
+## Actions et tendances
+{{ value('Actions correctives','corrective_actions') }}{{ value('Tendances','trends') }}{{ value('Recommandations','recommendations') }}
+{{ records('Contrôles qualité structurés',quality_controls) }}{{ validation() }}

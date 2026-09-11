@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Objectifs et normes</h2>{{ value('Objectifs qualité','quality_objectives') }}{{ value('Normes et référentiels','standards') }}
+<h2>Assurance</h2>{{ value('Activités d’assurance','assurance_activities') }}{{ value('Revues et audits','reviews') }}
+<h2>Contrôle</h2>{{ value('Contrôles','control_activities') }}{{ value('Alignement avec l’acceptation','acceptance_alignment') }}
+<h2>Amélioration</h2>{{ value('Traitement des non-conformités','nonconformity') }}{{ value('Gestion de configuration','configuration') }}{{ value('Amélioration continue','improvement') }}{{ records('Contrôles qualité',quality_controls) }}{% endblock %}

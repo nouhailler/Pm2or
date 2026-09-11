@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Période et synthèse</h2>{{ value('Période couverte','reporting_period') }}{{ value('Synthèse exécutive','executive_summary') }}
+<h2>Performance</h2>{{ value('Périmètre et livrables','scope_status') }}{{ value('Échéancier','schedule_status') }}{{ value('Coûts','cost_status') }}{{ value('Qualité','quality_status') }}
+<h2>Pilotage</h2>{{ value('Risques et problèmes','risk_issue_summary') }}{{ value('Modifications','change_summary') }}{{ value('Décisions attendues','decisions_needed') }}
+<h2>Prévisions</h2>{{ value('Prévisions','forecast') }}{{ value('Travaux de la prochaine période','next_period') }}{{ records('Risques ouverts',risks) }}{{ records('Problèmes ouverts',issues) }}{{ records('Modifications',changes) }}{% endblock %}

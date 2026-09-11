@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Synthèse et objectifs</h2>{{ value('Synthèse exécutive','executive_summary') }}{{ value('Atteinte des objectifs','objectives_achievement') }}
+<h2>Performance globale</h2>{{ value('Périmètre et livrables','scope_performance') }}{{ value('Échéancier','schedule_performance') }}{{ value('Coûts','cost_performance') }}{{ value('Qualité','quality_performance') }}
+<h2>Résultats et transfert</h2>{{ value('Acceptation finale','acceptance') }}{{ value('Perspective des bénéfices','benefits_outlook') }}{{ value('Transition et exploitation','transition_outcome') }}
+<h2>Clôture</h2>{{ value('Éléments transférés','open_items') }}{{ value('Synthèse des leçons','lessons_summary') }}{{ value('Fermeture administrative','administrative_closure') }}{{ records('Livrables',deliverables) }}{{ records('Leçons apprises',lessons_learned) }}{% endblock %}

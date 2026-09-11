@@ -1,0 +1,4 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value with context %}{% block content %}
+<h2>Méthode</h2>{{ value('Méthode d’identification','identification_method') }}{{ value('Méthode de classification','classification_method') }}
+<h2>Engagement</h2>{{ value('Principes d’engagement','engagement_principles') }}{{ value('Informations sensibles','sensitive_information') }}
+<h2>Matrice structurée</h2>{% if stakeholders %}<table><tr><th>Nom</th><th>Organisation</th><th>Fonction</th><th>Intérêt</th><th>Influence</th><th>Stratégie</th></tr>{% for s in stakeholders %}<tr><td>{{ s.name }}</td><td>{{ s.organisation or '—' }}</td><td>{{ s.function or '—' }}</td><td>{{ s.interest or '—' }}</td><td>{{ s.influence or '—' }}</td><td>{{ s.strategy or '—' }}</td></tr>{% endfor %}</table>{% else %}<p class="empty">Aucune partie prenante enregistrée.</p>{% endif %}{% endblock %}

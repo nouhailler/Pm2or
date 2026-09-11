@@ -1,0 +1,10 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Objectifs et principes
+{{ value('Objectifs de communication','communication_objectives') }}{{ value('Principes','principles') }}
+## Publics
+{{ value('Publics et besoins','audiences') }}{{ value('Confidentialité','confidentiality') }}
+## Dispositif
+{{ value('Canaux et formats','channels') }}{{ value('Calendrier et fréquence','calendar') }}{{ value('Responsabilités','ownership') }}
+## Évaluation
+{{ value('Retour et efficacité','feedback') }}{{ value('Conservation des communications','records') }}
+{{ records('Communications planifiées',communications) }}{{ validation() }}

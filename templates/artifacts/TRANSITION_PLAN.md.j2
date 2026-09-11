@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Objectifs et prérequis
+{{ value('Objectifs de transition','transition_objectives') }}{{ value('Prérequis','prerequisites') }}
+## Transfert
+{{ value('Transfert des livrables','handover') }}{{ value('Migration des données','data_migration') }}{{ value('Formation','training') }}
+## Exploitation
+{{ value('Préparation opérationnelle','operational_readiness') }}{{ value('Support post-transition','support_model') }}{{ value('Repli et continuité','rollback') }}
+{{ records('Activités de transition',transition_activities) }}{{ validation() }}

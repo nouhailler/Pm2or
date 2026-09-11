@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Impacts et préparation
+{{ value('Analyse des impacts','impact_analysis') }}{{ value('État de préparation','readiness') }}
+## Conduite du changement
+{{ value('Actions de changement','change_actions') }}{{ value('Communication du changement','communication') }}{{ value('Développement des compétences','training') }}
+## Adoption
+{{ value('Mesures d’adoption','adoption_measures') }}{{ value('Gestion des résistances','resistance') }}{{ value('Pérennisation','sustainability') }}
+{{ records('Activités de mise en œuvre',implementation_activities) }}{{ validation() }}

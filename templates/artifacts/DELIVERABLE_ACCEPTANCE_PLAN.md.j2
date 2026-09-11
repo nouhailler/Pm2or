@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Approche et responsabilités
+{{ value('Approche d’acceptation','acceptance_approach') }}{{ value('Rôles d’acceptation','roles') }}
+## Évaluation
+{{ value('Définition des critères','criteria_method') }}{{ value('Méthode de test','test_method') }}{{ value('Preuves attendues','evidence') }}
+## Décision
+{{ value('Calendrier d’acceptation','schedule') }}{{ value('Décision et réserves','decision_process') }}
+{{ records('Livrables soumis à acceptation',deliverables) }}{{ records('Critères enregistrés',acceptance_criteria) }}{{ validation() }}

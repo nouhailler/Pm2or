@@ -1,0 +1,13 @@
+.venv/
+.gitdata/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+*.db
+*.pm2
+exports/
+.coverage

@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, validation with context %}{{ metadata() }}
+## Périmètre et stratégie
+{{ value('Travaux externalisés','outsourced_scope') }}{{ value('Stratégie d’externalisation','sourcing_strategy') }}
+## Sélection
+{{ value('Processus d’acquisition','procurement_process') }}{{ value('Critères de sélection','selection_criteria') }}
+## Pilotage et sortie
+{{ value('Gouvernance fournisseur','supplier_governance') }}{{ value('Suivi des obligations','contract_monitoring') }}{{ value('Stratégie de sortie','exit_strategy') }}
+{{ validation() }}

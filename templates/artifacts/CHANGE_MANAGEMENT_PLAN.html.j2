@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Soumission et classification</h2>{{ value('Soumission et enregistrement','submission') }}{{ value('Classification et priorité','classification') }}
+<h2>Analyse</h2>{{ value('Analyse d’impact','impact_analysis') }}{{ value('Recommandation','recommendation') }}
+<h2>Décision</h2>{{ value('Autorités d’approbation','approval_authority') }}{{ value('Règles de décision','decision_rules') }}
+<h2>Mise en œuvre</h2>{{ value('Contrôle de mise en œuvre','implementation_control') }}{{ value('Vérification','verification') }}{{ value('Communication','communication') }}{{ records('Registre des modifications',changes) }}{% endblock %}

@@ -1,0 +1,8 @@
+{% from 'artifacts/_macros.md.j2' import metadata, value, records, validation with context %}{{ metadata() }}
+## Contexte de collecte
+{{ value('Méthode de collecte','collection_method') }}{{ value('Contributeurs','participants') }}
+## Expérience
+{{ value('Réussites et bonnes pratiques','successes') }}{{ value('Difficultés et écueils','challenges') }}{{ value('Causes profondes','root_causes') }}
+## Capitalisation
+{{ value('Leçons formulées','lessons') }}{{ value('Recommandations','recommendations') }}{{ value('Responsables et suivi','follow_up') }}
+{{ records('Leçons structurées',lessons_learned) }}{{ validation() }}

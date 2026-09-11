@@ -1,0 +1,5 @@
+{% extends 'artifacts/_base.html.j2' %}{% from 'artifacts/_macros.html.j2' import value, records with context %}{% block content %}
+<h2>Synthèse</h2>{{ value('Résumé exécutif','executive_summary') }}{{ value('Alignement stratégique','strategic_alignment') }}
+<h2>Analyse des options</h2>{{ value('Options étudiées','options') }}{{ value('Option recommandée','recommended_option') }}
+<h2>Viabilité</h2>{{ value('Bénéfices attendus','benefits') }}{{ value('Coûts estimés','costs') }}{{ value('Risques métier','business_risks') }}
+<h2>Feuille de route</h2>{{ value('Échéancier de haut niveau','roadmap') }}{{ value('Mesures de succès','success_measures') }}{{ records('Risques actuellement enregistrés',risks) }}{% endblock %}

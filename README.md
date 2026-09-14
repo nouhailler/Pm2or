@@ -16,10 +16,8 @@ PM² Desktop est une application de gestion de projets locale, en français, fon
 
 - navigation par cinq tiroirs repliables : Vue d’ensemble, Étapes du projet, Pilotage,
   Données et documents, Outils avancés ; ouverture automatique du tiroir de l’écran demandé ;
-
 - parcours graphique sur le tableau de bord : position réelle du projet, phases cliquables,
   revues de passage et raccourcis vers les assistants, registres, planning et contrôles ;
-
 - assistants complets Lancement, Planification, Exécution et Clôture avec complétude,
   validations, données sources, artefacts, gates, acceptations et fermeture administrative ;
 - gates RfP, RfE et RfC avec checklists issues de la configuration méthodologique ;
@@ -99,6 +97,18 @@ Un [projet fictif d’entraînement](examples/portail-association.pm2) et son
 [parcours d’exercices](examples/EXERCICES.md) sont fournis. Pour repartir du cas initial,
 utilisez **Fichier → Ouvrir un projet…** et sélectionnez cette archive.
 
+### Projet de démonstration : prochaine étape
+
+Le cas **Les Colibris** est aujourd’hui un support d’entraînement : il commence en
+lancement, avec un planning proposé, des documents en brouillon et des tests à exécuter.
+Il doit être enrichi pour devenir un véritable projet de démonstration clé en main,
+avec des données réalistes et cohérentes, des documents renseignés, des décisions,
+des preuves d’acceptation et un parcours guidé couvrant le fonctionnement de l’outil.
+
+Ce travail commencera le **15 septembre 2026**. Les priorités et le point de reprise
+sont consignés dans [CONTEXT.md](CONTEXT.md). L’historique est disponible dans
+[CHANGELOG.md](CHANGELOG.md).
+
 ### 💾 Stockage local
 
 Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-desktop`. La variable `PM2_DATA_DIR` permet de choisir un autre dossier.
@@ -155,3 +165,5 @@ projet.pm2
 | [🧪 Plan de test](10_TEST_PLAN.md) | Scénarios de validation |
 | [👁️ Recette visuelle V0.1](docs/RECETTE_VISUELLE_V0.1.md) | Contrôles des écrans |
 | [📝 Notes de version 0.1.3](docs/RELEASE_0.1.3.md) | Nouveautés et installation |
+| [Contexte et reprise](CONTEXT.md) | État du projet et prochain chantier |
+| [Historique des changements](CHANGELOG.md) | Versions publiées et travaux à venir |

@@ -6,6 +6,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+import pytest
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMessageBox
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,11 +24,57 @@ from pm2.infrastructure.orm import (
     StakeholderModel,
     TaskModel,
 )
+from pm2.methodology import bundle_methodology
 from pm2.ui.acceptance import AcceptanceExecutionWidget
 from pm2.ui.crud import EntityCatalogPage
 from pm2.ui.main_window import MainWindow
 from pm2.ui.pages import DocumentsPage, GovernancePage, RegisterTab, WorkPlanPage
 from pm2.ui.wizards import GateAssistant, PhaseAssistantPage
+
+
+@pytest.mark.parametrize("decisions", [("Conserver",), ("Examiner", "Conserver"), ("Mettre",)])
+def test_ui_project_methodology_choices(
+    qtbot: Any,
+    tmp_path: Path,
+    context: ApplicationContext,
+    project: Any,
+    monkeypatch: Any,
+    decisions: tuple[str, ...],
+) -> None:
+    future = context.methodology.model_copy(
+        update={
+            "methodology": context.methodology.methodology.model_copy(update={"version": "3.2"})
+        }
+    )
+    context.methodology_bundle = bundle_methodology(future)
+    pending = list(decisions)
+    examined: list[str] = []
+    original_exec = QMessageBox.exec
+
+    def choose(message: QMessageBox) -> int:
+        prefix = pending.pop(0)
+        button = next(button for button in message.buttons() if button.text().startswith(prefix))
+        QTimer.singleShot(0, button.click)
+        return original_exec(message)
+
+    monkeypatch.setattr(QMessageBox, "exec", choose)
+    monkeypatch.setattr(QMessageBox, "information", lambda *_args: QMessageBox.StandardButton.Ok)
+    monkeypatch.setattr(
+        MainWindow, "_show_methodology_diff", lambda _self, value: examined.append(value.id)
+    )
+    window = MainWindow(context, paths(tmp_path, context.database.path))
+    qtbot.addWidget(window)
+    expected = "3.2" if decisions == ("Mettre",) else "3.1"
+    assert window.project_methodology.methodology.version == expected
+    assert window.project.methodology_version == expected
+    assert all(
+        page.methodology.methodology.version == expected
+        for page in window.pages
+        if isinstance(page, PhaseAssistantPage)
+    )
+    assert bool(examined) == ("Examiner" in decisions)
+    assert not pending
+    window.close()
 
 
 class AcceptedDialog:

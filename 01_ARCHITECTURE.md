@@ -57,11 +57,12 @@ Extension : .pm2
 Le fichier est un ZIP contenant :
 project.db
 manifest.json
+methodology/PM2_METHODOLOGY.yaml
 documents/
 attachments/
 exports/
 
-manifest.json contient version du format, identifiant projet, méthodologie, version de méthodologie et date de dernière sauvegarde.
+manifest.json contient version du format, identifiant projet, méthodologie, version de méthodologie, SHA-256 du snapshot, chemin du YAML figé et date de dernière sauvegarde. La configuration installée sert aux nouveaux projets ; les projets existants utilisent leur snapshot, sauf mise à niveau explicitement demandée et auditée.
 
 ## 6. Navigation principale
 Dashboard

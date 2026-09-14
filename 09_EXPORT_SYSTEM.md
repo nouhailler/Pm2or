@@ -30,6 +30,7 @@ A complete project export contains:
 - registers
 - supporting documents
 - manifest
+- frozen methodology YAML (`methodology/PM2_METHODOLOGY.yaml`) and SHA-256
 - export report
 - validation report
 
@@ -41,3 +42,5 @@ A complete project export contains:
 
 ## Determinism
 Same database state + same template version should produce materially identical output.
+
+Archive format 1.1 verifies consistency between the methodology file, manifest and database snapshot before opening. Legacy 1.0 archives remain readable; missing snapshots follow the explicit historical compatibility policy.

@@ -23,6 +23,8 @@ class EntityCrudService:
         "current_phase",
         "methodology_id",
         "methodology_version",
+        "methodology_hash",
+        "methodology_snapshot",
     }
 
     def __init__(self, session: Session, project_id: str) -> None:
@@ -45,6 +47,10 @@ class EntityCrudService:
         return self.session.scalars(statement).all()
 
     def create(self, table_name: str, values: dict[str, Any], *, actor: str = "local") -> Base:
+        if table_name == "projects":
+            raise ValueError(
+                "La création d’un projet doit passer par ProjectService pour figer sa méthodologie."
+            )
         model = self.model(table_name)
         allowed = {column.name for column in model.__table__.columns}
         unknown = set(values) - allowed

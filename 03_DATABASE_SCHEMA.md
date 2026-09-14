@@ -52,6 +52,7 @@ audit_events
 settings
 
 ## Contraintes
+- `projects` fige `methodology_id`, `methodology_version`, `methodology_hash` et `methodology_snapshot` à sa création.
 - Foreign keys activées.
 - Suppression en cascade uniquement pour les enfants strictement dépendants.
 - Les objets métier ne doivent pas être supprimés physiquement lorsqu'ils sont référencés : préférer archived/deleted_at.
@@ -77,3 +78,5 @@ trace source/target
 
 ## Migration
 Alembic obligatoire. Première migration crée le schéma complet.
+
+La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite.

@@ -27,6 +27,8 @@ class Project:
     project_manager: str | None = None
     methodology_id: str = "pm2"
     methodology_version: str = "3.1"
+    methodology_hash: str = ""
+    methodology_snapshot: str = ""
     current_phase: PhaseCode = PhaseCode.LAUNCH
     status: ProjectStatus = ProjectStatus.LAUNCH
     start_date: date | None = None

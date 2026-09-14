@@ -4,7 +4,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from sqlalchemy import Engine, create_engine, event
+from sqlalchemy import Engine, create_engine, event, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from pm2.infrastructure.orm import Base
@@ -32,6 +32,26 @@ class Database:
 
     def create_schema(self) -> None:
         Base.metadata.create_all(self.engine)
+        self.ensure_schema_compatibility()
+
+    def ensure_schema_compatibility(self) -> None:
+        """Apply additive compatibility fixes needed before Alembic can be run explicitly."""
+        inspector = inspect(self.engine)
+        if "projects" not in inspector.get_table_names():
+            return
+        columns = {column["name"] for column in inspector.get_columns("projects")}
+        additions = {
+            "methodology_hash": (
+                "ALTER TABLE projects ADD COLUMN methodology_hash VARCHAR(64) NOT NULL DEFAULT ''"
+            ),
+            "methodology_snapshot": (
+                "ALTER TABLE projects ADD COLUMN methodology_snapshot TEXT NOT NULL DEFAULT ''"
+            ),
+        }
+        with self.engine.begin() as connection:
+            for name, statement in additions.items():
+                if name not in columns:
+                    connection.execute(text(statement))
 
     @contextmanager
     def session(self) -> Iterator[Session]:

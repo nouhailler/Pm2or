@@ -52,7 +52,7 @@ Le diagnostic sans interface vérifie la base et la méthodologie :
 .venv/bin/pm2-desktop --headless-check
 ```
 
-La recette de la V0.1 comprend 40 tests automatisés, dont les dix parcours Qt de
+La recette de la V0.1 comprend des tests automatisés, dont les dix parcours Qt de
 `10_TEST_PLAN.md` et un cycle de vie complet jusqu'au rapport final.
 
 Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-desktop`. La variable `PM2_DATA_DIR` permet de choisir un autre dossier.
@@ -68,3 +68,7 @@ Le script exécute les contrôles puis construit `dist/pm2-desktop` avec PyInsta
 ## Source méthodologique
 
 Le fichier `04_PM2_METHODOLOGY.yaml` est la source de vérité pour les phases, rôles, activités, artefacts, gates, responsabilités et règles PM² de la V0.1. Les widgets Qt ne définissent aucune règle méthodologique et toutes les transitions sont contrôlées par les services applicatifs.
+
+Chaque nouveau projet fige l’identifiant, la version, un snapshot YAML canonique complet et son SHA-256. À la réouverture, les écrans utilisent exclusivement ce snapshot, et non le YAML installé. En cas d’écart, l’interface propose de conserver la méthodologie, examiner les différences ou effectuer une mise à niveau explicite et auditée.
+
+Les archives `.pm2` (format 1.1) embarquent `methodology/PM2_METHODOLOGY.yaml` et vérifient sa cohérence avec le manifeste et SQLite. Les anciens projets sans snapshot ne peuvent être complétés automatiquement que si leur identifiant et leur version correspondent à ceux de la méthodologie installée ; le contenu historique exact ne peut pas être reconstitué a posteriori.

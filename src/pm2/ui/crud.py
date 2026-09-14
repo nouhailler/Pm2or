@@ -106,6 +106,10 @@ FIELD_LABELS = {
     "decision_owner": "Responsable de décision",
     "decision_date": "Date de décision",
     "project_id": "Projet",
+    "methodology_id": "Méthodologie",
+    "methodology_version": "Version méthodologique",
+    "methodology_hash": "Empreinte méthodologique",
+    "methodology_snapshot": "Snapshot méthodologique",
     "person_id": "Personne",
     "role_code": "Rôle",
     "due_date": "Échéance",
@@ -197,6 +201,8 @@ class EntityEditDialog(QDialog):
             "current_phase",
             "methodology_id",
             "methodology_version",
+            "methodology_hash",
+            "methodology_snapshot",
         }:
             return False
         return not (column.name == "id" and column.default is not None)

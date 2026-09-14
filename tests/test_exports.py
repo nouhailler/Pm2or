@@ -34,10 +34,19 @@ def test_archive_roundtrip_and_integrity(
         project.id, tmp_path / "demo.pm2"
     )
     with zipfile.ZipFile(archive) as bundle:
-        assert {"project.db", "manifest.json"} <= set(bundle.namelist())
-        assert {"documents/", "attachments/", "exports/"} <= set(bundle.namelist())
+        assert {
+            "project.db",
+            "manifest.json",
+            "methodology/PM2_METHODOLOGY.yaml",
+        } <= set(bundle.namelist())
+        assert {"methodology/", "documents/", "attachments/", "exports/"} <= set(bundle.namelist())
         manifest = json.loads(bundle.read("manifest.json"))
         assert manifest["project_id"] == project.id
+        assert manifest["methodology_hash"] == project.methodology_hash
+        assert (
+            bundle.read("methodology/PM2_METHODOLOGY.yaml").decode("utf-8")
+            == project.methodology_snapshot
+        )
     restored = tmp_path / "restored.db"
     opened = ProjectArchiveService.open(archive, restored)
     assert opened["project_id"] == project.id
@@ -45,6 +54,27 @@ def test_archive_roundtrip_and_integrity(
     with probe.session_factory() as restored_session:
         assert restored_session.get(ProjectModel, project.id).name == project.name
     probe.dispose()
+
+
+def test_archive_rejects_tampered_methodology(
+    session: Session, project: ProjectModel, context: ApplicationContext, tmp_path: Path
+) -> None:
+    source = ProjectArchiveService(context.database, session).save(
+        project.id, tmp_path / "source.pm2"
+    )
+    tampered = tmp_path / "tampered.pm2"
+    with (
+        zipfile.ZipFile(source, "r") as original,
+        zipfile.ZipFile(tampered, "w", zipfile.ZIP_DEFLATED) as changed,
+    ):
+        for info in original.infolist():
+            data = original.read(info.filename)
+            if info.filename == "methodology/PM2_METHODOLOGY.yaml":
+                data += b"\n# alteration\n"
+            changed.writestr(info, data)
+
+    with pytest.raises(ArchiveError, match="méthodologie"):
+        ProjectArchiveService.open(tampered, tmp_path / "tampered.db")
 
 
 def test_corrupt_archive_does_not_overwrite(tmp_path: Path) -> None:

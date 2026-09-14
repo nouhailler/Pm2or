@@ -3,6 +3,7 @@ from pathlib import Path
 from sqlalchemy import inspect, text
 
 from pm2.application.context import ApplicationContext
+from pm2.infrastructure.database import Database
 
 EXPECTED_TABLES = {
     "projects",
@@ -73,3 +74,23 @@ def test_alembic_initial_migration(tmp_path: Path) -> None:
 
     migrated_tables = set(inspect(create_engine(f"sqlite:///{destination}")).get_table_names())
     assert migrated_tables == EXPECTED_TABLES | {"alembic_version"}
+
+
+def test_runtime_adds_methodology_snapshot_columns_to_legacy_database(tmp_path: Path) -> None:
+    database = Database(tmp_path / "legacy.db")
+    with database.engine.begin() as connection:
+        connection.execute(
+            text(
+                "CREATE TABLE projects ("
+                "id VARCHAR(36) PRIMARY KEY, "
+                "methodology_id VARCHAR(40) NOT NULL, "
+                "methodology_version VARCHAR(20) NOT NULL"
+                ")"
+            )
+        )
+
+    database.ensure_schema_compatibility()
+
+    columns = {column["name"] for column in inspect(database.engine).get_columns("projects")}
+    assert {"methodology_hash", "methodology_snapshot"} <= columns
+    database.dispose()

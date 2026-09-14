@@ -10,10 +10,10 @@ class StrictModel(BaseModel):
 
 
 class MethodologyIdentity(StrictModel):
-    id: Literal["pm2"]
+    id: str = Field(min_length=1)
     name: str
-    version: Literal["3.1"]
-    language: Literal["fr"]
+    version: str = Field(min_length=1)
+    language: str = Field(min_length=2)
     source: str
     machine_readable_contract: bool = True
     implementation_policy: list[str] = Field(default_factory=list)

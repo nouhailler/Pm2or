@@ -60,6 +60,8 @@ class ProjectModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
     project_manager: Mapped[str | None] = mapped_column(String(255))
     methodology_id: Mapped[str] = mapped_column(String(40), default="pm2", nullable=False)
     methodology_version: Mapped[str] = mapped_column(String(20), default="3.1", nullable=False)
+    methodology_hash: Mapped[str] = mapped_column(String(64), default="", nullable=False)
+    methodology_snapshot: Mapped[str] = mapped_column(Text, default="", nullable=False)
     current_phase: Mapped[str] = mapped_column(String(40), default="LAUNCH", nullable=False)
     status: Mapped[str] = mapped_column(String(40), default="LAUNCH", nullable=False, index=True)
     start_date: Mapped[date | None] = mapped_column(Date)

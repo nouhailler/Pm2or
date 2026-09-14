@@ -2,7 +2,13 @@ from pathlib import Path
 
 import pytest
 
-from pm2.methodology.loader import MethodologyLoader, MethodologyLoadError, load_default_methodology
+from pm2.methodology.loader import (
+    MethodologyLoader,
+    MethodologyLoadError,
+    load_default_methodology,
+    load_default_methodology_bundle,
+    methodology_sha256,
+)
 
 
 def test_default_methodology_contract() -> None:
@@ -28,3 +34,10 @@ def test_invalid_methodology_has_explicit_error(tmp_path: Path) -> None:
     source.write_text("methodology: invalid", encoding="utf-8")
     with pytest.raises(MethodologyLoadError, match="Configuration PM² invalide"):
         MethodologyLoader.load(source)
+
+
+def test_default_methodology_has_canonical_verifiable_snapshot() -> None:
+    bundle = load_default_methodology_bundle()
+    assert MethodologyLoader.load_text(bundle.snapshot) == bundle.configuration
+    assert methodology_sha256(bundle.snapshot) == bundle.sha256
+    assert len(bundle.sha256) == 64

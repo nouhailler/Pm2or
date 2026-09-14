@@ -55,6 +55,8 @@ from pm2.infrastructure.orm import (
     utcnow,
 )
 from pm2.infrastructure.repositories import Repository
+from pm2.methodology import MethodologyLoader, bundle_methodology, methodology_sha256
+from pm2.methodology.loader import MethodologyLoadError
 from pm2.methodology.models import PM2Configuration
 
 
@@ -91,10 +93,37 @@ class AuditService:
         return event
 
 
+class ProjectMethodologyError(RuntimeError):
+    pass
+
+
 class ProjectService:
-    def __init__(self, session: Session, methodology: PM2Configuration) -> None:
+    def __init__(
+        self,
+        session: Session,
+        methodology: PM2Configuration,
+        *,
+        methodology_snapshot: str | None = None,
+        methodology_hash: str | None = None,
+    ) -> None:
         self.session = session
-        self.methodology = methodology
+        bundle = bundle_methodology(methodology)
+        if methodology_snapshot is not None:
+            snapshot_configuration = MethodologyLoader.load_text(
+                methodology_snapshot, source="snapshot courant"
+            )
+            if snapshot_configuration != methodology:
+                raise ProjectMethodologyError(
+                    "Le snapshot fourni ne correspond pas à la méthodologie courante."
+                )
+            bundle = bundle_methodology(snapshot_configuration)
+        if methodology_hash is not None and methodology_hash != bundle.sha256:
+            raise ProjectMethodologyError(
+                "L’empreinte fournie ne correspond pas au snapshot méthodologique courant."
+            )
+        self.methodology = bundle.configuration
+        self.methodology_snapshot = bundle.snapshot
+        self.methodology_hash = bundle.sha256
 
     def seed_roles(self) -> None:
         roles = [*self.methodology.roles.standard, *self.methodology.roles.support]
@@ -146,6 +175,8 @@ class ProjectService:
             target_end_date=dto.target_end_date,
             methodology_id=self.methodology.methodology.id,
             methodology_version=self.methodology.methodology.version,
+            methodology_hash=self.methodology_hash,
+            methodology_snapshot=self.methodology_snapshot,
             current_phase="LAUNCH",
             status="LAUNCH",
         )
@@ -179,6 +210,109 @@ class ProjectService:
         )
         self.session.flush()
         return project
+
+    def methodology_for(self, project: ProjectModel) -> PM2Configuration:
+        """Load and validate the immutable methodology owned by a project."""
+        if bool(project.methodology_snapshot) != bool(project.methodology_hash):
+            raise ProjectMethodologyError(
+                "Le snapshot et son empreinte sont incomplets : aucune substitution automatique n’est autorisée."
+            )
+        if not project.methodology_snapshot and not project.methodology_hash:
+            if (
+                project.methodology_id != self.methodology.methodology.id
+                or project.methodology_version != self.methodology.methodology.version
+            ):
+                raise ProjectMethodologyError(
+                    "Ce projet historique ne contient pas de snapshot méthodologique et sa "
+                    "version ne correspond pas à la méthodologie installée."
+                )
+            project.methodology_snapshot = self.methodology_snapshot
+            project.methodology_hash = self.methodology_hash
+            AuditService(self.session).record(
+                project.id,
+                "project",
+                project.id,
+                "METHODOLOGY_SNAPSHOT_BACKFILL",
+                new={
+                    "methodology_id": project.methodology_id,
+                    "methodology_version": project.methodology_version,
+                    "methodology_hash": project.methodology_hash,
+                },
+            )
+        actual_hash = methodology_sha256(project.methodology_snapshot)
+        if actual_hash != project.methodology_hash:
+            raise ProjectMethodologyError(
+                "Le snapshot méthodologique du projet est corrompu : empreinte SHA-256 invalide."
+            )
+        try:
+            configuration = MethodologyLoader.load_text(
+                project.methodology_snapshot,
+                source=f"projet {project.reference}",
+            )
+        except MethodologyLoadError as exc:
+            raise ProjectMethodologyError(
+                "Le snapshot méthodologique du projet est invalide."
+            ) from exc
+        identity = configuration.methodology
+        if identity.id != project.methodology_id or identity.version != project.methodology_version:
+            raise ProjectMethodologyError(
+                "L’identité du snapshot méthodologique ne correspond pas aux métadonnées du projet."
+            )
+        return configuration
+
+    def uses_current_methodology(self, project: ProjectModel) -> bool:
+        self.methodology_for(project)
+        return (
+            project.methodology_id == self.methodology.methodology.id
+            and project.methodology_version == self.methodology.methodology.version
+            and project.methodology_hash == self.methodology_hash
+        )
+
+    def upgrade_methodology(
+        self, project: ProjectModel, *, actor: str = "local"
+    ) -> PM2Configuration:
+        """Explicitly replace the frozen snapshot and audit the upgrade."""
+        previous = {
+            "methodology_id": project.methodology_id,
+            "methodology_version": project.methodology_version,
+            "methodology_hash": project.methodology_hash,
+            "methodology_snapshot": project.methodology_snapshot,
+        }
+        self.methodology_for(project)
+        project.methodology_id = self.methodology.methodology.id
+        project.methodology_version = self.methodology.methodology.version
+        project.methodology_hash = self.methodology_hash
+        project.methodology_snapshot = self.methodology_snapshot
+        self.seed_roles()
+        existing_phases = set(
+            self.session.scalars(
+                select(PhaseModel.methodology_phase_code).where(PhaseModel.project_id == project.id)
+            )
+        )
+        for definition in self.methodology.lifecycle.phases:
+            if definition.code not in existing_phases:
+                self.session.add(
+                    PhaseModel(
+                        project_id=project.id,
+                        methodology_phase_code=definition.code,
+                        status="NOT_STARTED",
+                    )
+                )
+        AuditService(self.session).record(
+            project.id,
+            "project",
+            project.id,
+            "METHODOLOGY_UPGRADE",
+            old=previous,
+            new={
+                "methodology_id": project.methodology_id,
+                "methodology_version": project.methodology_version,
+                "methodology_hash": project.methodology_hash,
+            },
+            actor=actor,
+        )
+        self.session.flush()
+        return self.methodology
 
     def list(self) -> Sequence[ProjectModel]:
         return self.session.scalars(

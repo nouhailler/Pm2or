@@ -10,6 +10,8 @@ from pm2.application.context import ApplicationContext
 from pm2.application.services import (
     AcceptanceService,
     GateService,
+    ProjectMethodologyError,
+    ProjectService,
     RegisterService,
     ResponsibilityService,
     TraceabilityService,
@@ -25,6 +27,7 @@ from pm2.infrastructure.orm import (
     AuditEventModel,
     DeliverableModel,
     IssueModel,
+    ProjectModel,
     RequirementModel,
     RiskModel,
     RoleModel,
@@ -39,6 +42,101 @@ def test_project_creation_has_lifecycle_governance_and_audit(
     assert {item.role_code for item in project.role_assignments} == {"PM", "PO"}
     assert session.scalar(select(func.count()).select_from(RoleModel)) >= 14
     assert session.scalar(select(func.count()).select_from(AuditEventModel)) == 1
+
+
+def test_project_keeps_frozen_methodology_until_explicit_upgrade(
+    session: Session,
+    project: ProjectModel,
+    context: ApplicationContext,
+) -> None:
+    original_hash = project.methodology_hash
+    original_snapshot = project.methodology_snapshot
+    assert len(original_hash) == 64
+    assert "methodology:" in project.methodology_snapshot
+
+    future_identity = context.methodology.methodology.model_copy(update={"version": "3.2"})
+    future = context.methodology.model_copy(update={"methodology": future_identity})
+    service = ProjectService(session, future)
+
+    frozen = service.methodology_for(project)
+    assert frozen.methodology.version == "3.1"
+    assert project.methodology_hash == original_hash
+    assert not service.uses_current_methodology(project)
+
+    upgraded = service.upgrade_methodology(project, actor="testeur")
+    assert upgraded.methodology.version == "3.2"
+    assert project.methodology_version == "3.2"
+    assert project.methodology_hash != original_hash
+    upgrade_event = session.scalar(
+        select(AuditEventModel).where(AuditEventModel.action == "METHODOLOGY_UPGRADE")
+    )
+    import json
+
+    assert json.loads(upgrade_event.old_value_json)["methodology_snapshot"] == original_snapshot
+    assert (
+        session.scalar(
+            select(func.count())
+            .select_from(AuditEventModel)
+            .where(AuditEventModel.action == "METHODOLOGY_UPGRADE")
+        )
+        == 1
+    )
+
+
+def test_legacy_matching_project_gets_audited_snapshot_backfill(
+    session: Session,
+    project: ProjectModel,
+    context: ApplicationContext,
+) -> None:
+    project.methodology_hash = ""
+    project.methodology_snapshot = ""
+    service = ProjectService(session, context.methodology)
+
+    restored = service.methodology_for(project)
+
+    assert restored.methodology.version == "3.1"
+    assert len(project.methodology_hash) == 64
+    assert (
+        session.scalar(
+            select(func.count())
+            .select_from(AuditEventModel)
+            .where(AuditEventModel.action == "METHODOLOGY_SNAPSHOT_BACKFILL")
+        )
+        == 1
+    )
+
+
+@pytest.mark.parametrize(
+    "damage", ["missing_hash", "missing_snapshot", "altered_snapshot", "legacy_version"]
+)
+def test_project_rejects_incomplete_or_unrecoverable_methodology(
+    session: Session, project: ProjectModel, context: ApplicationContext, damage: str
+) -> None:
+    if damage == "missing_hash":
+        project.methodology_hash = ""
+    elif damage == "missing_snapshot":
+        project.methodology_snapshot = ""
+    elif damage == "altered_snapshot":
+        project.methodology_snapshot += "\n# altered\n"
+    else:
+        project.methodology_snapshot = ""
+        project.methodology_hash = ""
+        project.methodology_version = "3.0"
+    with pytest.raises(ProjectMethodologyError):
+        ProjectService(session, context.methodology).methodology_for(project)
+
+
+def test_methodology_change_is_detected_even_without_version_bump(
+    session: Session, project: ProjectModel, context: ApplicationContext
+) -> None:
+    changed = context.methodology.model_copy(
+        update={
+            "source_notes": {**context.methodology.source_notes, "revision_note": "Nouvelle règle"}
+        }
+    )
+    service = ProjectService(session, changed)
+    assert service.methodology.methodology.version == project.methodology_version
+    assert not service.uses_current_methodology(project)
 
 
 def test_rcmsci_uniqueness(session: Session, project: object) -> None:

@@ -1,8 +1,21 @@
-# PM² Desktop 0.1.1
+# 🧭 PM² Desktop 0.1.2
+
+**Pilotez vos projets PM², du lancement à la clôture, dans une application locale en français.**
+
+[![Version 0.1.2](https://img.shields.io/badge/version-0.1.2-255f85)](https://github.com/nouhailler/Pm2or/releases/tag/v0.1.2)
+![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
+![PySide6](https://img.shields.io/badge/interface-PySide6-41CD52?logo=qt&logoColor=white)
+![SQLite](https://img.shields.io/badge/stockage-SQLite-003B57?logo=sqlite&logoColor=white)
+![Hors ligne](https://img.shields.io/badge/fonctionnement-hors_ligne-2E7D32)
 
 PM² Desktop est une application de gestion de projets locale, en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Elle utilise PySide6/Qt6, SQLAlchemy 2 et SQLite et ne requiert aucun serveur ni accès Internet à l'exécution.
 
-## Fonctions disponibles
+**[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.2/pm2-desktop_0.1.2_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.2.md)**
+
+## ✨ Fonctions disponibles
+
+- parcours graphique sur le tableau de bord : position réelle du projet, phases cliquables,
+  revues de passage et raccourcis vers les assistants, registres, planning et contrôles ;
 
 - assistants complets Lancement, Planification, Exécution et Clôture avec complétude,
   validations, données sources, artefacts, gates, acceptations et fermeture administrative ;
@@ -20,23 +33,39 @@ PM² Desktop est une application de gestion de projets locale, en français, fon
   HTML, DOCX et PDF ;
 - sauvegarde et réouverture d'archives `.pm2` avec contrôle d'intégrité.
 
-## Installation développeur
+## 📥 Installation Debian
 
-Un paquet Debian 13 amd64 est disponible dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases). Installation : `sudo apt install ./pm2-desktop_0.1.1_amd64.deb`. Voir les [notes de version](docs/RELEASE_0.1.1.md).
+Téléchargez le paquet **Debian 13 amd64** dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases), puis exécutez :
+
+```bash
+sudo apt install ./pm2-desktop_0.1.2_amd64.deb
+pm2-desktop
+```
+
+Un lanceur avec icône est installé dans le menu des applications. Python est embarqué dans le paquet.
+
+> ℹ️ Le paquet nécessite glibc 2.41 ou ultérieure. La compatibilité avec Debian 12 et Ubuntu 24.04 n’est pas assurée.
+
+Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.2](https://github.com/nouhailler/Pm2or/releases/download/v0.1.2/SHA256SUMS-0.1.2) à côté du `.deb` :
+
+```bash
+sha256sum -c SHA256SUMS-0.1.2
+```
+
+## 🛠️ Installation développeur
 
 Python 3.12 ou supérieur est requis.
 
 ```bash
+git clone https://github.com/nouhailler/Pm2or.git
+cd Pm2or
 python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
-QT_QPA_PLATFORM=offscreen .venv/bin/pytest
-.venv/bin/ruff check src tests
-.venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/methodology
 ```
 
 Sous Windows, remplacez `.venv/bin/` par `.venv\Scripts\`.
 
-## Lancement
+## ▶️ Lancement
 
 ```bash
 .venv/bin/pm2-desktop
@@ -54,23 +83,72 @@ Le diagnostic sans interface vérifie la base et la méthodologie :
 .venv/bin/pm2-desktop --headless-check
 ```
 
-La recette de la V0.1 comprend des tests automatisés, dont les dix parcours Qt de
-`10_TEST_PLAN.md` et un cycle de vie complet jusqu'au rapport final.
+![Parcours graphique PM² dans le tableau de bord](docs/PARCOURS_PM2.png)
+
+### 🧭 Tester le parcours graphique
+
+Ouvrez un projet puis sélectionnez **Dashboard**. Le bloc **Votre parcours PM²** indique
+« Vous êtes ici ». Cliquez sur une phase pour ouvrir son assistant ou sur
+**Continuer l’étape actuelle** pour reprendre le travail. Ces clics naviguent dans
+l’application ; les changements de phase passent par une décision de revue.
+
+Un [projet fictif d’entraînement](examples/portail-association.pm2) et son
+[parcours d’exercices](examples/EXERCICES.md) sont fournis. Pour repartir du cas initial,
+utilisez **Fichier → Ouvrir un projet…** et sélectionnez cette archive.
+
+### 💾 Stockage local
 
 Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-desktop`. La variable `PM2_DATA_DIR` permet de choisir un autre dossier.
 
-## Construction du paquet desktop
+## 🧪 Tests et contrôles
+
+La version **0.1.2** a été validée avec **57 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet et les scénarios de gel méthodologique.
+
+```bash
+QT_QPA_PLATFORM=offscreen .venv/bin/pytest
+.venv/bin/ruff check src tests scripts
+.venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/methodology
+```
+
+## 🏗️ Construction des paquets
 
 ```bash
 ./scripts/build.sh
+
+# Assembler le paquet Debian à partir du bundle PyInstaller
+.venv/bin/python scripts/package_deb.py
 ```
 
 Le script exécute les contrôles puis construit `dist/pm2-desktop` avec PyInstaller. Consultez [le guide utilisateur](docs/GUIDE_UTILISATEUR.md) et [le guide développeur](docs/GUIDE_DEVELOPPEUR.md) pour la suite.
 
-## Source méthodologique
+## 🔒 Méthodologie figée par projet
 
 Le fichier `04_PM2_METHODOLOGY.yaml` est la source de vérité pour les phases, rôles, activités, artefacts, gates, responsabilités et règles PM² de la V0.1. Les widgets Qt ne définissent aucune règle méthodologique et toutes les transitions sont contrôlées par les services applicatifs.
 
 Chaque nouveau projet fige l’identifiant, la version, un snapshot YAML canonique complet et son SHA-256. À la réouverture, les écrans utilisent exclusivement ce snapshot, et non le YAML installé. En cas d’écart, l’interface propose de conserver la méthodologie, examiner les différences ou effectuer une mise à niveau explicite et auditée.
 
 Les archives `.pm2` (format 1.1) embarquent `methodology/PM2_METHODOLOGY.yaml` et vérifient sa cohérence avec le manifeste et SQLite. Les anciens projets sans snapshot ne peuvent être complétés automatiquement que si leur identifiant et leur version correspondent à ceux de la méthodologie installée ; le contenu historique exact ne peut pas être reconstitué a posteriori.
+
+```text
+projet.pm2
+├── manifest.json
+├── methodology/
+│   └── PM2_METHODOLOGY.yaml
+├── project.db
+├── documents/
+├── attachments/
+└── exports/
+```
+
+## 📚 Documentation
+
+| Ressource | Contenu |
+| :--- | :--- |
+| [📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md) | Prise en main de l’application |
+| [🔧 Guide développeur](docs/GUIDE_DEVELOPPEUR.md) | Environnement et développement |
+| [🏛️ Architecture](01_ARCHITECTURE.md) | Organisation et couches applicatives |
+| [🗃️ Schéma de données](03_DATABASE_SCHEMA.md) | Tables, contraintes et migrations |
+| [🔒 Méthodologie figée](docs/METHODOLOGIE_FIGEE.md) | Snapshots, intégrité et mises à niveau |
+| [🧪 Plan de test](10_TEST_PLAN.md) | Scénarios de validation |
+| [👁️ Recette visuelle V0.1](docs/RECETTE_VISUELLE_V0.1.md) | Contrôles des écrans |
+| [📝 Notes de version 0.1.2](docs/RELEASE_0.1.2.md) | Nouveautés et installation |

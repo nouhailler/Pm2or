@@ -223,7 +223,7 @@ class MainWindow(QMainWindow):
         self._clear_pages()
         output = self.paths.data_dir / "exports" / project.reference
         definitions: list[tuple[str, Page]] = [
-            ("Dashboard", DashboardPage(self.session, project)),
+            ("Dashboard", DashboardPage(self.session, project, methodology)),
             ("Projet", ProjectPage(self.session, project)),
             ("Gouvernance", GovernancePage(self.session, project, methodology)),
             (
@@ -288,7 +288,7 @@ class MainWindow(QMainWindow):
             self.navigation.addItem(item)
             self.stack.addWidget(page)
             page.changed.connect(self.refresh_all)
-            if isinstance(page, TraceabilityPage):
+            if isinstance(page, (TraceabilityPage, DashboardPage)):
                 page.navigate_requested.connect(self.navigate_to)
             if isinstance(page, PhaseAssistantPage):
                 page.navigate_requested.connect(self.navigate_to)

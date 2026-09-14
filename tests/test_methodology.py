@@ -1,7 +1,10 @@
+import runpy
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
+from pm2.methodology import loader
 from pm2.methodology.loader import (
     MethodologyLoader,
     MethodologyLoadError,
@@ -41,3 +44,40 @@ def test_default_methodology_has_canonical_verifiable_snapshot() -> None:
     assert MethodologyLoader.load_text(bundle.snapshot) == bundle.configuration
     assert methodology_sha256(bundle.snapshot) == bundle.sha256
     assert len(bundle.sha256) == 64
+
+
+def test_pyinstaller_methodology_loads_outside_repository(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = Path(__file__).resolve().parents[1]
+
+    def analysis(*args, **kwargs):
+        return SimpleNamespace(pure=[], scripts=[], binaries=[], datas=[])
+
+    def build_step(*args, **kwargs):
+        return None
+
+    spec = runpy.run_path(
+        str(root / "pm2-desktop.spec"),
+        init_globals={
+            "SPECPATH": str(root),
+            "Analysis": analysis,
+            "PYZ": build_step,
+            "EXE": build_step,
+            "COLLECT": build_step,
+        },
+    )
+    package = tmp_path / "_internal" / "pm2"
+    for destination, source, kind in spec["a"].datas:
+        assert kind == "DATA"
+        target = tmp_path / "_internal" / destination
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(Path(source).read_bytes())
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(loader, "__file__", str(package / "methodology" / "loader.py"))
+    monkeypatch.setattr(loader.resources, "files", lambda name: package)
+    bundle = load_default_methodology_bundle()
+    assert bundle.configuration.methodology.id == "pm2"
+    assert bundle.configuration.methodology.version == "3.1"
+    assert bundle.source == str(package / "resources" / "PM2_METHODOLOGY.yaml")

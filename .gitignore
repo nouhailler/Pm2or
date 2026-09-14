@@ -11,3 +11,4 @@ dist/
 *.pm2
 exports/
 .coverage
+output/

@@ -58,9 +58,6 @@ PHASE_ARTIFACTS = {
     "CLOSING": ("PROJECT_END_REPORT", "LESSONS_LEARNED"),
 }
 
-GATE_BY_PHASE = {"LAUNCH": "RFP", "PLANNING": "RFE", "CLOSING": "RFC"}
-
-
 class ArtifactEditor(QWidget):
     changed = Signal()
 
@@ -518,7 +515,7 @@ class PhaseAssistantPage(QWidget):
             self.acceptance = acceptance
         else:
             self.acceptance = None
-        gate_code = GATE_BY_PHASE.get(phase)
+        gate_code = next((gate.code for gate in methodology.gates if gate.from_phase == phase), None)
         if gate_code:
             gate = GateAssistant(session, project, methodology, gate_code)
             gate.changed.connect(self._child_changed)

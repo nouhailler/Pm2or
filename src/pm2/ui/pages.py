@@ -4,7 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtCore import QEvent, Qt, QUrl, Signal
 from PySide6.QtGui import QColor, QDesktopServices
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -23,8 +23,8 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
     QPlainTextEdit,
-    QProgressBar,
     QPushButton,
+    QScrollArea,
     QSplitter,
     QTableWidget,
     QTableWidgetItem,
@@ -88,6 +88,7 @@ from pm2.infrastructure.orm import (
 from pm2.methodology.models import PM2Configuration
 from pm2.ui.crud import FIELD_LABELS, EntityCatalogPage, EntityEditDialog
 from pm2.ui.dialogs import RegisterItemDialog, TraceLinkDialog, WbsNodeDialog
+from pm2.ui.project_workflow import ProjectWorkflow
 
 
 class Page(QWidget):
@@ -146,24 +147,40 @@ class MetricCard(QFrame):
 
 
 class DashboardPage(Page):
-    def __init__(self, session: Session, project: ProjectModel) -> None:
+    navigate_requested = Signal(str)
+
+    def __init__(self, session: Session, project: ProjectModel, methodology: PM2Configuration) -> None:
         super().__init__()
         self.session, self.project = session, project
-        root = QVBoxLayout(self)
+        outer = QVBoxLayout(self)
+        scroll = QScrollArea()
+        self.dashboard_scroll = scroll
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        content = QWidget()
+        root = QVBoxLayout(content)
+        scroll.setWidget(content)
+        outer.addWidget(scroll)
         heading = QHBoxLayout()
         title_box = QVBoxLayout()
         title = QLabel("Tableau de bord")
         title.setObjectName("pageTitle")
         self.project_label = QLabel()
         self.project_label.setObjectName("pageSubtitle")
+        self.project_label.setWordWrap(True)
         title_box.addWidget(title)
         title_box.addWidget(self.project_label)
-        heading.addLayout(title_box)
+        heading.addLayout(title_box, 1)
         heading.addStretch()
         self.validation_badge = QLabel()
+        self.validation_badge.setWordWrap(True)
         self.validation_badge.setObjectName("validationBadge")
         heading.addWidget(self.validation_badge)
         root.addLayout(heading)
+        self.workflow = ProjectWorkflow(session, project, methodology)
+        self.workflow.navigate_requested.connect(self.navigate_requested)
+        root.addWidget(self.workflow)
+        scroll.viewport().installEventFilter(self)
         cards_layout = QGridLayout()
         titles = [
             ("phase", "Phase"),
@@ -181,20 +198,8 @@ class DashboardPage(Page):
         for index, (key, label) in enumerate(titles):
             card = MetricCard(label)
             self.cards[key] = card
-            cards_layout.addWidget(card, index // 5, index % 5)
+            cards_layout.addWidget(card, index // 3, index % 3)
         root.addLayout(cards_layout)
-        progress_group = QGroupBox("Cycle de vie")
-        progress_layout = QVBoxLayout(progress_group)
-        self.phase_progress = QProgressBar()
-        self.phase_progress.setRange(0, 4)
-        self.phase_progress.setFormat("%v / 4 phases")
-        progress_layout.addWidget(self.phase_progress)
-        self.timeline = QLabel(
-            "Lancement  →  RfP  →  Planification  →  RfE  →  Exécution  →  RfC  →  Clôture"
-        )
-        self.timeline.setWordWrap(True)
-        progress_layout.addWidget(self.timeline)
-        root.addWidget(progress_group)
         actions_group = QGroupBox("Actions requises")
         actions_layout = QVBoxLayout(actions_group)
         self.actions = QLabel()
@@ -204,34 +209,28 @@ class DashboardPage(Page):
         root.addStretch()
         self.reload()
 
+    def eventFilter(self, watched, event) -> bool:
+        if watched is self.dashboard_scroll.viewport() and event.type() == QEvent.Type.Resize:
+            self.workflow.layout_route(watched.width())
+        return super().eventFilter(watched, event)
+
     def reload(self) -> None:
         self.session.refresh(self.project)
         counts = project_counts(self.session, self.project.id)
-        phase_names = {
-            "LAUNCH": "Lancement",
-            "PLANNING": "Planification",
-            "EXECUTION": "Exécution",
-            "CLOSING": "Clôture",
-            "CLOSED": "Fermé",
-        }
-        gate_names = {
-            "LAUNCH": "RfP",
-            "PLANNING": "RfE",
-            "EXECUTION": "RfC",
-            "CLOSING": "Fermeture",
-        }
+        phase_names = {phase.code: phase.name for phase in self.workflow.phases}
+        gate_names = {gate.from_phase: gate.name for gate in self.workflow.methodology.gates}
+        closed = self.project.status in {"CLOSED", "ARCHIVED"}
         values = {
             **counts,
-            "phase": phase_names.get(self.project.current_phase, self.project.current_phase),
-            "gate": gate_names.get(self.project.current_phase, "—"),
+            "phase": "Clos" if closed else phase_names.get(self.project.current_phase, self.project.current_phase),
+            "gate": "—" if closed else gate_names.get(self.project.current_phase, "Fermeture"),
             "budget": f"{self.project.approved_budget:,.2f} {self.project.currency}",
             "progress": f"{counts['progress']} %",
         }
         for key, card in self.cards.items():
             card.value.setText(str(values[key]))
         self.project_label.setText(f"{self.project.reference} — {self.project.name}")
-        order = {"LAUNCH": 1, "PLANNING": 2, "EXECUTION": 3, "CLOSING": 4, "CLOSED": 4}
-        self.phase_progress.setValue(order.get(self.project.current_phase, 0))
+        self.workflow.reload()
         problems = ValidationService(self.session).validate_project(self.project.id)
         errors = sum(problem.severity == "ERROR" for problem in problems)
         warnings = sum(problem.severity == "WARNING" for problem in problems)

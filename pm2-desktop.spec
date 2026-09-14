@@ -7,7 +7,6 @@ a = Analysis(
     pathex=[str(root / "src")],
     binaries=[],
     datas=[
-        (str(root / "04_PM2_METHODOLOGY.yaml"), "pm2/resources"),
         (str(root / "templates"), "pm2/templates"),
     ],
     hiddenimports=["sqlalchemy.dialects.sqlite", "jinja2.ext"],
@@ -16,6 +15,10 @@ a = Analysis(
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
+)
+# Match the resource name used by the loader and the wheel's force-include mapping.
+a.datas.append(
+    ("pm2/resources/PM2_METHODOLOGY.yaml", str(root / "04_PM2_METHODOLOGY.yaml"), "DATA")
 )
 pyz = PYZ(a.pure)
 exe = EXE(

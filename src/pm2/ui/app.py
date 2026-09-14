@@ -6,6 +6,7 @@ from pathlib import Path
 from PySide6.QtCore import QLocale, QTranslator
 from PySide6.QtWidgets import QApplication
 
+from pm2 import __version__
 from pm2.application.context import ApplicationContext
 from pm2.config import AppPaths
 from pm2.ui.main_window import MainWindow
@@ -16,7 +17,7 @@ def run_gui(database_path: Path | None = None) -> int:
     paths.ensure()
     application = QApplication.instance() or QApplication(sys.argv)
     application.setApplicationName("PM² Desktop")
-    application.setApplicationVersion("0.1.0")
+    application.setApplicationVersion(__version__)
     application.setOrganizationName("PM² Desktop")
     QLocale.setDefault(QLocale(QLocale.Language.French, QLocale.Country.France))
     translator = QTranslator(application)

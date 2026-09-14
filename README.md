@@ -1,4 +1,4 @@
-# PM² Desktop 0.1
+# PM² Desktop 0.1.1
 
 PM² Desktop est une application de gestion de projets locale, en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Elle utilise PySide6/Qt6, SQLAlchemy 2 et SQLite et ne requiert aucun serveur ni accès Internet à l'exécution.
 
@@ -21,6 +21,8 @@ PM² Desktop est une application de gestion de projets locale, en français, fon
 - sauvegarde et réouverture d'archives `.pm2` avec contrôle d'intégrité.
 
 ## Installation développeur
+
+Un paquet Debian 13 amd64 est disponible dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases). Installation : `sudo apt install ./pm2-desktop_0.1.1_amd64.deb`. Voir les [notes de version](docs/RELEASE_0.1.1.md).
 
 Python 3.12 ou supérieur est requis.
 

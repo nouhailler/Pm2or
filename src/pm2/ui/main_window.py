@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
 )
 from sqlalchemy.orm import Session
 
+from pm2 import __version__
 from pm2.application.context import ApplicationContext
 from pm2.application.services import ProjectMethodologyError, ProjectService
 from pm2.application.validation import ValidationService
@@ -155,7 +156,7 @@ class MainWindow(QMainWindow):
         central = QWidget()
         outer = QVBoxLayout(central)
         outer.setContentsMargins(0, 0, 0, 0)
-        brand = QLabel("PM² Desktop  ·  v0.1")
+        brand = QLabel(f"PM² Desktop  ·  v{__version__}")
         brand.setObjectName("appBrand")
         outer.addWidget(brand)
         body = QHBoxLayout()
@@ -582,7 +583,7 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             "À propos de PM² Desktop",
-            "<b>PM² Desktop 0.1</b><br>Gestion de projets PM² v3.1 en français.<br>"
+            f"<b>PM² Desktop {__version__}</b><br>Gestion de projets PM² v3.1 en français.<br>"
             "Application locale et hors ligne — PySide6, SQLite et SQLAlchemy.",
         )
 

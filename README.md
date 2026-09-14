@@ -1,8 +1,8 @@
-# 🧭 PM² Desktop 0.1.2
+# 🧭 PM² Desktop 0.1.3
 
 **Pilotez vos projets PM², du lancement à la clôture, dans une application locale en français.**
 
-[![Version 0.1.2](https://img.shields.io/badge/version-0.1.2-255f85)](https://github.com/nouhailler/Pm2or/releases/tag/v0.1.2)
+[![Version 0.1.3](https://img.shields.io/badge/version-0.1.3-255f85)](https://github.com/nouhailler/Pm2or/releases/tag/v0.1.3)
 ![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
 ![PySide6](https://img.shields.io/badge/interface-PySide6-41CD52?logo=qt&logoColor=white)
 ![SQLite](https://img.shields.io/badge/stockage-SQLite-003B57?logo=sqlite&logoColor=white)
@@ -10,9 +10,12 @@
 
 PM² Desktop est une application de gestion de projets locale, en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Elle utilise PySide6/Qt6, SQLAlchemy 2 et SQLite et ne requiert aucun serveur ni accès Internet à l'exécution.
 
-**[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.2/pm2-desktop_0.1.2_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.2.md)**
+**[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.3/pm2-desktop_0.1.3_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.3.md)**
 
 ## ✨ Fonctions disponibles
+
+- navigation par cinq tiroirs repliables : Vue d’ensemble, Étapes du projet, Pilotage,
+  Données et documents, Outils avancés ; ouverture automatique du tiroir de l’écran demandé ;
 
 - parcours graphique sur le tableau de bord : position réelle du projet, phases cliquables,
   revues de passage et raccourcis vers les assistants, registres, planning et contrôles ;
@@ -38,7 +41,7 @@ PM² Desktop est une application de gestion de projets locale, en français, fon
 Téléchargez le paquet **Debian 13 amd64** dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases), puis exécutez :
 
 ```bash
-sudo apt install ./pm2-desktop_0.1.2_amd64.deb
+sudo apt install ./pm2-desktop_0.1.3_amd64.deb
 pm2-desktop
 ```
 
@@ -46,10 +49,10 @@ Un lanceur avec icône est installé dans le menu des applications. Python est e
 
 > ℹ️ Le paquet nécessite glibc 2.41 ou ultérieure. La compatibilité avec Debian 12 et Ubuntu 24.04 n’est pas assurée.
 
-Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.2](https://github.com/nouhailler/Pm2or/releases/download/v0.1.2/SHA256SUMS-0.1.2) à côté du `.deb` :
+Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.3](https://github.com/nouhailler/Pm2or/releases/download/v0.1.3/SHA256SUMS-0.1.3) à côté du `.deb` :
 
 ```bash
-sha256sum -c SHA256SUMS-0.1.2
+sha256sum -c SHA256SUMS-0.1.3
 ```
 
 ## 🛠️ Installation développeur
@@ -87,7 +90,7 @@ Le diagnostic sans interface vérifie la base et la méthodologie :
 
 ### 🧭 Tester le parcours graphique
 
-Ouvrez un projet puis sélectionnez **Dashboard**. Le bloc **Votre parcours PM²** indique
+Ouvrez un projet puis sélectionnez **Vue d’ensemble → Tableau de bord**. Le bloc **Votre parcours PM²** indique
 « Vous êtes ici ». Cliquez sur une phase pour ouvrir son assistant ou sur
 **Continuer l’étape actuelle** pour reprendre le travail. Ces clics naviguent dans
 l’application ; les changements de phase passent par une décision de revue.
@@ -102,7 +105,7 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La version **0.1.2** a été validée avec **57 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet et les scénarios de gel méthodologique.
+La version **0.1.3** a été validée avec **59 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet et les scénarios de gel méthodologique.
 
 ```bash
 QT_QPA_PLATFORM=offscreen .venv/bin/pytest
@@ -151,4 +154,4 @@ projet.pm2
 | [🔒 Méthodologie figée](docs/METHODOLOGIE_FIGEE.md) | Snapshots, intégrité et mises à niveau |
 | [🧪 Plan de test](10_TEST_PLAN.md) | Scénarios de validation |
 | [👁️ Recette visuelle V0.1](docs/RECETTE_VISUELLE_V0.1.md) | Contrôles des écrans |
-| [📝 Notes de version 0.1.2](docs/RELEASE_0.1.2.md) | Nouveautés et installation |
+| [📝 Notes de version 0.1.3](docs/RELEASE_0.1.3.md) | Nouveautés et installation |

@@ -1,8 +1,11 @@
 from pathlib import Path
 
+from PySide6.QtCore import Qt
+
 from pm2.application.services import GateService, ProjectService
 from pm2.config import AppPaths
 from pm2.ui.main_window import MainWindow
+from pm2.ui.navigation import NAVIGATION_GROUPS
 from pm2.ui.pages import DashboardPage
 from pm2.ui.wizards import PhaseAssistantPage
 
@@ -36,7 +39,7 @@ def test_workflow_opens_assistants_without_changing_phase(qtbot, context, projec
     workflow.continue_button.click()
     assert window.stack.currentWidget().phase == "LAUNCH"
     workflow.gate_buttons["RFP"].click()
-    assert window.navigation.currentItem().text() == "Gates"
+    assert window.navigation.currentItem() is window.navigation.page_items["Gates"]
 
 
 def test_workflow_follows_gate_decisions_and_final_closure(qtbot, context, project, tmp_path):
@@ -72,3 +75,32 @@ def test_execution_has_rfc_review_and_closure_has_no_outgoing_gate(
     assistants = {page.phase: page for page in window.pages if isinstance(page, PhaseAssistantPage)}
     assert assistants["EXECUTION"].gate.gate_code == "RFC"
     assert assistants["CLOSING"].gate is None
+
+
+def test_navigation_drawers_keep_active_page_and_reveal_shortcut(qtbot, context, project, tmp_path):
+    window = make_window(qtbot, context, tmp_path)
+    window.show()
+    navigation = window.navigation
+    assert navigation.topLevelItemCount() == 5
+    assert len(navigation.page_items) == len(window.pages)
+    group = navigation.groups["Vue d’ensemble"]
+    active = navigation.currentItem()
+    rect = navigation.visualItemRect(group)
+    qtbot.mouseClick(navigation.viewport(), Qt.MouseButton.LeftButton, pos=rect.center())
+    assert not group.isExpanded()
+    assert navigation.currentItem() is active
+    assert window.stack.currentWidget() is window.pages[0]
+    window.navigate_to("Documents")
+    assert navigation.groups["Données et documents"].isExpanded()
+    assert navigation.currentItem() is navigation.page_items["Documents"]
+    assert window.stack.currentWidget() is window.pages[window.page_indexes["Documents"]]
+
+
+def test_all_grouped_navigation_destinations_open_their_page(qtbot, context, project, tmp_path):
+    window = make_window(qtbot, context, tmp_path)
+    for _title, names in NAVIGATION_GROUPS:
+        for name in names:
+            window.navigate_to(name)
+            assert window.stack.currentWidget() is window.pages[window.page_indexes[name]]
+            assert window.navigation.currentItem() is window.navigation.page_items[name]
+            assert window.navigation.currentItem().parent().isExpanded()

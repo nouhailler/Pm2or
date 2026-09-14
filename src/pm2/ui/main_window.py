@@ -4,7 +4,6 @@ import difflib
 import json
 from pathlib import Path
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence
 from PySide6.QtWidgets import (
     QDialog,
@@ -13,8 +12,6 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
-    QListWidget,
-    QListWidgetItem,
     QMainWindow,
     QMessageBox,
     QPlainTextEdit,
@@ -35,6 +32,7 @@ from pm2.infrastructure.orm import ProjectModel
 from pm2.methodology.models import PM2Configuration
 from pm2.ui.crud import EntityCatalogPage
 from pm2.ui.dialogs import ProjectDialog
+from pm2.ui.navigation import ProjectNavigation
 from pm2.ui.pages import (
     CoreDataPage,
     DashboardPage,
@@ -56,9 +54,10 @@ STYLE = """
 QMainWindow, QWidget { background: #f4f6f9; color: #172033; font-size: 13px; }
 QMenuBar, QMenu, QStatusBar { background: white; }
 #sidebar { background: #18324a; border: none; color: #e9f1f8; outline: none; padding: 8px; }
-#sidebar::item { min-height: 35px; border-radius: 5px; padding-left: 10px; }
+#sidebar::item { min-height: 35px; border-radius: 5px; padding-left: 4px; }
 #sidebar::item:selected { background: #2f6b91; color: white; }
 #sidebar::item:hover { background: #254e70; }
+#sidebar::branch { background: #18324a; }
 #contextPanel { background: white; border-left: 1px solid #dce2e8; }
 #appBrand { color: #18324a; font-weight: 700; font-size: 17px; padding: 10px; background: white; }
 #pageTitle { font-size: 25px; font-weight: 700; color: #18324a; }
@@ -161,10 +160,9 @@ class MainWindow(QMainWindow):
         outer.addWidget(brand)
         body = QHBoxLayout()
         body.setContentsMargins(0, 0, 0, 0)
-        self.navigation = QListWidget()
-        self.navigation.setObjectName("sidebar")
-        self.navigation.setFixedWidth(220)
-        self.navigation.currentRowChanged.connect(self._navigation_changed)
+        self.navigation = ProjectNavigation()
+        self.navigation.setFixedWidth(240)
+        self.navigation.navigate_requested.connect(self._navigation_changed)
         body.addWidget(self.navigation)
         self.stack = QStackedWidget()
         body.addWidget(self.stack, stretch=1)
@@ -280,12 +278,10 @@ class MainWindow(QMainWindow):
                 ),
             ),
         ]
-        self.navigation.clear()
         self.pages = []
+        self.page_indexes = {}
         for name, page in definitions:
-            item = QListWidgetItem(name)
-            item.setData(Qt.ItemDataRole.UserRole, name)
-            self.navigation.addItem(item)
+            self.page_indexes[name] = len(self.pages)
             self.stack.addWidget(page)
             page.changed.connect(self.refresh_all)
             if isinstance(page, (TraceabilityPage, DashboardPage)):
@@ -293,7 +289,8 @@ class MainWindow(QMainWindow):
             if isinstance(page, PhaseAssistantPage):
                 page.navigate_requested.connect(self.navigate_to)
             self.pages.append(page)
-        self.navigation.setCurrentRow(0)
+        self.navigation.set_pages([name for name, _page in definitions])
+        self.navigation.select_page("Dashboard")
         self._update_recent(str(self.context.database.path or ""))
         self._update_status()
 
@@ -304,7 +301,8 @@ class MainWindow(QMainWindow):
             self.stack.removeWidget(widget)
             widget.deleteLater()
 
-    def _navigation_changed(self, row: int) -> None:
+    def _navigation_changed(self, name: str) -> None:
+        row = self.page_indexes.get(name, -1)
         if 0 <= row < self.stack.count():
             self.stack.setCurrentIndex(row)
             page = self.stack.currentWidget()
@@ -312,10 +310,7 @@ class MainWindow(QMainWindow):
                 page.reload()
 
     def navigate_to(self, name: str) -> None:
-        for index in range(self.navigation.count()):
-            if self.navigation.item(index).data(Qt.ItemDataRole.UserRole) == name:
-                self.navigation.setCurrentRow(index)
-                return
+        self.navigation.select_page(name)
 
     def new_project(self) -> None:
         dialog = ProjectDialog(self)

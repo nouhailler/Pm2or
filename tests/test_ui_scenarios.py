@@ -119,7 +119,7 @@ def test_ui_create_project(qtbot: Any, tmp_path: Path, monkeypatch: Any) -> None
 
     assert window.project is not None
     assert window.project.reference == "UI-001"
-    assert window.navigation.count() >= 16
+    assert len(window.navigation.page_items) >= 16
     window.close()
 
 

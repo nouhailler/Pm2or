@@ -8,11 +8,21 @@ L'application enregistre automatiquement les données dans la base locale à la 
 
 ## Navigation et cycle de vie
 
-La barre latérale donne accès au Dashboard, au projet, à la gouvernance, aux quatre assistants de phase, au plan de travail, aux objets métier, au catalogue complet, aux gates, registres, documents et validations. Le panneau de droite rappelle en permanence le contexte actif.
+![Navigation par tiroirs](NAVIGATION_PM2.png)
+
+La barre latérale regroupe les écrans dans cinq tiroirs. Cliquez sur un titre pour déplier ou replier sa catégorie, puis sur un écran pour l’ouvrir.
+
+- **Vue d’ensemble** : Tableau de bord, Projet et Gouvernance.
+- **Étapes du projet** : les quatre assistants de phase, Plan de travail et Passages de phase.
+- **Pilotage** : Suivi & Contrôle, Registres, Traçabilité et Validation.
+- **Données et documents** : Données du projet et Documents.
+- **Outils avancés** : Catalogue des entités et Paramètres.
+
+Replier un tiroir conserve l’écran affiché. Un raccourci ouvre automatiquement le tiroir de sa destination. Les catégories peuvent rester ouvertes simultanément. Le panneau de droite rappelle en permanence le contexte actif.
 
 Chaque assistant Lancement, Planification, Exécution ou Clôture regroupe les artefacts de sa phase, affiche leur complétude et la synthèse des validations, et fournit des accès directs aux données sources. Les assistants concernés intègrent également le gate, l'exécution des tests d'acceptation, l'acceptation finale ou la fermeture administrative.
 
-Le passage d'une phase à la suivante se fait dans **Gates** :
+Le passage d'une phase à la suivante se fait dans **Passages de phase** :
 
 1. ouvrez RfP, RfE ou RfC selon la phase courante ;
 2. contrôlez chaque élément de la checklist et joignez mentalement/structurellement les preuves correspondantes ;
@@ -33,7 +43,7 @@ Les dépendances peuvent être ajoutées ou retirées dans la même vue. Elles s
 
 ## Besoins, livrables et acceptation
 
-La page **Données métier** permet de créer :
+La page **Données du projet** permet de créer :
 
 - exigences avec source, priorité et méthode de vérification ;
 - livrables avec responsable et état d'acceptation ;
@@ -57,7 +67,7 @@ Les quatre onglets de **Registres** permettent recherche, filtrage, création et
 
 Une modification ne peut entrer en implémentation sans approbation formelle. Un problème ne peut être clôturé sans résolution.
 
-Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue** offre la même vue pour les 47 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les changements de statut restent exclusivement pilotés par les workflows métier.
+Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 47 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les changements de statut restent exclusivement pilotés par les workflows métier.
 
 ## Validation
 

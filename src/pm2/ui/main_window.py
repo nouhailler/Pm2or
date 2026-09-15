@@ -6,6 +6,7 @@ from pathlib import Path
 
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
     QDialogButtonBox,
     QFileDialog,
@@ -48,6 +49,7 @@ from pm2.ui.pages import (
     WelcomePage,
     WorkPlanPage,
 )
+from pm2.ui.tooltips import enhance_tooltips, install_tooltip_support
 from pm2.ui.wizards import PhaseAssistantPage
 
 STYLE = """
@@ -94,6 +96,9 @@ class MainWindow(QMainWindow):
         self.resize(1440, 900)
         self.setMinimumSize(1050, 680)
         self.setStyleSheet(STYLE)
+        application = QApplication.instance()
+        if application is not None:
+            install_tooltip_support(application)
         self._build_menu()
         self._build_shell()
         projects = self._project_service().list()
@@ -105,6 +110,7 @@ class MainWindow(QMainWindow):
                 self.show_welcome()
         else:
             self.show_welcome()
+        enhance_tooltips(self)
 
     def _build_menu(self) -> None:
         file_menu = self.menuBar().addMenu("&Fichier")
@@ -478,6 +484,7 @@ class MainWindow(QMainWindow):
                 "Mettre à niveau", QMessageBox.ButtonRole.DestructiveRole
             )
             choice.setDefaultButton(keep_button)
+            enhance_tooltips(choice)
             choice.exec()
             clicked = choice.clickedButton()
             if clicked is compare_button:

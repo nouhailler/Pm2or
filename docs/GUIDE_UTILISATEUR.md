@@ -6,6 +6,13 @@ L'écran d'accueil propose de créer un projet ou d'ouvrir une archive `.pm2`. P
 
 L'application enregistre automatiquement les données dans la base locale à la validation de chaque action. La barre inférieure indique le projet actif, sa phase et le nombre d'erreurs/avertissements.
 
+## Aide contextuelle
+
+Laissez le pointeur quelques instants sur un menu, un bouton, un onglet, un champ, une liste
+ou un tableau pour afficher son infobulle. Elle précise l’effet de l’action ou la donnée
+attendue. Les mêmes descriptions sont exposées aux technologies d’assistance. Une infobulle
+spécifique à un écran est toujours prioritaire sur l’aide générique.
+
 ## Navigation et cycle de vie
 
 ![Navigation par tiroirs](NAVIGATION_PM2.png)

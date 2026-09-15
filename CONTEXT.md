@@ -1,6 +1,6 @@
 # Contexte du projet PM² Desktop
 
-Dernière mise à jour : **14 septembre 2026**.
+Dernière mise à jour : **15 septembre 2026**.
 
 ## Point de reprise : 15 septembre 2026
 
@@ -16,9 +16,9 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
 
 ## État livré
 
-- Version publiée : **0.1.3**, sur `main`, tag `v0.1.3`.
+- Version publiée : **0.1.4**, sur `main`, tag `v0.1.4`.
 - Dépôt : <https://github.com/nouhailler/Pm2or>.
-- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.3>.
+- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.4>.
 - Correctif de démarrage : PyInstaller embarque désormais
   `pm2/resources/PM2_METHODOLOGY.yaml`, comme le paquet Python et le chargeur.
 - Tableau de bord : parcours graphique des quatre phases, position réelle du projet,
@@ -27,10 +27,12 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
 - Navigation : cinq catégories repliables — Vue d’ensemble, Étapes du projet, Pilotage,
   Données et documents, Outils avancés. Une destination ouverte par un raccourci
   déplie automatiquement son tiroir ; replier un titre ne change pas l’écran affiché.
-- Validation de la 0.1.3 : **59 tests**, Ruff, mypy, vérification visuelle et au clavier,
-  contrôle sans interface et démarrage Qt du paquet Debian extrait.
+- Aide contextuelle : infobulles sur les menus, boutons, onglets, formulaires, listes et
+  tableaux, y compris les composants créés dynamiquement ; descriptions accessibles associées.
+- Validation de la 0.1.4 : **62 tests**, Ruff et mypy, contrôle sans interface et
+  vérification du paquet Debian extrait.
 
-Les releases 0.1.2 et 0.1.3 incluent le `.deb`, `portail-association.pm2`, `EXERCICES.md`
+Les releases 0.1.2 à 0.1.4 incluent le `.deb`, `portail-association.pm2`, `EXERCICES.md`
 et un fichier d’empreintes SHA-256. Le paquet vise Debian 13 amd64, glibc 2.41 ou ultérieure.
 
 ## Exemple actuel
@@ -118,5 +120,3 @@ Les fichiers `build/`, `dist/`, `*.db` et `*.pm2` sont ignorés ; l’archive fi
 `examples/portail-association.pm2` est néanmoins suivie explicitement dans le dépôt.
 
 Les corrections et publications précédentes ont été autorisées par l’utilisateur.
-Pour cette fin de session, seules les mises à jour README, CONTEXT et CHANGELOG sont demandées,
-avec commit et push ; aucune nouvelle release ni modification du jeu de données n’est prévue.

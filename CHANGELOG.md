@@ -15,6 +15,17 @@
 - Création de `CHANGELOG.md` et mise à jour du README sur l’état du cas d’exemple
   et la préparation de la future démonstration.
 
+## 0.1.4 — 15 septembre 2026
+
+- Ajout d’infobulles explicatives sur les menus, boutons, onglets, champs de formulaire,
+  listes et tableaux de l’application.
+- Aides métier détaillées pour les principales actions PM², avec texte générique pour les
+  nouveaux contrôles qui ne disposent pas encore d’une description spécialisée.
+- Application automatique aux pages et dialogues créés dynamiquement, sans remplacer les
+  infobulles spécifiques existantes.
+- Ajout de descriptions accessibles cohérentes avec les infobulles.
+- Validation : 62 tests automatisés et analyse Ruff.
+
 ## 0.1.3 — 14 septembre 2026
 
 - Regroupement des menus dans cinq tiroirs repliables : Vue d’ensemble, Étapes du projet,

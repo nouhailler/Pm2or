@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMessageBox
+from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog, QMessageBox, QTextBrowser
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -360,6 +360,43 @@ def test_ui_generate_artifact(
     assert generated.exists()
     assert "PROJECT_CHARTER" in generated.read_text(encoding="utf-8")
     assert page.history.rowCount() == 1
+
+
+def test_ui_document_row_opens_detailed_window(
+    qtbot: Any,
+    session: Session,
+    project: Any,
+    context: ApplicationContext,
+    tmp_path: Path,
+    monkeypatch: Any,
+) -> None:
+    page = DocumentsPage(
+        session, context.database, project, context.methodology, tmp_path / "exports"
+    )
+    qtbot.addWidget(page)
+    dialogs: list[QDialog] = []
+
+    def capture(dialog: QDialog) -> QDialog.DialogCode:
+        dialogs.append(dialog)
+        return QDialog.DialogCode.Accepted
+
+    monkeypatch.setattr(QDialog, "exec", capture)
+    row = next(
+        row
+        for row in range(page.table.rowCount())
+        if page.table.item(row, 0).text() == "OUTSOURCING_PLAN"
+    )
+
+    page.table.itemActivated.emit(page.table.item(row, 0))
+
+    assert page.table.currentRow() == row
+    assert len(dialogs) == 1
+    assert dialogs[0].property("artifactCode") == "OUTSOURCING_PLAN"
+    assert dialogs[0].windowTitle().startswith("Détail — Plan d")
+    assert "Externalisation" in dialogs[0].windowTitle()
+    content = dialogs[0].findChild(QTextBrowser, "documentDetailContent")
+    assert content is not None
+    assert "OUTSOURCING_PLAN" in content.toPlainText()
 
 
 def test_ui_execute_test_and_accept_deliverable(

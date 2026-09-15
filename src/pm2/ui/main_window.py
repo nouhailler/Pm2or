@@ -49,6 +49,7 @@ from pm2.ui.pages import (
     WelcomePage,
     WorkPlanPage,
 )
+from pm2.ui.row_details import enable_row_details, install_row_detail_support
 from pm2.ui.tooltips import enhance_tooltips, install_tooltip_support
 from pm2.ui.wizards import PhaseAssistantPage
 
@@ -99,6 +100,7 @@ class MainWindow(QMainWindow):
         application = QApplication.instance()
         if application is not None:
             install_tooltip_support(application)
+            install_row_detail_support(application)
         self._build_menu()
         self._build_shell()
         projects = self._project_service().list()
@@ -111,6 +113,7 @@ class MainWindow(QMainWindow):
         else:
             self.show_welcome()
         enhance_tooltips(self)
+        enable_row_details(self)
 
     def _build_menu(self) -> None:
         file_menu = self.menuBar().addMenu("&Fichier")

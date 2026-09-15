@@ -10,6 +10,7 @@ from pm2 import __version__
 from pm2.application.context import ApplicationContext
 from pm2.config import AppPaths
 from pm2.ui.main_window import MainWindow
+from pm2.ui.row_details import install_row_detail_support
 from pm2.ui.tooltips import install_tooltip_support
 
 
@@ -21,6 +22,7 @@ def run_gui(database_path: Path | None = None) -> int:
     application.setApplicationVersion(__version__)
     application.setOrganizationName("PM² Desktop")
     install_tooltip_support(application)
+    install_row_detail_support(application)
     QLocale.setDefault(QLocale(QLocale.Language.French, QLocale.Country.France))
     translator = QTranslator(application)
     qt_translation = Path(__import__("PySide6").__file__).parent / "translations" / "qtbase_fr.qm"

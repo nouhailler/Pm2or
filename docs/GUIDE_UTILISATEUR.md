@@ -13,6 +13,10 @@ ou un tableau pour afficher son infobulle. Elle précise l’effet de l’action
 attendue. Les mêmes descriptions sont exposées aux technologies d’assistance. Une infobulle
 spécifique à un écran est toujours prioritaire sur l’aide générique.
 
+Dans tous les tableaux, double-cliquez sur une ligne — ou sélectionnez-la puis appuyez sur
+**Entrée** — pour ouvrir une fiche avec les valeurs complètes de chaque colonne. Les documents
+et artefacts utilisent une fiche enrichie qui présente également leur objectif et leur contenu.
+
 ## Navigation et cycle de vie
 
 ![Navigation par tiroirs](NAVIGATION_PM2.png)

@@ -69,6 +69,7 @@ ACTION_HELP = {
     "aller à la cible": "Ouvrir la page correspondant à la cible du lien sélectionné.",
     "générer": "Générer le document dans le format choisi.",
     "aperçu": "Prévisualiser le document sélectionné avant de l’ouvrir ou le diffuser.",
+    "voir le détail": "Afficher l’objectif, les informations et le contenu du document sélectionné.",
     "ouvrir le dossier": "Ouvrir le dossier contenant les documents générés.",
     "fermer": "Fermer cette fenêtre.",
     "enregistrer le résultat du test": "Consigner le résultat du test d’acceptation sélectionné.",

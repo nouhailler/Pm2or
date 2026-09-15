@@ -15,6 +15,16 @@
 - Création de `CHANGELOG.md` et mise à jour du README sur l’état du cas d’exemple
   et la préparation de la future démonstration.
 
+## 0.1.5 — 15 septembre 2026
+
+- Ouverture d’une fiche détaillée par double-clic ou touche Entrée sur toutes les lignes de
+  tableaux de l’application.
+- Présentation générique des valeurs complètes par nom de colonne et conservation des fenêtres
+  métier spécialisées, notamment pour les documents et artefacts.
+- Fenêtre Documents enrichie avec objectif, phase, statut, caractère obligatoire et rendu complet.
+- Projet d’exemple Les Colibris complété avec les 21 artefacts PM² et 178 champs documentaires.
+- Validation : 67 tests automatisés, Ruff et mypy.
+
 ## 0.1.4 — 15 septembre 2026
 
 - Ajout d’infobulles explicatives sur les menus, boutons, onglets, champs de formulaire,

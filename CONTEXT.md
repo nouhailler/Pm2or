@@ -16,9 +16,9 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
 
 ## État livré
 
-- Version publiée : **0.1.4**, sur `main`, tag `v0.1.4`.
+- Version publiée : **0.1.5**, sur `main`, tag `v0.1.5`.
 - Dépôt : <https://github.com/nouhailler/Pm2or>.
-- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.4>.
+- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.5>.
 - Correctif de démarrage : PyInstaller embarque désormais
   `pm2/resources/PM2_METHODOLOGY.yaml`, comme le paquet Python et le chargeur.
 - Tableau de bord : parcours graphique des quatre phases, position réelle du projet,
@@ -29,10 +29,14 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
   déplie automatiquement son tiroir ; replier un titre ne change pas l’écran affiché.
 - Aide contextuelle : infobulles sur les menus, boutons, onglets, formulaires, listes et
   tableaux, y compris les composants créés dynamiquement ; descriptions accessibles associées.
-- Validation de la 0.1.4 : **62 tests**, Ruff et mypy, contrôle sans interface et
+- Détail des tableaux : double-clic ou touche Entrée sur une ligne pour afficher toutes ses
+  valeurs ; fenêtre enrichie pour les documents avec objectif et rendu complet.
+- Exemple documentaire : les 21 artefacts PM² de l’archive Les Colibris contiennent désormais
+  178 champs illustratifs renseignés.
+- Validation de la 0.1.5 : **67 tests**, Ruff et mypy, contrôle sans interface et
   vérification du paquet Debian extrait.
 
-Les releases 0.1.2 à 0.1.4 incluent le `.deb`, `portail-association.pm2`, `EXERCICES.md`
+Les releases 0.1.2 à 0.1.5 incluent le `.deb`, `portail-association.pm2`, `EXERCICES.md`
 et un fichier d’empreintes SHA-256. Le paquet vise Debian 13 amd64, glibc 2.41 ou ultérieure.
 
 ## Exemple actuel

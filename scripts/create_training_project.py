@@ -9,7 +9,7 @@ from pathlib import Path
 
 from sqlalchemy import select
 
-from pm2.application.artifacts import ArtifactDataService
+from pm2.application.artifacts import ARTIFACT_SCHEMAS, ArtifactDataService
 from pm2.application.context import ApplicationContext
 from pm2.application.documents import DocumentService
 from pm2.application.services import (
@@ -25,6 +25,110 @@ from pm2.infrastructure.archive import ProjectArchiveService
 from pm2.infrastructure.orm import ProjectModel
 
 REFERENCE = "FORMATION-2026-001"
+
+EXAMPLE_ARTIFACT_SUMMARIES = {
+    "PROJECT_INITIATION_REQUEST": (
+        "Ce document transforme le besoin initial de l’association en demande de projet "
+        "compréhensible et autorisable."
+    ),
+    "BUSINESS_CASE": (
+        "Cette étude compare les options et démontre que les bénéfices attendus du portail "
+        "justifient son coût et ses risques."
+    ),
+    "PROJECT_CHARTER": (
+        "Cette charte fixe les objectifs, le périmètre, les jalons et l’autorité confiée à "
+        "l’équipe du projet."
+    ),
+    "PROJECT_HANDBOOK": (
+        "Ce manuel décrit comment Alice Martin et l’équipe appliqueront PM², prendront les "
+        "décisions et piloteront le projet."
+    ),
+    "STAKEHOLDER_MATRIX": (
+        "Cette matrice organise l’implication du comité, du secrétariat, de l’équipe technique "
+        "et du groupe pilote."
+    ),
+    "WORK_PLAN": (
+        "Ce plan explique comment la WBS, les dates, les coûts et l’avancement du portail "
+        "seront établis puis contrôlés."
+    ),
+    "OUTSOURCING_PLAN": (
+        "Ce plan encadre la sélection et le suivi du prestataire chargé de configurer la "
+        "solution de réservation."
+    ),
+    "DELIVERABLE_ACCEPTANCE_PLAN": (
+        "Ce plan précise comment les maquettes, le portail, les données et la formation seront "
+        "testés puis acceptés."
+    ),
+    "TRANSITION_PLAN": (
+        "Ce plan prépare le transfert du portail au secrétariat, la formation, le support et "
+        "la continuité en cas de difficulté."
+    ),
+    "ORGANISATIONAL_IMPLEMENTATION_PLAN": (
+        "Ce plan accompagne le passage des inscriptions par courriel au portail et mesure "
+        "l’adoption par les membres."
+    ),
+    "REQUIREMENTS_MANAGEMENT_PLAN": (
+        "Ce plan décrit comment les besoins du secrétariat sont recueillis, priorisés, validés "
+        "et reliés aux tests."
+    ),
+    "CHANGE_MANAGEMENT_PLAN": (
+        "Ce plan garantit que toute demande, comme le paiement en ligne, est analysée et "
+        "approuvée avant d’affecter le périmètre."
+    ),
+    "RISK_MANAGEMENT_PLAN": (
+        "Ce plan organise l’identification, l’évaluation et le suivi des risques de disponibilité, "
+        "de qualité des données et d’adoption."
+    ),
+    "ISSUE_MANAGEMENT_PLAN": (
+        "Ce plan définit comment l’équipe enregistre, attribue, escalade et résout les problèmes "
+        "rencontrés pendant le projet."
+    ),
+    "QUALITY_MANAGEMENT_PLAN": (
+        "Ce plan fixe les contrôles nécessaires pour livrer un portail fiable, utilisable et "
+        "conforme aux critères d’acceptation."
+    ),
+    "COMMUNICATIONS_MANAGEMENT_PLAN": (
+        "Ce plan adapte les messages, canaux et fréquences au comité, au secrétariat, aux "
+        "techniciens et aux membres."
+    ),
+    "MEETING_MINUTES": (
+        "Ce compte rendu conserve les décisions, actions, responsables et échéances d’une "
+        "réunion de suivi du portail."
+    ),
+    "PROJECT_REPORT": (
+        "Ce rapport donne au comité une vision périodique de l’avancement, du budget, des "
+        "prochains jalons et des points nécessitant une décision."
+    ),
+    "QUALITY_REPORT": (
+        "Ce rapport rassemble les contrôles réalisés, les anomalies de recette, leurs corrections "
+        "et l’état de conformité des livrables."
+    ),
+    "PROJECT_END_REPORT": (
+        "Ce rapport compare les résultats du projet aux objectifs initiaux et prépare la décision "
+        "de clôture et le suivi des bénéfices."
+    ),
+    "LESSONS_LEARNED": (
+        "Ce document capitalise ce qui a bien fonctionné, les difficultés rencontrées et les "
+        "recommandations utiles aux futurs projets de l’association."
+    ),
+}
+
+
+def populate_example_artifacts(data: ArtifactDataService, project_id: str) -> None:
+    """Give every PM² document meaningful, project-specific demonstration content."""
+    for code, schema in ARTIFACT_SCHEMAS.items():
+        summary = EXAMPLE_ARTIFACT_SUMMARIES[code]
+        values = {
+            field.code: (
+                f"{summary}\n\n"
+                f"Dans l’exemple Les Colibris, la rubrique « {field.label} » de la section "
+                f"« {section.title} » consigne les choix, responsabilités et preuves attendus "
+                "pour le portail de réservation."
+            )
+            for section in schema.sections
+            for field in section.fields
+        }
+        data.save(project_id, code, values, actor="générateur-exemple")
 
 
 def create_project(context: ApplicationContext) -> str:
@@ -317,6 +421,7 @@ def create_project(context: ApplicationContext) -> str:
         )
         DocumentService(session, context.methodology).ensure_catalog(project.id)
         data = ArtifactDataService(session)
+        populate_example_artifacts(data, project.id)
         data.save(
             project.id,
             "PROJECT_INITIATION_REQUEST",

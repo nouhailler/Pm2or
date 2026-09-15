@@ -38,6 +38,7 @@ from PySide6.QtWidgets import (
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from pm2.application.artifacts import ARTIFACT_SCHEMAS
 from pm2.application.crud import EntityCrudService
 from pm2.application.documents import DocumentService
 from pm2.application.export import ExportService
@@ -1674,8 +1675,8 @@ class DocumentsPage(Page):
         generate = QPushButton("Générer")
         generate.setObjectName("primaryButton")
         generate.clicked.connect(self._generate)
-        preview = QPushButton("Aperçu")
-        preview.clicked.connect(self._preview)
+        preview = QPushButton("Voir le détail")
+        preview.clicked.connect(self._open_document_detail)
         open_folder = QPushButton("Ouvrir le dossier")
         open_folder.clicked.connect(self._open_folder)
         bundle = QPushButton("Exporter le projet .pm2")
@@ -1688,10 +1689,19 @@ class DocumentsPage(Page):
         layout.addLayout(heading)
         self.table = QTableWidget(0, 5)
         self.table.setHorizontalHeaderLabels(["Code", "Titre", "Phase", "Requis", "Statut"])
+        self.table.setProperty("pm2CustomRowDetail", True)
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.setToolTip(
+            "Double-cliquez sur une ligne, ou sélectionnez-la et appuyez sur Entrée, "
+            "pour afficher le détail du document."
+        )
+        self.table.setCursor(Qt.CursorShape.PointingHandCursor)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.itemSelectionChanged.connect(self._load_history)
+        self.table.itemActivated.connect(
+            lambda item: self._open_document_detail(item.row())
+        )
         layout.addWidget(self.table)
         layout.addWidget(QLabel("Historique des versions"))
         self.history = QTableWidget(0, 5)
@@ -1711,27 +1721,59 @@ class DocumentsPage(Page):
         row = self.table.currentRow()
         return self.table.item(row, 0).text() if row >= 0 else None
 
-    def _preview(self) -> None:
+    def _open_document_detail(self, row: int | None = None) -> None:
+        if isinstance(row, bool):
+            row = None
+        if row is not None:
+            self.table.selectRow(row)
         code = self._selected_code()
         if not code:
-            QMessageBox.information(self, "Aperçu", "Sélectionnez un artefact.")
+            QMessageBox.information(self, "Détail du document", "Sélectionnez un artefact.")
             return
         try:
+            document = self.session.scalar(
+                select(DocumentModel).where(
+                    DocumentModel.project_id == self.project.id,
+                    DocumentModel.artifact_code == code,
+                )
+            )
+            definition = self.methodology.artifacts[code]
+            schema = ARTIFACT_SCHEMAS[code]
             rendered = self.service.render_html(self.service.context(self.project.id, code))
             dialog = QDialog(self)
-            dialog.setWindowTitle(f"Aperçu — {code}")
-            dialog.resize(950, 720)
+            dialog.setWindowTitle(f"Détail — {definition.name}")
+            dialog.setProperty("artifactCode", code)
+            dialog.resize(1000, 760)
+            dialog_layout = QVBoxLayout(dialog)
+            title = QLabel(definition.name)
+            title.setObjectName("pageTitle")
+            metadata = QLabel(
+                f"Code : {code}  ·  Phase : {definition.phase}  ·  "
+                f"Requis : {'Oui' if definition.required else 'Non'}  ·  "
+                f"Statut : {document.status if document else '—'}"
+            )
+            metadata.setObjectName("pageSubtitle")
+            purpose = QLabel(schema.purpose)
+            purpose.setWordWrap(True)
+            purpose.setObjectName("documentPurpose")
             preview = QTextBrowser(dialog)
+            preview.setObjectName("documentDetailContent")
             preview.setHtml(rendered)
             preview.setOpenExternalLinks(False)
-            dialog_layout = QVBoxLayout(dialog)
+            dialog_layout.addWidget(title)
+            dialog_layout.addWidget(metadata)
+            dialog_layout.addWidget(purpose)
             dialog_layout.addWidget(preview)
             close = QPushButton("Fermer")
             close.clicked.connect(dialog.accept)
             dialog_layout.addWidget(close, alignment=Qt.AlignmentFlag.AlignRight)
             dialog.exec()
         except Exception as exc:
-            QMessageBox.critical(self, "Aperçu impossible", str(exc))
+            QMessageBox.critical(self, "Détail impossible", str(exc))
+
+    def _preview(self) -> None:
+        """Backward-compatible entry point used by existing integrations."""
+        self._open_document_detail()
 
     def _open_folder(self) -> None:
         self.default_output.mkdir(parents=True, exist_ok=True)

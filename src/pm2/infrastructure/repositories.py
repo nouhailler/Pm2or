@@ -34,8 +34,9 @@ class Repository[ModelT: Base]:
         statement = select(self.model)
         if criteria:
             statement = statement.where(*criteria)
-        if hasattr(self.model, "deleted_at"):
-            statement = statement.where(self.model.deleted_at.is_(None))
+        model: Any = self.model
+        if hasattr(model, "deleted_at"):
+            statement = statement.where(model.deleted_at.is_(None))
         return self.session.scalars(statement).all()
 
     def archive(self, entity_id: str) -> ModelT:

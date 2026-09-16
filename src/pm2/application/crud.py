@@ -18,6 +18,7 @@ class EntityCrudService:
     PROTECTED_FIELDS = {
         "created_at",
         "updated_at",
+        "archived",
         "deleted_at",
         "status",
         "current_phase",
@@ -52,12 +53,14 @@ class EntityCrudService:
                 "La création d’un projet doit passer par ProjectService pour figer sa méthodologie."
             )
         model = self.model(table_name)
-        allowed = {column.name for column in model.__table__.columns}
+        allowed = {
+            column.name for column in model.__table__.columns
+        } - self.PROTECTED_FIELDS - {"id", "project_id"}
         unknown = set(values) - allowed
         if unknown:
-            raise ValueError(f"Champs inconnus : {', '.join(sorted(unknown))}")
+            raise ValueError(f"Champs inconnus ou protégés : {', '.join(sorted(unknown))}")
         payload = dict(values)
-        if "project_id" in allowed:
+        if "project_id" in model.__table__.columns:
             payload["project_id"] = self.project_id
         entity = model(**payload)
         try:
@@ -80,10 +83,17 @@ class EntityCrudService:
         model = self.model(table_name)
         entity = self.require(table_name, entity_id)
         old = row_to_dict(entity)
-        allowed = {column.name for column in model.__table__.columns} - self.PROTECTED_FIELDS
+        allowed = (
+            {column.name for column in model.__table__.columns}
+            - self.PROTECTED_FIELDS
+            - {"id", "project_id"}
+        )
+        forbidden = set(values) - allowed
+        if forbidden:
+            raise ValueError(
+                f"Champs inconnus ou protégés : {', '.join(sorted(forbidden))}"
+            )
         for key, value in values.items():
-            if key not in allowed or key in {"id", "project_id"}:
-                continue
             setattr(entity, key, value)
         try:
             self.session.flush()

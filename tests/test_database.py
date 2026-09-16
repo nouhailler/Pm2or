@@ -1,11 +1,13 @@
 from pathlib import Path
 
+import pytest
 from sqlalchemy import inspect, text
 
 from pm2.application.context import ApplicationContext
 from pm2.infrastructure.database import Database
 
 EXPECTED_TABLES = {
+    "alembic_version",
     "projects",
     "phases",
     "persons",
@@ -60,6 +62,7 @@ def test_complete_schema_and_foreign_keys(context: ApplicationContext) -> None:
     assert set(inspect(context.database.engine).get_table_names()) == EXPECTED_TABLES
     with context.database.engine.connect() as connection:
         assert connection.scalar(text("PRAGMA foreign_keys")) == 1
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0002"
 
 
 def test_alembic_initial_migration(tmp_path: Path) -> None:
@@ -73,7 +76,7 @@ def test_alembic_initial_migration(tmp_path: Path) -> None:
     from sqlalchemy import create_engine
 
     migrated_tables = set(inspect(create_engine(f"sqlite:///{destination}")).get_table_names())
-    assert migrated_tables == EXPECTED_TABLES | {"alembic_version"}
+    assert migrated_tables == EXPECTED_TABLES
 
 
 def test_runtime_adds_methodology_snapshot_columns_to_legacy_database(tmp_path: Path) -> None:
@@ -94,3 +97,18 @@ def test_runtime_adds_methodology_snapshot_columns_to_legacy_database(tmp_path: 
     columns = {column["name"] for column in inspect(database.engine).get_columns("projects")}
     assert {"methodology_hash", "methodology_snapshot"} <= columns
     database.dispose()
+
+
+def test_open_rejects_foreign_database_without_modifying_its_schema(tmp_path: Path) -> None:
+    destination = tmp_path / "foreign.db"
+    database = Database(destination)
+    with database.engine.begin() as connection:
+        connection.execute(text("CREATE TABLE notes (id INTEGER PRIMARY KEY, value TEXT)"))
+    database.dispose()
+
+    with pytest.raises(ValueError, match="n'est pas une base PM²"):
+        ApplicationContext.open(destination, create=False)
+
+    probe = Database(destination)
+    assert inspect(probe.engine).get_table_names() == ["notes"]
+    probe.dispose()

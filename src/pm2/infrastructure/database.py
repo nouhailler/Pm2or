@@ -4,6 +4,8 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import Engine, create_engine, event, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -31,11 +33,32 @@ class Database:
         cursor.close()
 
     def create_schema(self) -> None:
-        Base.metadata.create_all(self.engine)
-        self.ensure_schema_compatibility()
+        self.upgrade_schema()
+
+    @staticmethod
+    def _migration_directory() -> Path:
+        candidates = (
+            Path(__file__).resolve().parents[3] / "migrations",
+            Path(__file__).resolve().parents[1] / "migrations",
+        )
+        for candidate in candidates:
+            if (candidate / "env.py").is_file():
+                return candidate
+        raise RuntimeError("Les migrations Alembic de PM² Desktop sont introuvables.")
+
+    def upgrade_schema(self) -> None:
+        """Bring the database to the current schema revision."""
+        if self.path is None:
+            # Alembic would open another connection and therefore another in-memory database.
+            Base.metadata.create_all(self.engine)
+            return
+        configuration = Config()
+        configuration.set_main_option("script_location", str(self._migration_directory()))
+        configuration.set_main_option("sqlalchemy.url", f"sqlite+pysqlite:///{self.path}")
+        command.upgrade(configuration, "head")
 
     def ensure_schema_compatibility(self) -> None:
-        """Apply additive compatibility fixes needed before Alembic can be run explicitly."""
+        """Compatibility shim for callers predating automatic Alembic migrations."""
         inspector = inspect(self.engine)
         if "projects" not in inspector.get_table_names():
             return

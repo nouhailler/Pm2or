@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from sqlalchemy import inspect
+
 from pm2.infrastructure.database import Database
 from pm2.methodology import MethodologyBundle, PM2Configuration, load_default_methodology_bundle
 
@@ -26,9 +28,16 @@ class ApplicationContext:
 
     @classmethod
     def open(cls, database_path: Path | str, *, create: bool = True) -> ApplicationContext:
+        path = Path(database_path) if str(database_path) != ":memory:" else None
+        if not create and path is not None and not path.is_file():
+            raise FileNotFoundError(f"Base de données introuvable : {path}")
         database = Database(database_path)
-        if create:
-            database.create_schema()
-        else:
-            database.ensure_schema_compatibility()
-        return cls(database=database, methodology_bundle=load_default_methodology_bundle())
+        try:
+            if not create and "projects" not in inspect(database.engine).get_table_names():
+                raise ValueError("Le fichier sélectionné n'est pas une base PM² Desktop.")
+            database.upgrade_schema()
+            methodology = load_default_methodology_bundle()
+        except Exception:
+            database.dispose()
+            raise
+        return cls(database=database, methodology_bundle=methodology)

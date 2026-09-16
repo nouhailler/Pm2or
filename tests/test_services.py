@@ -278,13 +278,32 @@ def test_acceptance_and_requirement_trace(session: Session, project: object) -> 
 
 
 def test_trace_link_and_critical_deletion(session: Session, project: object) -> None:
+    requirement = RequirementModel(project_id=project.id, code="R-T", title="Besoin")
+    deliverable = DeliverableModel(project_id=project.id, code="D-T", name="Livrable")
+    risk = RiskModel(project_id=project.id, code="RK-T", title="Risque")
+    session.add_all([requirement, deliverable, risk])
+    session.flush()
     service = TraceabilityService(session)
-    link = service.link(project.id, "requirement", "a", "task", "b", "implements")
-    assert service.links_for("requirement", "a") == [link]
+    link = service.link(
+        project.id, "requirement", requirement.id, "deliverable", deliverable.id, "implements"
+    )
+    assert service.links_for("requirement", requirement.id) == [link]
     service.unlink(link.id)
-    critical = service.link(project.id, "risk", "r", "task", "t", "mitigates", critical=True)
+    critical = service.link(
+        project.id,
+        "risk",
+        risk.id,
+        "deliverable",
+        deliverable.id,
+        "mitigates",
+        critical=True,
+    )
     with pytest.raises(ValueError, match="critique"):
         service.unlink(critical.id)
+    with pytest.raises(ValueError, match="introuvable"):
+        service.link(
+            project.id, "requirement", "missing", "deliverable", deliverable.id, "implements"
+        )
 
 
 def test_validation_detects_high_risk_and_overdue_issue(session: Session, project: object) -> None:

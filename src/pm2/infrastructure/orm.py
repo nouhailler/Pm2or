@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, date, datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, cast
 from uuid import uuid4
 
 from sqlalchemy import (
@@ -15,6 +15,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    Table,
     Text,
     UniqueConstraint,
     text,
@@ -714,7 +715,7 @@ MODEL_BY_KIND: dict[str, type[Base]] = {
 }
 
 ALL_MODELS_BY_TABLE: dict[str, type[Base]] = {
-    mapper.local_table.name: mapper.class_ for mapper in Base.registry.mappers
+    cast(Table, mapper.local_table).name: mapper.class_ for mapper in Base.registry.mappers
 }
 
 

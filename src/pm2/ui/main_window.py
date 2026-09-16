@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import difflib
 import json
+import logging
 from pathlib import Path
 
 from PySide6.QtGui import QAction, QCloseEvent, QKeySequence
@@ -52,6 +53,8 @@ from pm2.ui.pages import (
 from pm2.ui.row_details import enable_row_details, install_row_detail_support
 from pm2.ui.tooltips import enhance_tooltips, install_tooltip_support
 from pm2.ui.wizards import PhaseAssistantPage
+
+logger = logging.getLogger(__name__)
 
 STYLE = """
 QMainWindow, QWidget { background: #f4f6f9; color: #172033; font-size: 13px; }
@@ -334,6 +337,7 @@ class MainWindow(QMainWindow):
             self.activate_project(project)
         except Exception as exc:
             self.session.rollback()
+            logger.exception("Impossible de créer le projet")
             QMessageBox.critical(self, "Création impossible", str(exc))
 
     def open_project(self) -> None:
@@ -360,21 +364,60 @@ class MainWindow(QMainWindow):
                     )
                     if answer != QMessageBox.StandardButton.Yes:
                         return
-                ProjectArchiveService.open(source, destination, overwrite=True)
+                ProjectArchiveService.open(
+                    source,
+                    destination,
+                    overwrite=True,
+                    content_destination=projects_dir / source.stem,
+                )
             self._switch_database(destination)
         except Exception as exc:
+            logger.exception("Impossible d'ouvrir le projet %s", source)
             QMessageBox.critical(self, "Ouverture impossible", str(exc))
 
     def _switch_database(self, path: Path) -> None:
-        self.session.close()
-        self.context.database.dispose()
-        self.context = ApplicationContext.open(path, create=False)
-        self.session = self.context.database.session_factory()
-        projects = self._project_service().list()
-        if not projects:
-            raise ArchiveError("Aucun projet trouvé dans la base sélectionnée.")
-        self.activate_project(projects[0])
-        self._update_recent(str(path))
+        new_context = ApplicationContext.open(path, create=False)
+        new_session = new_context.database.session_factory()
+        try:
+            service = ProjectService(
+                new_session,
+                new_context.methodology,
+                methodology_snapshot=new_context.methodology_snapshot,
+                methodology_hash=new_context.methodology_hash,
+            )
+            projects = service.list()
+            if not projects:
+                raise ArchiveError("Aucun projet trouvé dans la base sélectionnée.")
+            was_legacy = not projects[0].methodology_snapshot or not projects[0].methodology_hash
+            service.methodology_for(projects[0])
+            if was_legacy:
+                new_session.commit()
+        except Exception:
+            new_session.close()
+            new_context.database.dispose()
+            raise
+
+        old_context = self.context
+        old_session = self.session
+        old_project = self.project
+        self.context = new_context
+        self.session = new_session
+        self._methodology_cache.clear()
+        try:
+            self.activate_project(projects[0])
+        except Exception:
+            new_session.close()
+            new_context.database.dispose()
+            self.context = old_context
+            self.session = old_session
+            self._methodology_cache.clear()
+            if old_project is not None:
+                self.activate_project(old_project)
+            else:
+                self.show_welcome()
+            raise
+        old_session.close()
+        old_context.database.dispose()
 
     def export_archive(self) -> None:
         if not self.project:
@@ -393,6 +436,7 @@ class MainWindow(QMainWindow):
             )
             QMessageBox.information(self, "Projet exporté", f"Archive créée :\n{output}")
         except Exception as exc:
+            logger.exception("Impossible d'exporter le projet %s", self.project.id)
             QMessageBox.critical(self, "Export impossible", str(exc))
 
     def close_project(self) -> None:
@@ -407,6 +451,7 @@ class MainWindow(QMainWindow):
             self.activate_project(project)
         except Exception as exc:
             self.session.rollback()
+            logger.exception("Impossible de fermer le projet %s", self.project.id)
             QMessageBox.critical(self, "Fermeture refusée", str(exc))
 
     def refresh_all(self) -> None:
@@ -582,6 +627,7 @@ class MainWindow(QMainWindow):
         try:
             self._switch_database(Path(path))
         except Exception as exc:
+            logger.exception("Impossible d'ouvrir le projet récent %s", path)
             QMessageBox.critical(self, "Ouverture impossible", str(exc))
 
     def about(self) -> None:

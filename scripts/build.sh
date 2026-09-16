@@ -4,12 +4,14 @@ set -euo pipefail
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_dir"
 
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/pip install -e '.[dev]'
+if ! command -v uv >/dev/null 2>&1; then
+    echo "uv est requis pour construire un environnement reproductible." >&2
+    exit 1
+fi
+uv sync --frozen --extra dev
 QT_QPA_PLATFORM=offscreen PYTHONPATH=src .venv/bin/pytest
-.venv/bin/ruff check src tests
-PYTHONPATH=src .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/methodology
+.venv/bin/ruff check src tests scripts migrations
+PYTHONPATH=src .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
 .venv/bin/pyinstaller --noconfirm pm2-desktop.spec
 
 echo "Paquet créé dans dist/pm2-desktop"

@@ -38,6 +38,9 @@ def run_migrations_online() -> None:
         )
         with context.begin_transaction():
             context.run_migrations()
+        # SQLite uses non-transactional DDL here, while the alembic_version update is DML.
+        # SQLAlchemy 2 otherwise rolls that DML back when the connection context closes.
+        connection.commit()
 
 
 if context.is_offline_mode():

@@ -22,6 +22,7 @@ from pm2.infrastructure.orm import (
     AuditEventModel,
     ChangeApprovalModel,
     ChangeModel,
+    DecisionModel,
     DeliverableModel,
     DocumentModel,
     GateChecklistItemModel,
@@ -1197,6 +1198,18 @@ class TraceabilityService:
         "discussed_in",
         "referenced_by",
     }
+    TRACEABLE_MODELS: dict[str, type[Any]] = {
+        "requirement": RequirementModel,
+        "deliverable": DeliverableModel,
+        "task": TaskModel,
+        "risk": RiskModel,
+        "issue": IssueModel,
+        "decision": DecisionModel,
+        "change": ChangeModel,
+        "document": DocumentModel,
+        "acceptance_test": AcceptanceTestModel,
+        "transition_activity": TransitionActivityModel,
+    }
 
     def __init__(self, session: Session) -> None:
         self.session = session
@@ -1216,6 +1229,8 @@ class TraceabilityService:
             raise ValueError(f"Type de relation inconnu : {relation_type}")
         if source_type == target_type and source_id == target_id:
             raise ValueError("Une entité ne peut pas être reliée à elle-même.")
+        self._require_project_entity(project_id, source_type, source_id, "source")
+        self._require_project_entity(project_id, target_type, target_id, "cible")
         link = TraceLinkModel(
             project_id=project_id,
             source_type=source_type,
@@ -1228,6 +1243,43 @@ class TraceabilityService:
         self.session.add(link)
         self.session.flush()
         return link
+
+    def _require_project_entity(
+        self, project_id: str, entity_type: str, entity_id: str, label: str
+    ) -> None:
+        model = self.TRACEABLE_MODELS.get(entity_type)
+        if model is None:
+            raise ValueError(f"Type d'entité de {label} inconnu : {entity_type}")
+        if entity_type == "task":
+            statement = (
+                select(TaskModel.id)
+                .join(WbsNodeModel, TaskModel.wbs_node_id == WbsNodeModel.id)
+                .where(TaskModel.id == entity_id, WbsNodeModel.project_id == project_id)
+            )
+        elif entity_type == "acceptance_test":
+            statement = (
+                select(AcceptanceTestModel.id)
+                .join(
+                    AcceptanceCriterionModel,
+                    AcceptanceTestModel.criterion_id == AcceptanceCriterionModel.id,
+                )
+                .join(
+                    DeliverableModel,
+                    AcceptanceCriterionModel.deliverable_id == DeliverableModel.id,
+                )
+                .where(
+                    AcceptanceTestModel.id == entity_id,
+                    DeliverableModel.project_id == project_id,
+                )
+            )
+        else:
+            statement = select(model.id).where(
+                model.id == entity_id, model.project_id == project_id
+            )
+        if self.session.scalar(statement) is None:
+            raise ValueError(
+                f"Entité {label} introuvable dans ce projet : {entity_type}/{entity_id}"
+            )
 
     def unlink(self, link_id: str) -> None:
         link = Repository(self.session, TraceLinkModel).require(link_id)

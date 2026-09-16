@@ -16,7 +16,9 @@ Le flux d'écriture normal est `widget → service → repository/session → SQ
 
 `pm2.infrastructure.orm.Base.metadata` décrit les 47 tables contractuelles. `Database` active `PRAGMA foreign_keys=ON` sur chaque connexion. Les objets référencés ont `archived`/`deleted_at`; la cascade est réservée aux enfants stricts.
 
-La migration initiale se lance ainsi :
+Au démarrage, l'application applique automatiquement les migrations jusqu'à la
+révision courante avant d'ouvrir le projet. Une sauvegarde d'une base de production
+reste recommandée avant toute mise à niveau. La migration peut aussi être lancée manuellement :
 
 ```bash
 PYTHONPATH=src .venv/bin/alembic upgrade head
@@ -49,10 +51,10 @@ Le contexte de `DocumentService` agrège le projet, les registres, exigences, li
 ```bash
 QT_QPA_PLATFORM=offscreen PYTHONPATH=src .venv/bin/pytest
 .venv/bin/ruff check src tests
-PYTHONPATH=src .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/methodology
+PYTHONPATH=src .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
 ```
 
-Les 40 tests couvrent les invariants, les 47 tables, Alembic, les gates, RCmSCI,
+Les 72 tests couvrent les invariants, les 47 tables, Alembic, les gates, RCmSCI,
 workflows, commandes WBS/dépendances, CRUD/audit, acceptation stricte, traçabilité,
 les 21 modèles spécialisés, quatre formats documentaires, archive/intégrité, les dix
 parcours UI contractuels et le cycle de vie complet jusqu'au rapport final.

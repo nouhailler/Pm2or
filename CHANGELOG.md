@@ -2,6 +2,18 @@
 
 ## À venir
 
+### Robustesse du dépôt — 16 septembre 2026
+
+- Les bases sont maintenant migrées automatiquement par Alembic à l'ouverture et la
+  révision SQLite est persistée correctement.
+- L'ouverture d'un projet valide le nouveau contexte avant de fermer le projet courant.
+- Le format d'archive 1.2 inventorie et vérifie la taille et le SHA-256 de chaque fichier,
+  limite l'extraction et restaure les documents, pièces jointes et exports.
+- Les liens de traçabilité vérifient l'existence et le projet de leurs deux extrémités.
+- Le CRUD générique refuse les champs techniques et d'état protégés.
+- Ajout d'un verrou `uv`, d'une CI Python 3.12/3.13 et de tests de non-régression ;
+  la suite comporte désormais 72 tests.
+
 ### Prévu à partir du 15 septembre 2026
 
 - Enrichir le projet fictif Les Colibris pour en faire une démonstration clé en main :

@@ -3,12 +3,13 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import sqlite3
 import tempfile
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 
-from sqlalchemy import select, text
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from pm2.infrastructure.database import Database
@@ -30,8 +31,12 @@ def sha256_file(path: Path) -> str:
 
 
 class ProjectArchiveService:
-    FORMAT_VERSION = "1.1"
+    FORMAT_VERSION = "1.2"
+    SUPPORTED_FORMAT_VERSIONS = {"1.0", "1.1", FORMAT_VERSION}
     METHODOLOGY_PATH = "methodology/PM2_METHODOLOGY.yaml"
+    MAX_ENTRIES = 2_000
+    MAX_ENTRY_SIZE = 512 * 1024 * 1024
+    MAX_UNCOMPRESSED_SIZE = 1024 * 1024 * 1024
 
     def __init__(self, database: Database, session: Session) -> None:
         self.database = database
@@ -72,28 +77,18 @@ class ProjectArchiveService:
             )
         destination = destination.with_suffix(".pm2")
         destination.parent.mkdir(parents=True, exist_ok=True)
-        self.session.commit()
-        with self.database.engine.connect() as connection:
-            connection.execute(text("PRAGMA wal_checkpoint(FULL)"))
+        if self.session.new or self.session.dirty or self.session.deleted:
+            raise ArchiveError(
+                "Des modifications ne sont pas encore validées. Enregistrez-les avant l'export."
+            )
         with tempfile.TemporaryDirectory(prefix="pm2-archive-") as temp_name:
             temp = Path(temp_name)
             database_copy = temp / "project.db"
-            shutil.copy2(self.database.path, database_copy)
-            manifest = {
-                "format": "pm2-desktop-project",
-                "format_version": self.FORMAT_VERSION,
-                "project_id": project.id,
-                "project_reference": project.reference,
-                "methodology": project.methodology_id,
-                "methodology_version": project.methodology_version,
-                "methodology_hash": project.methodology_hash,
-                "methodology_snapshot": self.METHODOLOGY_PATH,
-                "saved_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
-                "database_sha256": sha256_file(database_copy),
-            }
-            (temp / "manifest.json").write_text(
-                json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8"
-            )
+            with (
+                sqlite3.connect(self.database.path) as source_database,
+                sqlite3.connect(database_copy) as target_database,
+            ):
+                source_database.backup(target_database)
             methodology_target = temp / self.METHODOLOGY_PATH
             methodology_target.parent.mkdir()
             methodology_target.write_text(project.methodology_snapshot, encoding="utf-8")
@@ -110,6 +105,30 @@ class ProjectArchiveService:
                             relative = path.relative_to(source)
                             (target / relative).parent.mkdir(parents=True, exist_ok=True)
                             shutil.copy2(path, target / relative)
+            files = {
+                path.relative_to(temp).as_posix(): {
+                    "sha256": sha256_file(path),
+                    "size": path.stat().st_size,
+                }
+                for path in sorted(temp.rglob("*"))
+                if path.is_file()
+            }
+            manifest = {
+                "format": "pm2-desktop-project",
+                "format_version": self.FORMAT_VERSION,
+                "project_id": project.id,
+                "project_reference": project.reference,
+                "methodology": project.methodology_id,
+                "methodology_version": project.methodology_version,
+                "methodology_hash": project.methodology_hash,
+                "methodology_snapshot": self.METHODOLOGY_PATH,
+                "saved_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+                "database_sha256": sha256_file(database_copy),
+                "files": files,
+            }
+            (temp / "manifest.json").write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8"
+            )
             temporary_archive = temp / "project.pm2"
             with zipfile.ZipFile(temporary_archive, "w", zipfile.ZIP_DEFLATED) as archive:
                 for directory in ("methodology/", "documents/", "attachments/", "exports/"):
@@ -117,12 +136,19 @@ class ProjectArchiveService:
                 for path in sorted(temp.rglob("*")):
                     if path.is_file() and path != temporary_archive:
                         archive.write(path, path.relative_to(temp).as_posix())
-            shutil.copy2(temporary_archive, destination)
+            staging = destination.with_suffix(destination.suffix + ".saving")
+            shutil.copy2(temporary_archive, staging)
+            staging.replace(destination)
         return destination
 
     @classmethod
     def open(
-        cls, archive_path: Path, database_destination: Path, *, overwrite: bool = False
+        cls,
+        archive_path: Path,
+        database_destination: Path,
+        *,
+        overwrite: bool = False,
+        content_destination: Path | None = None,
     ) -> dict[str, object]:
         if database_destination.exists() and not overwrite:
             raise ArchiveError(f"La destination existe déjà : {database_destination}")
@@ -131,21 +157,52 @@ class ProjectArchiveService:
                 zipfile.ZipFile(archive_path, "r") as archive,
                 tempfile.TemporaryDirectory(prefix="pm2-open-") as temp_name,
             ):
-                names = archive.namelist()
+                infos = archive.infolist()
+                names = [info.filename for info in infos]
+                if len(infos) > cls.MAX_ENTRIES:
+                    raise ArchiveError("Archive invalide : trop de fichiers.")
+                if len(names) != len(set(names)):
+                    raise ArchiveError("Archive invalide : chemins dupliqués.")
+                total_size = sum(info.file_size for info in infos)
+                if total_size > cls.MAX_UNCOMPRESSED_SIZE:
+                    raise ArchiveError("Archive invalide : contenu décompressé trop volumineux.")
                 if "manifest.json" not in names or "project.db" not in names:
                     raise ArchiveError("Archive invalide : manifest.json ou project.db absent.")
-                for name in names:
+                for info in infos:
+                    name = info.filename
                     path = PurePosixPath(name)
-                    if path.is_absolute() or ".." in path.parts:
+                    if (
+                        path.is_absolute()
+                        or ".." in path.parts
+                        or "\\" in name
+                        or "\x00" in name
+                        or info.file_size > cls.MAX_ENTRY_SIZE
+                        or info.flag_bits & 0x1
+                    ):
                         raise ArchiveError("Archive invalide : chemin non sûr détecté.")
                 temp = Path(temp_name)
-                archive.extractall(temp)
+                for info in infos:
+                    target = temp.joinpath(*PurePosixPath(info.filename).parts)
+                    if info.is_dir():
+                        target.mkdir(parents=True, exist_ok=True)
+                        continue
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with archive.open(info) as source, target.open("wb") as output:
+                        shutil.copyfileobj(source, output, length=1024 * 1024)
                 try:
-                    manifest = json.loads((temp / "manifest.json").read_text(encoding="utf-8"))
+                    loaded_manifest = json.loads(
+                        (temp / "manifest.json").read_text(encoding="utf-8")
+                    )
                 except (json.JSONDecodeError, OSError) as exc:
                     raise ArchiveError("Archive invalide : manifest illisible.") from exc
+                if not isinstance(loaded_manifest, dict):
+                    raise ArchiveError("Archive invalide : manifest illisible.")
+                manifest: dict[str, object] = loaded_manifest
                 if manifest.get("format") != "pm2-desktop-project":
                     raise ArchiveError("Archive invalide : format non reconnu.")
+                format_version = manifest.get("format_version")
+                if format_version not in cls.SUPPORTED_FORMAT_VERSIONS:
+                    raise ArchiveError("Archive invalide : version de format non prise en charge.")
                 snapshot: str | None = None
                 snapshot_path = manifest.get("methodology_snapshot")
                 if snapshot_path is not None:
@@ -176,9 +233,11 @@ class ProjectArchiveService:
                 actual = sha256_file(temp / "project.db")
                 if actual != manifest.get("database_sha256"):
                     raise ArchiveError("Archive corrompue : empreinte de la base incorrecte.")
+                if format_version == cls.FORMAT_VERSION:
+                    cls._verify_file_manifest(temp, manifest, names)
                 probe = Database(temp / "project.db")
                 try:
-                    probe.ensure_schema_compatibility()
+                    probe.upgrade_schema()
                     with probe.session_factory() as session:
                         project = session.scalar(
                             select(ProjectModel).where(
@@ -201,9 +260,61 @@ class ProjectArchiveService:
                 database_destination.parent.mkdir(parents=True, exist_ok=True)
                 staging = database_destination.with_suffix(database_destination.suffix + ".opening")
                 shutil.copy2(temp / "project.db", staging)
+                if content_destination is not None:
+                    cls._restore_content(temp, content_destination, overwrite=overwrite)
                 staging.replace(database_destination)
                 return manifest
         except zipfile.BadZipFile as exc:
             raise ArchiveError("Le fichier n'est pas une archive PM² valide.") from exc
         except MethodologyLoadError as exc:
             raise ArchiveError("Archive invalide : méthodologie illisible.") from exc
+
+    @classmethod
+    def _verify_file_manifest(
+        cls, temp: Path, manifest: dict[str, object], archive_names: list[str]
+    ) -> None:
+        files = manifest.get("files")
+        if not isinstance(files, dict):
+            raise ArchiveError("Archive invalide : manifeste des fichiers absent.")
+        actual_names = {name for name in archive_names if name and not name.endswith("/")}
+        expected_names = {"manifest.json", *files}
+        if actual_names != expected_names:
+            raise ArchiveError("Archive invalide : liste de fichiers incohérente.")
+        for name, metadata in files.items():
+            if not isinstance(name, str) or not isinstance(metadata, dict):
+                raise ArchiveError("Archive invalide : manifeste des fichiers illisible.")
+            path = temp.joinpath(*PurePosixPath(name).parts)
+            if metadata.get("size") != path.stat().st_size or metadata.get(
+                "sha256"
+            ) != sha256_file(path):
+                raise ArchiveError(f"Archive corrompue : fichier altéré ({name}).")
+
+    @staticmethod
+    def _restore_content(temp: Path, destination: Path, *, overwrite: bool) -> None:
+        if destination.exists() and not overwrite:
+            raise ArchiveError(f"La destination du contenu existe déjà : {destination}")
+        staging = destination.with_name(destination.name + ".opening")
+        if staging.exists():
+            shutil.rmtree(staging)
+        staging.mkdir(parents=True)
+        for name in ("documents", "attachments", "exports"):
+            source = temp / name
+            target = staging / name
+            if source.is_dir():
+                shutil.copytree(source, target)
+            else:
+                target.mkdir()
+        backup = destination.with_name(destination.name + ".previous")
+        if backup.exists():
+            shutil.rmtree(backup)
+        try:
+            if destination.exists():
+                destination.replace(backup)
+            staging.replace(destination)
+        except Exception:
+            if backup.exists() and not destination.exists():
+                backup.replace(destination)
+            raise
+        finally:
+            if backup.exists():
+                shutil.rmtree(backup)

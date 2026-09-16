@@ -74,6 +74,10 @@ def test_generic_crud_is_audited_and_catalog_covers_every_entity(
         {"name": "Utilisateur CRUD", "organisation": "PMO"},
         actor="testeur",
     )
+    with pytest.raises(ValueError, match="protégés"):
+        service.create("stakeholders", {"name": "Invalide", "archived": True})
+    with pytest.raises(ValueError, match="protégés"):
+        service.update("stakeholders", stakeholder.id, {"status": "INJECTED"})
     service.update("stakeholders", stakeholder.id, {"function": "Sponsor"}, actor="testeur")
     service.remove("stakeholders", stakeholder.id, actor="testeur")
     session.commit()

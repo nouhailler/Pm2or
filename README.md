@@ -59,13 +59,12 @@ sha256sum -c SHA256SUMS-0.1.5
 
 ## 🛠️ Installation développeur
 
-Python 3.12 ou supérieur est requis.
+Python 3.12 ou supérieur et [uv](https://docs.astral.sh/uv/) sont requis.
 
 ```bash
 git clone https://github.com/nouhailler/Pm2or.git
 cd Pm2or
-python3 -m venv .venv
-.venv/bin/pip install -e '.[dev]'
+uv sync --frozen --extra dev
 ```
 
 Sous Windows, remplacez `.venv/bin/` par `.venv\Scripts\`.
@@ -119,12 +118,12 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La version **0.1.5** a été validée avec **67 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
+La branche courante est validée avec **72 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
 
 ```bash
 QT_QPA_PLATFORM=offscreen .venv/bin/pytest
 .venv/bin/ruff check src tests scripts
-.venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/methodology
+.venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
 ```
 
 ## 🏗️ Construction des paquets
@@ -144,7 +143,7 @@ Le fichier `04_PM2_METHODOLOGY.yaml` est la source de vérité pour les phases, 
 
 Chaque nouveau projet fige l’identifiant, la version, un snapshot YAML canonique complet et son SHA-256. À la réouverture, les écrans utilisent exclusivement ce snapshot, et non le YAML installé. En cas d’écart, l’interface propose de conserver la méthodologie, examiner les différences ou effectuer une mise à niveau explicite et auditée.
 
-Les archives `.pm2` (format 1.1) embarquent `methodology/PM2_METHODOLOGY.yaml` et vérifient sa cohérence avec le manifeste et SQLite. Les anciens projets sans snapshot ne peuvent être complétés automatiquement que si leur identifiant et leur version correspondent à ceux de la méthodologie installée ; le contenu historique exact ne peut pas être reconstitué a posteriori.
+Les archives `.pm2` (format 1.2, avec lecture des formats 1.0 et 1.1) embarquent `methodology/PM2_METHODOLOGY.yaml`. Le manifeste vérifie la cohérence avec SQLite ainsi que la taille et le SHA-256 de chaque document, pièce jointe et export. Les anciens projets sans snapshot ne peuvent être complétés automatiquement que si leur identifiant et leur version correspondent à ceux de la méthodologie installée ; le contenu historique exact ne peut pas être reconstitué a posteriori.
 
 ```text
 projet.pm2

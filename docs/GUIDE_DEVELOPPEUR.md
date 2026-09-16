@@ -49,7 +49,7 @@ Le contexte de `DocumentService` agrège le projet, les registres, exigences, li
 ## Tests et qualité
 
 ```bash
-QT_QPA_PLATFORM=offscreen PYTHONPATH=src .venv/bin/pytest
+QT_QPA_PLATFORM=offscreen PYTHONPATH=src .venv/bin/pytest --cov=pm2 --cov-report=term-missing
 .venv/bin/ruff check src tests
 PYTHONPATH=src .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
 ```
@@ -58,6 +58,7 @@ Les 72 tests couvrent les invariants, les 47 tables, Alembic, les gates, RCmSCI,
 workflows, commandes WBS/dépendances, CRUD/audit, acceptation stricte, traçabilité,
 les 21 modèles spécialisés, quatre formats documentaires, archive/intégrité, les dix
 parcours UI contractuels et le cycle de vie complet jusqu'au rapport final.
+La configuration Coverage mesure les branches et impose un minimum global de 70 %.
 
 ## Extension
 

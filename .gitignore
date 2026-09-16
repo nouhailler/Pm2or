@@ -11,4 +11,6 @@ dist/
 *.pm2
 exports/
 .coverage
+coverage.xml
+htmlcov/
 output/

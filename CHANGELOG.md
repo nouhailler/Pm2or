@@ -13,6 +13,12 @@
 - Le CRUD générique refuse les champs techniques et d'état protégés.
 - Ajout d'un verrou `uv`, d'une CI Python 3.12/3.13 et de tests de non-régression ;
   la suite comporte désormais 72 tests.
+- La CI mesure les lignes et branches couvertes et bloque toute baisse sous 70 %
+  (couverture de référence : 70,76 % après découpage).
+- `TraceabilityService`, le contrat `Page` et `TraceabilityPage` sont maintenant
+  isolés dans des modules dédiés avec imports historiques compatibles.
+- Ajout du texte officiel complet de la licence EUPL 1.2 et inclusion automatique
+  de celui-ci dans les métadonnées du wheel.
 
 ### Prévu à partir du 15 septembre 2026
 

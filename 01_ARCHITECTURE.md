@@ -42,6 +42,10 @@ Entités et invariants métier indépendants de Qt et SQLite.
 ### application
 Services/use cases : création de projet, transitions de phase, registres, validations, gates, génération documentaire, traçabilité.
 
+Les services transversaux sont progressivement extraits de `services.py`. La
+traçabilité réside dans `application/traceability.py`, tout en restant réexportée
+par `application.services` pour conserver la compatibilité des imports.
+
 ### infrastructure
 SQLAlchemy, SQLite, repositories, exporteurs, stockage des pièces jointes.
 
@@ -50,6 +54,9 @@ Chargement et validation de PM²_METHODOLOGY.yaml : phases, rôles, artefacts, a
 
 ### ui
 PySide6. MainWindow + navigation + vues métier + dialogues + modèles Qt.
+
+Le contrat commun des pages se trouve dans `ui/page_base.py`; les écrans fonctionnels
+volumineux sont extraits de `ui/pages.py`, à commencer par `ui/traceability_page.py`.
 
 ## 5. Format projet
 Extension : .pm2

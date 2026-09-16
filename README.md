@@ -10,6 +10,8 @@
 
 PM² Desktop est une application de gestion de projets locale, en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Elle utilise PySide6/Qt6, SQLAlchemy 2 et SQLite et ne requiert aucun serveur ni accès Internet à l'exécution.
 
+Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
+
 **[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.5/pm2-desktop_0.1.5_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.5.md)**
 
 ## ✨ Fonctions disponibles
@@ -121,10 +123,13 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 La branche courante est validée avec **72 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
 
 ```bash
-QT_QPA_PLATFORM=offscreen .venv/bin/pytest
+QT_QPA_PLATFORM=offscreen .venv/bin/pytest --cov=pm2 --cov-report=term-missing
 .venv/bin/ruff check src tests scripts
 .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
 ```
+
+La couverture de lignes et de branches ne peut pas descendre sous **70 %** ; le niveau
+mesuré lors de l'ajout de ce seuil est de **70,66 %**.
 
 ## 🏗️ Construction des paquets
 

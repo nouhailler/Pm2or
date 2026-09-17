@@ -78,7 +78,10 @@ class AcceptanceExecutionWidget(QWidget):
         if row < 0:
             QMessageBox.information(self, "Test", "Sélectionnez un test d’acceptation.")
             return
-        test_id = self.tests.item(row, 0).data(Qt.ItemDataRole.UserRole)
+        test_item = self.tests.item(row, 0)
+        if test_item is None:
+            return
+        test_id = test_item.data(Qt.ItemDataRole.UserRole)
         outcome, ok = QInputDialog.getItem(
             self, "Résultat du test", "Verdict", ["PASSED", "FAILED", "BLOCKED"], 0, False
         )
@@ -103,7 +106,10 @@ class AcceptanceExecutionWidget(QWidget):
         if row < 0:
             QMessageBox.information(self, "Acceptation", "Sélectionnez un livrable.")
             return
-        deliverable_id = self.deliverables.item(row, 0).data(Qt.ItemDataRole.UserRole)
+        deliverable_item = self.deliverables.item(row, 0)
+        if deliverable_item is None:
+            return
+        deliverable_id = deliverable_item.data(Qt.ItemDataRole.UserRole)
         deliverable = self.session.get(DeliverableModel, deliverable_id)
         if deliverable is None:
             return
@@ -147,14 +153,14 @@ class AcceptanceExecutionWidget(QWidget):
         ).all()
         self.deliverables.setRowCount(len(deliverables))
         for row, deliverable in enumerate(deliverables):
-            values = (
+            test_values = (
                 deliverable.code,
                 deliverable.name,
                 deliverable.status,
                 deliverable.acceptance_status,
                 deliverable.owner or "—",
             )
-            for column, value in enumerate(values):
+            for column, value in enumerate(test_values):
                 item = QTableWidgetItem(value)
                 if column == 0:
                     item.setData(Qt.ItemDataRole.UserRole, deliverable.id)

@@ -59,7 +59,7 @@ def _context_title(table: QTableWidget) -> str:
         if isinstance(parent, QTabWidget):
             for index in range(parent.count()):
                 page = parent.widget(index)
-                if page is table or page.isAncestorOf(table):
+                if page is not None and (page is table or page.isAncestorOf(table)):
                     label = parent.tabText(index).replace("&", "").strip()
                     if label:
                         return label

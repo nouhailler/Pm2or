@@ -195,7 +195,7 @@ def test_ui_create_wbs_and_task(
         },
     ]
     monkeypatch.setattr(
-        "pm2.ui.pages.WbsNodeDialog",
+        "pm2.ui.work_plan_page.WbsNodeDialog",
         lambda *_args, **_kwargs: AcceptedDialog(responses.pop(0)),
     )
 
@@ -221,7 +221,7 @@ def _register_page(
     page = RegisterTab(session, project, kind)
     qtbot.addWidget(page)
     monkeypatch.setattr(
-        "pm2.ui.pages.RegisterItemDialog",
+        "pm2.ui.registers_page.RegisterItemDialog",
         lambda *_args, **_kwargs: AcceptedDialog(values),
     )
     page._add()

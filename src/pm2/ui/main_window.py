@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1050, 680)
         self.setStyleSheet(STYLE)
         application = QApplication.instance()
-        if application is not None:
+        if isinstance(application, QApplication):
             install_tooltip_support(application)
             install_row_detail_support(application)
         self._build_menu()
@@ -319,6 +319,8 @@ class MainWindow(QMainWindow):
         self.pages.clear()
         while self.stack.count():
             widget = self.stack.widget(0)
+            if widget is None:
+                break
             self.stack.removeWidget(widget)
             widget.deleteLater()
 

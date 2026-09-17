@@ -65,7 +65,10 @@ class TraceabilityPage(Page):
         row = self.table.currentRow()
         if row < 0:
             return
-        target_type = self.table.item(row, 2).data(Qt.ItemDataRole.UserRole)
+        target_item = self.table.item(row, 2)
+        if target_item is None:
+            return
+        target_type = target_item.data(Qt.ItemDataRole.UserRole)
         destinations = {
             "task": "Plan de travail",
             "wbs_node": "Plan de travail",
@@ -86,7 +89,15 @@ class TraceabilityPage(Page):
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return
         try:
-            TraceabilityService(self.session).link(self.project.id, **dialog.values())
+            values = dialog.values()
+            TraceabilityService(self.session).link(
+                self.project.id,
+                values["source_type"],
+                values["source_id"],
+                values["target_type"],
+                values["target_id"],
+                values["relation_type"],
+            )
             self.session.commit()
             self.reload()
             self.changed.emit()
@@ -99,9 +110,10 @@ class TraceabilityPage(Page):
         if row < 0:
             return
         try:
-            TraceabilityService(self.session).unlink(
-                self.table.item(row, 0).data(Qt.ItemDataRole.UserRole)
-            )
+            source_item = self.table.item(row, 0)
+            if source_item is None:
+                return
+            TraceabilityService(self.session).unlink(source_item.data(Qt.ItemDataRole.UserRole))
             self.session.commit()
             self.reload()
             self.changed.emit()

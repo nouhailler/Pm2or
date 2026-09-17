@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import cast
 
 from PySide6.QtCore import QLocale, QTranslator
 from PySide6.QtWidgets import QApplication
@@ -17,7 +18,7 @@ from pm2.ui.tooltips import install_tooltip_support
 def run_gui(database_path: Path | None = None) -> int:
     paths = AppPaths.default()
     paths.ensure()
-    application = QApplication.instance() or QApplication(sys.argv)
+    application = cast(QApplication | None, QApplication.instance()) or QApplication(sys.argv)
     application.setApplicationName("PM² Desktop")
     application.setApplicationVersion(__version__)
     application.setOrganizationName("PM² Desktop")
@@ -25,7 +26,10 @@ def run_gui(database_path: Path | None = None) -> int:
     install_row_detail_support(application)
     QLocale.setDefault(QLocale(QLocale.Language.French, QLocale.Country.France))
     translator = QTranslator(application)
-    qt_translation = Path(__import__("PySide6").__file__).parent / "translations" / "qtbase_fr.qm"
+    pyside_file = __import__("PySide6").__file__
+    if pyside_file is None:
+        raise RuntimeError("Installation PySide6 introuvable.")
+    qt_translation = Path(pyside_file).parent / "translations" / "qtbase_fr.qm"
     if translator.load(str(qt_translation)):
         application.installTranslator(translator)
     context = ApplicationContext.open(database_path or paths.database)

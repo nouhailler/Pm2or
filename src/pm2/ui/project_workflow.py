@@ -162,18 +162,18 @@ class ProjectWorkflow(QGroupBox):
                     "REJECTED": "Refusé",
                 }.get(reviews.get(gate.code, ""), "À préparer")
                 self.gate_buttons[gate.code].setText(f"→ {gate.name}\n{status}")
-        phase = next(
+        current_phase_definition = next(
             (phase for phase in self.phases if phase.code == self.project.current_phase), None
         )
         self.position.setText(
             "Projet clos — le parcours est terminé."
             if closed
-            else f"Vous êtes ici : {phase.name if phase else self.project.current_phase}. Cliquez sur une étape pour ouvrir son assistant."
+            else f"Vous êtes ici : {current_phase_definition.name if current_phase_definition else self.project.current_phase}. Cliquez sur une étape pour ouvrir son assistant."
         )
         self.purpose.setText(
             "Conservez le bilan et l’archive du projet."
             if closed
-            else (phase.purpose if phase else "")
+            else (current_phase_definition.purpose if current_phase_definition else "")
         )
         activities = [
             activity.name
@@ -186,7 +186,7 @@ class ProjectWorkflow(QGroupBox):
             else "Repères pour cette étape :\n" + "\n".join(f"• {name}" for name in activities)
         )
         self.activities.setVisible(not closed)
-        gate = next(
+        next_gate_definition = next(
             (
                 gate
                 for gate in self.methodology.gates
@@ -198,8 +198,8 @@ class ProjectWorkflow(QGroupBox):
             ""
             if closed
             else (
-                f"Prochain passage : {gate.name} · {gate.label}"
-                if gate
+                f"Prochain passage : {next_gate_definition.name} · {next_gate_definition.label}"
+                if next_gate_definition
                 else "Après les contrôles : Projet → Fermer administrativement."
             )
         )

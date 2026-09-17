@@ -4,7 +4,7 @@ import json
 from contextlib import suppress
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
-from typing import Any
+from typing import Any, cast
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -36,6 +36,7 @@ from pm2.application.crud import EntityCrudService
 from pm2.application.validation import ValidationService
 from pm2.domain.workflows import DEFAULT_WORKFLOW_ENGINE
 from pm2.infrastructure.orm import ALL_MODELS_BY_TABLE, Base, TraceLinkModel
+from pm2.ui.page_base import Page
 
 FRIENDLY_NAMES = {
     "projects": "Projets",
@@ -173,7 +174,8 @@ class EntityEditDialog(QDialog):
         root.addWidget(intro)
         container = QWidget()
         form = QFormLayout(container)
-        for column in self.model.__table__.columns:
+        for raw_column in self.model.__table__.columns:
+            column = cast(Column[Any], raw_column)
             if not self._show_column(column):
                 continue
             widget = self._widget_for(column)
@@ -244,17 +246,17 @@ class EntityEditDialog(QDialog):
                 combo.setCurrentIndex(index)
             return combo
         if isinstance(column.type, Text):
-            editor = QPlainTextEdit()
-            editor.setMaximumHeight(90)
-            editor.setPlainText(str(current or ""))
-            return editor
-        editor = QLineEdit()
-        editor.setText(str(current) if current is not None else "")
+            text_editor = QPlainTextEdit()
+            text_editor.setMaximumHeight(90)
+            text_editor.setPlainText(str(current or ""))
+            return text_editor
+        line_editor = QLineEdit()
+        line_editor.setText(str(current) if current is not None else "")
         if isinstance(column.type, (Date, DateTime)):
-            editor.setPlaceholderText(
+            line_editor.setPlaceholderText(
                 "AAAA-MM-JJ" if isinstance(column.type, Date) else "AAAA-MM-JJTHH:MM:SS"
             )
-        return editor
+        return line_editor
 
     def _validate(self) -> None:
         try:
@@ -274,11 +276,12 @@ class EntityEditDialog(QDialog):
             if isinstance(widget, QComboBox):
                 result[name] = widget.currentData() if column.foreign_keys else widget.currentText()
                 continue
-            raw = (
-                widget.toPlainText().strip()
-                if isinstance(widget, QPlainTextEdit)
-                else widget.text().strip()
-            )
+            if isinstance(widget, QPlainTextEdit):
+                raw = widget.toPlainText().strip()
+            elif isinstance(widget, QLineEdit):
+                raw = widget.text().strip()
+            else:
+                raise TypeError(f"Widget de saisie non pris en charge : {type(widget).__name__}")
             if not raw:
                 if column.nullable:
                     result[name] = None
@@ -308,7 +311,7 @@ class EntityEditDialog(QDialog):
             raise ValueError(f"Valeur invalide pour {column.name} : {raw}") from exc
 
 
-class EntityCatalogPage(QWidget):
+class EntityCatalogPage(Page):
     changed = Signal()
 
     def __init__(self, session: Session, project_id: str) -> None:
@@ -384,7 +387,8 @@ class EntityCatalogPage(QWidget):
 
     def _selected_identity(self) -> str | None:
         row = self.table.currentRow()
-        return self.table.item(row, 0).data(Qt.ItemDataRole.UserRole) if row >= 0 else None
+        item = self.table.item(row, 0) if row >= 0 else None
+        return str(item.data(Qt.ItemDataRole.UserRole)) if item is not None else None
 
     def _create(self) -> None:
         controlled = {
@@ -551,14 +555,14 @@ class EntityCatalogPage(QWidget):
         ).all()
         self.relations_view.setRowCount(len(links))
         for row, link in enumerate(links):
-            for column, value in enumerate(
+            for column_index, value in enumerate(
                 (
                     f"{link.source_type} · {link.source_id}",
                     link.relation_type,
                     f"{link.target_type} · {link.target_id}",
                 )
             ):
-                self.relations_view.setItem(row, column, QTableWidgetItem(value))
+                self.relations_view.setItem(row, column_index, QTableWidgetItem(value))
         problems = [
             item
             for item in ValidationService(self.session).validate_project(self.project_id)
@@ -566,13 +570,17 @@ class EntityCatalogPage(QWidget):
         ]
         self.validation_view.setRowCount(len(problems))
         for row, problem in enumerate(problems):
-            for column, value in enumerate((problem.severity, problem.code, problem.message)):
-                self.validation_view.setItem(row, column, QTableWidgetItem(value))
+            for column_index, value in enumerate(
+                (problem.severity, problem.code, problem.message)
+            ):
+                self.validation_view.setItem(row, column_index, QTableWidgetItem(value))
         events = self.service.history(self.table_name(), identity)
         self.audit_view.setRowCount(len(events))
         for row, event in enumerate(events):
             changes = event.new_value_json or event.old_value_json or ""
             with suppress(json.JSONDecodeError, TypeError):
                 changes = json.dumps(json.loads(changes), ensure_ascii=False, indent=1)
-            for column, value in enumerate((event.timestamp, event.actor, event.action, changes)):
-                self.audit_view.setItem(row, column, QTableWidgetItem(str(value)))
+            for column_index, audit_value in enumerate(
+                (event.timestamp, event.actor, event.action, changes)
+            ):
+                self.audit_view.setItem(row, column_index, QTableWidgetItem(str(audit_value)))

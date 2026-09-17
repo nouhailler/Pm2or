@@ -200,8 +200,10 @@ def enhance_tooltips(root: QWidget) -> None:
         for index in range(tabs.count()):
             if tabs.tabToolTip(index):
                 continue
-            label = tabs.tabText(index).replace("&", "").strip()
-            tabs.setTabToolTip(index, TAB_HELP.get(_key(label), f"Afficher l’onglet « {label} »."))
+            tab_label = tabs.tabText(index).replace("&", "").strip()
+            tabs.setTabToolTip(
+                index, TAB_HELP.get(_key(tab_label), f"Afficher l’onglet « {tab_label} »."),
+            )
         _set_help(tabs.tabBar(), "Choisissez un onglet pour afficher la section correspondante.")
 
     for menu in root.findChildren(QMenu):

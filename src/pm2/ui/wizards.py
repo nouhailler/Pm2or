@@ -32,6 +32,7 @@ from pm2.domain.workflows import DEFAULT_WORKFLOW_ENGINE
 from pm2.infrastructure.orm import DocumentModel, ProjectModel
 from pm2.methodology.models import PM2Configuration
 from pm2.ui.acceptance import AcceptanceExecutionWidget
+from pm2.ui.page_base import Page
 
 PHASE_ARTIFACTS = {
     "LAUNCH": (
@@ -431,7 +432,7 @@ class AdministrativeClosure(QWidget):
         )
 
 
-class PhaseAssistantPage(QWidget):
+class PhaseAssistantPage(Page):
     changed = Signal()
     navigate_requested = Signal(str)
 
@@ -500,6 +501,9 @@ class PhaseAssistantPage(QWidget):
         self.validation_summary.setObjectName("pageSubtitle")
         root.addWidget(self.validation_summary)
         self.tabs = QTabWidget()
+        self.acceptance: AcceptanceExecutionWidget | None
+        self.gate: GateAssistant | None
+        self.closing: AdministrativeClosure | None
         self.overview = PhaseOverview(session, project, phase)
         self.tabs.addTab(self.overview, "Vue d’ensemble")
         DocumentService(session, methodology).ensure_catalog(project.id)

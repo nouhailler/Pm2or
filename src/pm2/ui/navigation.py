@@ -81,7 +81,9 @@ class ProjectNavigation(QTreeWidget):
         item = self.page_items.get(name)
         if item is None:
             return
-        item.parent().setExpanded(True)
+        parent = item.parent()
+        if parent is not None:
+            parent.setExpanded(True)
         self.setCurrentItem(item)
         self.scrollToItem(item)
 
@@ -92,7 +94,9 @@ class ProjectNavigation(QTreeWidget):
             return
         name = item.data(0, Qt.ItemDataRole.UserRole)
         if name:
-            item.parent().setExpanded(True)
+            parent = item.parent()
+            if parent is not None:
+                parent.setExpanded(True)
             self.navigate_requested.emit(name)
 
     def _update_group_label(self, group: QTreeWidgetItem) -> None:

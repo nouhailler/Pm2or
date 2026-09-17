@@ -32,6 +32,7 @@ from pm2.config import AppPaths
 from pm2.infrastructure.archive import ArchiveError, ProjectArchiveService
 from pm2.infrastructure.orm import ProjectModel
 from pm2.methodology.models import PM2Configuration
+from pm2.ui.attachments_page import AttachmentsPage
 from pm2.ui.crud import EntityCatalogPage
 from pm2.ui.dialogs import ProjectDialog
 from pm2.ui.navigation import ProjectNavigation
@@ -278,6 +279,14 @@ class MainWindow(QMainWindow):
             (
                 "Documents",
                 DocumentsPage(self.session, self.context.database, project, methodology, output),
+            ),
+            (
+                "Pièces jointes",
+                AttachmentsPage(
+                    self.session,
+                    project,
+                    self.paths.data_dir / "attachment-cache" / project.id,
+                ),
             ),
             ("Validation", ValidationPage(self.session, project)),
             (

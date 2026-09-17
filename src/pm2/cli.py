@@ -8,6 +8,7 @@ from sqlalchemy import inspect
 
 from pm2 import __version__
 from pm2.application.context import ApplicationContext
+from pm2.application.diagnostics import export_diagnostics
 from pm2.config import AppPaths
 from pm2.logging_config import configure_logging
 
@@ -17,6 +18,12 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument("--database", type=Path, help="Base SQLite locale à ouvrir")
     result.add_argument(
         "--headless-check", action="store_true", help="Vérifier l'environnement sans ouvrir Qt"
+    )
+    result.add_argument(
+        "--diagnostics",
+        type=Path,
+        metavar="FICHIER",
+        help="Exporter un diagnostic anonymisé au format JSON sans ouvrir Qt",
     )
     result.add_argument("--version", action="version", version=f"PM² Desktop {__version__}")
     return result
@@ -28,8 +35,13 @@ def main(argv: list[str] | None = None) -> int:
     paths.ensure()
     configure_logging(paths.log_file)
     database = args.database or paths.database
-    if args.headless_check:
+    if args.headless_check or args.diagnostics:
         context = ApplicationContext.open(database)
+        if args.diagnostics:
+            destination = export_diagnostics(context, args.diagnostics)
+            print(json.dumps({"status": "ok", "diagnostics": str(destination)}))
+            context.database.dispose()
+            return 0
         payload = {
             "status": "ok",
             "version": __version__,

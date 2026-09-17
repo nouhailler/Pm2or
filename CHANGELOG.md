@@ -2,6 +2,15 @@
 
 ## À venir
 
+### Pièces jointes et support — 17 septembre 2026
+
+- Ajout d'un écran de pièces jointes avec stockage en base, limite de 25 Mio,
+  empreinte SHA-256, ouverture locale, retrait logique et audit.
+- Ajout de la migration `0003` et sauvegarde automatique de la base avant migration.
+- Ajout d'un export JSON de diagnostic anonymisé avec l'option `--diagnostics`.
+- Renforcement des contrôles d'archives, du démarrage et des tests de régression ;
+  la suite comporte désormais 99 tests.
+
 ### Robustesse du dépôt — 16 septembre 2026
 
 - Les bases sont maintenant migrées automatiquement par Alembic à l'ouverture et la

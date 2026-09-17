@@ -11,7 +11,7 @@ NAVIGATION_GROUPS = (
         ("Lancement", "Planification", "Plan de travail", "Exécution", "Clôture", "Gates"),
     ),
     ("Pilotage", ("Suivi & Contrôle", "Registres", "Traçabilité", "Validation")),
-    ("Données et documents", ("Données métier", "Documents")),
+    ("Données et documents", ("Données métier", "Documents", "Pièces jointes")),
     ("Outils avancés", ("Catalogue", "Paramètres")),
 )
 

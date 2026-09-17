@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import zipfile
 from pathlib import Path
 
@@ -159,3 +160,58 @@ def test_archive_rejects_unsupported_format_version(
             changed.writestr(info, data)
     with pytest.raises(ArchiveError, match="version de format"):
         ProjectArchiveService.open(unsupported, tmp_path / "unsupported.db")
+
+
+@pytest.mark.parametrize("unsafe_name", ["../escape", "/absolute", "folder\\file"])
+def test_archive_rejects_unsafe_paths(tmp_path: Path, unsafe_name: str) -> None:
+    archive = tmp_path / "hostile.pm2"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        bundle.writestr("manifest.json", "{}")
+        bundle.writestr("project.db", b"sqlite")
+        bundle.writestr(unsafe_name, b"hostile")
+    with pytest.raises(ArchiveError, match="chemin non sûr"):
+        ProjectArchiveService.open(archive, tmp_path / "never.db")
+    assert not (tmp_path.parent / "escape").exists()
+
+
+def test_archive_rejects_duplicate_and_oversized_entries(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    duplicate = tmp_path / "duplicate.pm2"
+    with zipfile.ZipFile(duplicate, "w") as bundle:
+        bundle.writestr("manifest.json", "{}")
+        bundle.writestr("project.db", b"one")
+        bundle.writestr("project.db", b"two")
+    with pytest.raises(ArchiveError, match="dupliqués"):
+        ProjectArchiveService.open(duplicate, tmp_path / "duplicate.db")
+
+    oversized = tmp_path / "oversized.pm2"
+    with zipfile.ZipFile(oversized, "w") as bundle:
+        bundle.writestr("manifest.json", "{}")
+        bundle.writestr("project.db", b"too large")
+    monkeypatch.setattr(ProjectArchiveService, "MAX_ENTRY_SIZE", 1)
+    with pytest.raises(ArchiveError, match="chemin non sûr"):
+        ProjectArchiveService.open(oversized, tmp_path / "oversized.db")
+
+
+def test_archive_disk_error_preserves_existing_destination(
+    session: Session,
+    project: ProjectModel,
+    context: ApplicationContext,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destination = tmp_path / "protected.pm2"
+    destination.write_bytes(b"previous archive")
+    real_copy = shutil.copy2
+
+    def fail_final_copy(source: Path, target: Path, *args: object, **kwargs: object) -> Path:
+        if Path(target).suffix == ".saving":
+            raise OSError("disk full")
+        return Path(real_copy(source, target, *args, **kwargs))
+
+    monkeypatch.setattr("pm2.infrastructure.archive.shutil.copy2", fail_final_copy)
+    with pytest.raises(OSError, match="disk full"):
+        ProjectArchiveService(context.database, session).save(project.id, destination)
+    assert destination.read_bytes() == b"previous archive"
+    assert not destination.with_suffix(".pm2.saving").exists()

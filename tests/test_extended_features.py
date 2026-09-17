@@ -67,7 +67,7 @@ def test_all_21_artifacts_have_specialized_markdown_and_html(
 def test_generic_crud_is_audited_and_catalog_covers_every_entity(
     session: Session, project: object
 ) -> None:
-    assert len(ALL_MODELS_BY_TABLE) == 47
+    assert len(ALL_MODELS_BY_TABLE) == 48
     service = EntityCrudService(session, project.id)
     stakeholder = service.create(
         "stakeholders",

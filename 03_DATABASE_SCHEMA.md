@@ -41,6 +41,7 @@ communications
 reports
 documents
 document_versions
+attachments
 document_links
 gate_reviews
 gate_checklist_items
@@ -79,4 +80,4 @@ trace source/target
 ## Migration
 Alembic obligatoire. Première migration crée le schéma complet.
 
-La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite.
+La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite. La migration `0003` ajoute les pièces jointes stockées en base avec leur taille, leur type et leur empreinte SHA-256. Avant toute migration d'une base existante, l'application crée une sauvegarde horodatée `.pre-migration-*.bak`.

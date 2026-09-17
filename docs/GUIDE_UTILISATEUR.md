@@ -78,7 +78,7 @@ Les quatre onglets de **Registres** permettent recherche, filtrage, création et
 
 Une modification ne peut entrer en implémentation sans approbation formelle. Un problème ne peut être clôturé sans résolution.
 
-Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 47 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les changements de statut restent exclusivement pilotés par les workflows métier.
+Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 48 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les changements de statut restent exclusivement pilotés par les workflows métier.
 
 ## Validation
 
@@ -87,6 +87,8 @@ Le Dashboard montre les actions requises. La page **Validation** filtre les règ
 ## Documents et archives
 
 Dans **Documents**, sélectionnez l'un des 21 artefacts spécialisés et un format : Markdown, HTML, DOCX ou PDF. Les contenus sont régénérés depuis les données structurées de leur assistant et les registres courants. L'aperçu HTML, le dossier d'export et l'historique des versions sont accessibles depuis cette page.
+
+Dans **Pièces jointes**, ajoutez les preuves et fichiers de référence du projet. Chaque fichier est limité à 25 Mio, stocké dans la base avec son type et son empreinte SHA-256, et peut être ouvert ou retiré depuis cet écran. Une pièce retirée reste tracée dans l'audit mais ne peut plus être ouverte.
 
 **Exporter le projet .pm2** produit une archive ZIP spécialisée contenant :
 

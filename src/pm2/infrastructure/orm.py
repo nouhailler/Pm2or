@@ -13,6 +13,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     Numeric,
     String,
     Table,
@@ -574,6 +575,18 @@ class DocumentModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
     approver: Mapped[str | None] = mapped_column(String(255))
     approval_date: Mapped[date | None] = mapped_column(Date)
     __table_args__ = (UniqueConstraint("project_id", "code"),)
+
+
+class AttachmentModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
+    __tablename__ = "attachments"
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    media_type: Mapped[str] = mapped_column(String(120), default="application/octet-stream")
+    size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    description: Mapped[str] = mapped_column(Text, default="")
+    content: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    __table_args__ = (UniqueConstraint("project_id", "filename", "content_hash"),)
 
 
 class DocumentVersionModel(Base, UUIDMixin, TimestampMixin):

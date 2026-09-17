@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import shutil
 from collections.abc import Iterator
 from contextlib import contextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
+from alembic.runtime.migration import MigrationContext
+from alembic.script import ScriptDirectory
 from sqlalchemy import Engine, create_engine, event, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -55,7 +59,24 @@ class Database:
         configuration = Config()
         configuration.set_main_option("script_location", str(self._migration_directory()))
         configuration.set_main_option("sqlalchemy.url", f"sqlite+pysqlite:///{self.path}")
-        command.upgrade(configuration, "head")
+        script = ScriptDirectory.from_config(configuration)
+        with self.engine.connect() as connection:
+            current_revision = MigrationContext.configure(connection).get_current_revision()
+        target_revision = script.get_current_head()
+        if current_revision == target_revision:
+            return
+        backup: Path | None = None
+        if self.path.exists() and self.path.stat().st_size:
+            stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+            backup = self.path.with_suffix(self.path.suffix + f".pre-migration-{stamp}.bak")
+            shutil.copy2(self.path, backup)
+        try:
+            command.upgrade(configuration, "head")
+        except Exception:
+            if backup is not None:
+                self.dispose()
+                shutil.copy2(backup, self.path)
+            raise
 
     def ensure_schema_compatibility(self) -> None:
         """Compatibility shim for callers predating automatic Alembic migrations."""

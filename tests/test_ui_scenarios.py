@@ -443,7 +443,7 @@ def test_ui_catalog_crud_details_audit_and_restore(
 ) -> None:
     page = EntityCatalogPage(session, project.id)
     qtbot.addWidget(page)
-    assert page.selector.count() == 47
+    assert page.selector.count() == 48
     page.selector.setCurrentIndex(page.selector.findData("stakeholders"))
     monkeypatch.setattr(
         "pm2.ui.crud.EntityEditDialog",

@@ -34,7 +34,8 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 - registres des risques, problèmes, décisions et modifications avec workflows contrôlés ;
 - qualité, transition, mise en œuvre organisationnelle et réunions ;
 - validation PM² agrégée et filtrable ;
-- catalogue détaillé des 47 entités avec CRUD, relations, validation et audit ;
+- catalogue détaillé des 48 entités avec CRUD, relations, validation et audit ;
+- pièces jointes intégrées au projet, contrôlées par SHA-256 et conservées dans la base ;
 - exécution des tests d'acceptation et acceptation finale contrôlée depuis l'interface ;
 - 21 artefacts spécialisés, avec saisie structurée, aperçu, versions et exports Markdown,
   HTML, DOCX et PDF ;
@@ -89,6 +90,12 @@ Le diagnostic sans interface vérifie la base et la méthodologie :
 .venv/bin/pm2-desktop --headless-check
 ```
 
+Un rapport de support anonymisé peut être écrit sans ouvrir l'interface :
+
+```bash
+.venv/bin/pm2-desktop --diagnostics diagnostic.json
+```
+
 ![Parcours graphique PM² dans le tableau de bord](docs/PARCOURS_PM2.png)
 
 ### 🧭 Tester le parcours graphique
@@ -116,11 +123,11 @@ sont consignés dans [CONTEXT.md](CONTEXT.md). L’historique est disponible dan
 
 ### 💾 Stockage local
 
-Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-desktop`. La variable `PM2_DATA_DIR` permet de choisir un autre dossier.
+Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-desktop`. La variable `PM2_DATA_DIR` permet de choisir un autre dossier. Les mises à niveau du schéma créent automatiquement une copie `.pre-migration-*.bak` de toute base existante avant modification.
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **72 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
+La branche courante est validée avec **99 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les pièces jointes, le diagnostic anonymisé, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
 
 ```bash
 QT_QPA_PLATFORM=offscreen .venv/bin/pytest --cov=pm2 --cov-report=term-missing

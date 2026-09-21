@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pm2-desktop"
-version = "0.1.5"
+version = "0.1.6"
 description = "Application desktop hors ligne de gestion de projets PM² 3.1"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -29,6 +29,8 @@ dev = [
   "ruff>=0.6",
   "mypy>=1.11",
   "pyinstaller>=6.10",
+  "pip-audit>=2.9,<3",
+  "cyclonedx-bom>=7,<8",
   "types-PyYAML>=6.0",
 ]
 
@@ -53,7 +55,7 @@ branch = true
 source = ["pm2"]
 
 [tool.coverage.report]
-fail_under = 70
+fail_under = 80
 show_missing = true
 skip_covered = true
 exclude_also = [
@@ -72,7 +74,7 @@ ignore = ["E501"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-packages = ["pm2.domain", "pm2.application", "pm2.infrastructure", "pm2.methodology"]
+packages = ["pm2.domain", "pm2.application", "pm2.infrastructure", "pm2.methodology", "pm2.ui"]
 
 [[tool.mypy.overrides]]
 module = ["reportlab.*"]

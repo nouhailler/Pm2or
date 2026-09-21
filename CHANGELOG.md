@@ -1,5 +1,18 @@
 # Historique des changements
 
+## 0.1.6 — 21 septembre 2026
+
+- Ajout d'une interface complète de pièces jointes, de la migration `0003`, des
+  sauvegardes pré-migration et de la restauration automatique en cas d'échec.
+- Ajout du diagnostic JSON anonymisé et renforcement contre les bases SQLite
+  corrompues, archives ZIP hostiles, erreurs disque et défauts de permissions.
+- Découpage de `application/services.py` et `ui/pages.py` en modules métier dédiés,
+  avec façades d'import compatibles.
+- Extension de mypy à toute l'interface PySide6 : aucune erreur restante.
+- Couverture portée à 80,84 % avec 111 tests et seuil CI relevé à 80 %.
+- Actions GitHub épinglées par SHA, audit `pip-audit`, SBOM CycloneDX et tests CI
+  du bundle PyInstaller et de l'installation du paquet Debian.
+
 ## À venir
 
 ### Pièces jointes et support — 17 septembre 2026
@@ -8,8 +21,7 @@
   empreinte SHA-256, ouverture locale, retrait logique et audit.
 - Ajout de la migration `0003` et sauvegarde automatique de la base avant migration.
 - Ajout d'un export JSON de diagnostic anonymisé avec l'option `--diagnostics`.
-- Renforcement des contrôles d'archives, du démarrage et des tests de régression ;
-  la suite comporte désormais 99 tests.
+- Renforcement des contrôles d'archives, du démarrage et des tests de régression.
 
 ### Robustesse du dépôt — 16 septembre 2026
 

@@ -162,7 +162,9 @@ def test_archive_rejects_unsupported_format_version(
         ProjectArchiveService.open(unsupported, tmp_path / "unsupported.db")
 
 
-@pytest.mark.parametrize("unsafe_name", ["../escape", "/absolute", "folder\\file"])
+@pytest.mark.parametrize(
+    "unsafe_name", ["../escape", "/absolute", "folder\\file", "C:/windows/path"]
+)
 def test_archive_rejects_unsafe_paths(tmp_path: Path, unsafe_name: str) -> None:
     archive = tmp_path / "hostile.pm2"
     with zipfile.ZipFile(archive, "w") as bundle:
@@ -190,8 +192,21 @@ def test_archive_rejects_duplicate_and_oversized_entries(
         bundle.writestr("manifest.json", "{}")
         bundle.writestr("project.db", b"too large")
     monkeypatch.setattr(ProjectArchiveService, "MAX_ENTRY_SIZE", 1)
-    with pytest.raises(ArchiveError, match="chemin non sûr"):
+    with pytest.raises(ArchiveError, match="trop volumineux"):
         ProjectArchiveService.open(oversized, tmp_path / "oversized.db")
+
+
+def test_archive_rejects_symbolic_link_entries(tmp_path: Path) -> None:
+    archive = tmp_path / "symlink.pm2"
+    link = zipfile.ZipInfo("attachments/link")
+    link.create_system = 3
+    link.external_attr = 0o120777 << 16
+    with zipfile.ZipFile(archive, "w") as bundle:
+        bundle.writestr("manifest.json", "{}")
+        bundle.writestr("project.db", b"sqlite")
+        bundle.writestr(link, "../../outside")
+    with pytest.raises(ArchiveError, match="chemin non sûr"):
+        ProjectArchiveService.open(archive, tmp_path / "symlink.db")
 
 
 def test_archive_disk_error_preserves_existing_destination(

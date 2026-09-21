@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 
 from pm2 import __version__
+from pm2.application.context import ApplicationContext
+from pm2.application.diagnostics import export_diagnostics
 from pm2.cli import main, parser
 
 
@@ -38,3 +40,18 @@ def test_anonymized_diagnostics(
     assert payload["application"]["version"] == __version__
     assert "private-profile" not in serialized
     assert "database" not in payload["runtime"]
+
+
+def test_diagnostic_write_failure_removes_temporary_file(
+    context: ApplicationContext, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    destination = tmp_path / "support" / "diagnostic.json"
+
+    def fail_dump(*_args: object, **_kwargs: object) -> None:
+        raise OSError("disk full")
+
+    monkeypatch.setattr("pm2.application.diagnostics.json.dump", fail_dump)
+    with pytest.raises(OSError, match="disk full"):
+        export_diagnostics(context, destination)
+    assert not destination.exists()
+    assert list(destination.parent.glob("*.tmp")) == []

@@ -57,3 +57,21 @@ def test_attachment_detects_corrupt_content(
     with pytest.raises(OSError, match="intégrité"):
         service.materialize(project.id, attachment.id, tmp_path / "cache")
     assert not (tmp_path / "cache" / "preuve.txt").exists()
+
+
+def test_attachment_propagates_destination_permission_error(
+    session: Session,
+    project: ProjectModel,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = tmp_path / "preuve.txt"
+    source.write_text("preuve", encoding="utf-8")
+    attachment = AttachmentService(session).add(project.id, source)
+
+    def deny_write(_path: Path, _content: bytes) -> int:
+        raise PermissionError("permission denied")
+
+    monkeypatch.setattr(Path, "write_bytes", deny_write)
+    with pytest.raises(PermissionError, match="permission denied"):
+        AttachmentService(session).materialize(project.id, attachment.id, tmp_path / "cache")

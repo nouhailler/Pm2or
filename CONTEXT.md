@@ -1,6 +1,6 @@
 # Contexte du projet PM² Desktop
 
-Dernière mise à jour : **15 septembre 2026**.
+Dernière mise à jour : **21 septembre 2026**.
 
 ## Point de reprise : 15 septembre 2026
 
@@ -16,9 +16,9 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
 
 ## État livré
 
-- Version publiée : **0.1.5**, sur `main`, tag `v0.1.5`.
+- Version publiée : **0.1.6**, sur `main`, tag `v0.1.6`.
 - Dépôt : <https://github.com/nouhailler/Pm2or>.
-- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.5>.
+- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.6>.
 - Correctif de démarrage : PyInstaller embarque désormais
   `pm2/resources/PM2_METHODOLOGY.yaml`, comme le paquet Python et le chargeur.
 - Tableau de bord : parcours graphique des quatre phases, position réelle du projet,
@@ -33,10 +33,10 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
   valeurs ; fenêtre enrichie pour les documents avec objectif et rendu complet.
 - Exemple documentaire : les 21 artefacts PM² de l’archive Les Colibris contiennent désormais
   178 champs illustratifs renseignés.
-- Validation de la 0.1.5 : **67 tests**, Ruff et mypy, contrôle sans interface et
-  vérification du paquet Debian extrait.
+- Validation de la 0.1.6 : **111 tests**, couverture lignes/branches de **80,84 %**,
+  Ruff, mypy sur toute l'interface, audit des dépendances et SBOM CycloneDX.
 
-Les releases 0.1.2 à 0.1.5 incluent le `.deb`, `portail-association.pm2`, `EXERCICES.md`
+Les releases 0.1.2 à 0.1.6 incluent le `.deb`, `portail-association.pm2`, `EXERCICES.md`
 et un fichier d’empreintes SHA-256. Le paquet vise Debian 13 amd64, glibc 2.41 ou ultérieure.
 
 ## Exemple actuel

@@ -4,6 +4,7 @@ import hashlib
 import json
 import shutil
 import sqlite3
+import stat
 import tempfile
 import zipfile
 from datetime import UTC, datetime
@@ -171,15 +172,19 @@ class ProjectArchiveService:
                 for info in infos:
                     name = info.filename
                     path = PurePosixPath(name)
+                    file_type = (info.external_attr >> 16) & 0o170000
                     if (
                         path.is_absolute()
                         or ".." in path.parts
                         or "\\" in name
                         or "\x00" in name
-                        or info.file_size > cls.MAX_ENTRY_SIZE
+                        or (path.parts and ":" in path.parts[0])
                         or info.flag_bits & 0x1
+                        or file_type == stat.S_IFLNK
                     ):
                         raise ArchiveError("Archive invalide : chemin non sûr détecté.")
+                    if info.file_size > cls.MAX_ENTRY_SIZE:
+                        raise ArchiveError("Archive invalide : fichier trop volumineux.")
                 temp = Path(temp_name)
                 for info in infos:
                     target = temp.joinpath(*PurePosixPath(info.filename).parts)

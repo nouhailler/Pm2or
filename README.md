@@ -1,8 +1,8 @@
-# 🧭 PM² Desktop 0.1.5
+# 🧭 PM² Desktop 0.1.6
 
 **Pilotez vos projets PM², du lancement à la clôture, dans une application locale en français.**
 
-[![Version 0.1.5](https://img.shields.io/badge/version-0.1.5-255f85)](https://github.com/nouhailler/Pm2or/releases/tag/v0.1.5)
+[![Version 0.1.6](https://img.shields.io/badge/version-0.1.6-255f85)](https://github.com/nouhailler/Pm2or/releases/tag/v0.1.6)
 ![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
 ![PySide6](https://img.shields.io/badge/interface-PySide6-41CD52?logo=qt&logoColor=white)
 ![SQLite](https://img.shields.io/badge/stockage-SQLite-003B57?logo=sqlite&logoColor=white)
@@ -12,7 +12,7 @@ PM² Desktop est une application de gestion de projets locale, en français, fon
 
 Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 
-**[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.5/pm2-desktop_0.1.5_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.5.md)**
+**[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.6/pm2-desktop_0.1.6_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.6.md)**
 
 ## ✨ Fonctions disponibles
 
@@ -46,7 +46,7 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 Téléchargez le paquet **Debian 13 amd64** dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases), puis exécutez :
 
 ```bash
-sudo apt install ./pm2-desktop_0.1.5_amd64.deb
+sudo apt install ./pm2-desktop_0.1.6_amd64.deb
 pm2-desktop
 ```
 
@@ -54,10 +54,10 @@ Un lanceur avec icône est installé dans le menu des applications. Python est e
 
 > ℹ️ Le paquet nécessite glibc 2.41 ou ultérieure. La compatibilité avec Debian 12 et Ubuntu 24.04 n’est pas assurée.
 
-Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.5](https://github.com/nouhailler/Pm2or/releases/download/v0.1.5/SHA256SUMS-0.1.5) à côté du `.deb` :
+Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.6](https://github.com/nouhailler/Pm2or/releases/download/v0.1.6/SHA256SUMS-0.1.6) à côté du `.deb` :
 
 ```bash
-sha256sum -c SHA256SUMS-0.1.5
+sha256sum -c SHA256SUMS-0.1.6
 ```
 
 ## 🛠️ Installation développeur
@@ -127,16 +127,16 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **99 tests automatisés**, ainsi que Ruff et mypy. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les pièces jointes, le diagnostic anonymisé, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
+La branche courante est validée avec **111 tests automatisés**, ainsi que Ruff, mypy sur toutes les couches et un audit des dépendances d'exécution. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les pièces jointes, le diagnostic anonymisé, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
 
 ```bash
 QT_QPA_PLATFORM=offscreen .venv/bin/pytest --cov=pm2 --cov-report=term-missing
 .venv/bin/ruff check src tests scripts
-.venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
+.venv/bin/mypy src/pm2
 ```
 
-La couverture de lignes et de branches ne peut pas descendre sous **70 %** ; le niveau
-mesuré lors de l'ajout de ce seuil est de **70,66 %**.
+La couverture de lignes et de branches ne peut pas descendre sous **80 %** ; le niveau
+mesuré pour la version 0.1.6 est de **80,84 %**.
 
 ## 🏗️ Construction des paquets
 
@@ -179,6 +179,6 @@ projet.pm2
 | [🔒 Méthodologie figée](docs/METHODOLOGIE_FIGEE.md) | Snapshots, intégrité et mises à niveau |
 | [🧪 Plan de test](10_TEST_PLAN.md) | Scénarios de validation |
 | [👁️ Recette visuelle V0.1](docs/RECETTE_VISUELLE_V0.1.md) | Contrôles des écrans |
-| [📝 Notes de version 0.1.5](docs/RELEASE_0.1.5.md) | Nouveautés et installation |
+| [📝 Notes de version 0.1.6](docs/RELEASE_0.1.6.md) | Nouveautés et installation |
 | [Contexte et reprise](CONTEXT.md) | État du projet et prochain chantier |
 | [Historique des changements](CHANGELOG.md) | Versions publiées et travaux à venir |

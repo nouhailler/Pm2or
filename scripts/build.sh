@@ -11,7 +11,13 @@ fi
 uv sync --frozen --extra dev
 QT_QPA_PLATFORM=offscreen PYTHONPATH=src .venv/bin/pytest --cov=pm2 --cov-report=term-missing
 .venv/bin/ruff check src tests scripts migrations
-PYTHONPATH=src .venv/bin/mypy src/pm2/domain src/pm2/application src/pm2/infrastructure src/pm2/methodology
+PYTHONPATH=src .venv/bin/mypy src/pm2
+mkdir -p build
+uv export --frozen --no-dev --no-emit-project --format requirements-txt \
+    --output-file build/runtime-requirements.txt >/dev/null
+.venv/bin/pip-audit --requirement build/runtime-requirements.txt --no-deps --disable-pip
+.venv/bin/cyclonedx-py environment --pyproject pyproject.toml --output-reproducible \
+    --of JSON -o build/sbom.cdx.json .venv
 .venv/bin/pyinstaller --noconfirm pm2-desktop.spec
 
 echo "Paquet créé dans dist/pm2-desktop"

@@ -86,8 +86,15 @@ jobs:
       - name: Build, install and test Debian package
         run: |
           PYTHONPATH=src uv run python scripts/package_deb.py
-          sudo apt-get install -y ./dist/pm2-desktop_*_amd64.deb
-          PM2_DATA_DIR="$RUNNER_TEMP/package-data" pm2-desktop --headless-check
+          docker run --rm \
+            --volume "$PWD:/workspace" \
+            --workdir /workspace \
+            debian:13-slim \
+            sh -euxc '
+              apt-get update
+              apt-get install -y ./dist/pm2-desktop_*_amd64.deb
+              PM2_DATA_DIR=/tmp/package-data pm2-desktop --headless-check
+            '
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: debian-package

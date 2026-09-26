@@ -1,6 +1,6 @@
 # Historique des changements
 
-## 0.1.6 — 21 septembre 2026
+## 0.1.6 — 26 septembre 2026
 
 - Ajout d'une interface complète de pièces jointes, de la migration `0003`, des
   sauvegardes pré-migration et de la restauration automatique en cas d'échec.

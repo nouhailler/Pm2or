@@ -25,7 +25,7 @@ La barre latérale regroupe les écrans dans cinq tiroirs. Cliquez sur un titre 
 
 - **Vue d’ensemble** : Tableau de bord, Projet et Gouvernance.
 - **Étapes du projet** : les quatre assistants de phase, Plan de travail et Passages de phase.
-- **Pilotage** : Suivi & Contrôle, Registres, Traçabilité et Validation.
+- **Pilotage** : Suivi & Contrôle, Baselines, Registres, Traçabilité et Validation.
 - **Données et documents** : Données du projet et Documents.
 - **Outils avancés** : Catalogue des entités et Paramètres.
 
@@ -78,7 +78,13 @@ Les quatre onglets de **Registres** permettent recherche, filtrage, création et
 
 Une modification ne peut entrer en implémentation sans approbation formelle. Un problème ne peut être clôturé sans résolution.
 
-Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 48 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les changements de statut restent exclusivement pilotés par les workflows métier.
+## Baselines et écarts
+
+Dans **Baselines**, créez une référence nommée et indiquez son type et son auteur. L'application attribue une référence `B-001`, `B-002`, etc., capture le budget, le Work Plan, les jalons, les exigences, les livrables, les risques et les documents, puis signe ce snapshot avec SHA-256.
+
+Une baseline ne peut ensuite être ni modifiée ni supprimée. Elle peut être approuvée une seule fois en indiquant l'approbateur. **Comparer à l'état actuel** présente chaque ajout, retrait et modification depuis la référence. Lorsqu'un changement doit devenir la nouvelle référence officielle, créez une nouvelle baseline au lieu de modifier l'ancienne.
+
+Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 49 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les baselines y sont en lecture seule ; les changements de statut restent exclusivement pilotés par les workflows métier.
 
 ## Validation
 

@@ -15,6 +15,17 @@
 
 ## À venir
 
+### Baselines immuables — 26 septembre 2026
+
+- Ajout de snapshots projet append-only couvrant budget, Work Plan, jalons,
+  exigences, livrables, risques, documents et données des artefacts.
+- Empreinte SHA-256 vérifiée à chaque lecture, approbation nominative unique et
+  triggers SQLite interdisant toute modification ou suppression.
+- Ajout d'une page de création, d'approbation et de comparaison entre baseline et
+  état courant, avec détail des ajouts, retraits et modifications.
+- Ajout de la migration Alembic `0004` et des tests de migration, d'intégrité,
+  d'immuabilité et d'interface.
+
 ### Pièces jointes et support — 17 septembre 2026
 
 - Ajout d'un écran de pièces jointes avec stockage en base, limite de 25 Mio,

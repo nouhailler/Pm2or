@@ -52,6 +52,10 @@ class EntityCrudService:
             raise ValueError(
                 "La création d’un projet doit passer par ProjectService pour figer sa méthodologie."
             )
+        if table_name == "baselines":
+            raise ValueError(
+                "La création d’une baseline doit passer par BaselineService pour figer son snapshot."
+            )
         model = self.model(table_name)
         allowed = {
             column.name for column in model.__table__.columns
@@ -80,6 +84,8 @@ class EntityCrudService:
     def update(
         self, table_name: str, entity_id: str, values: dict[str, Any], *, actor: str = "local"
     ) -> Base:
+        if table_name == "baselines":
+            raise ValueError("Une baseline est immuable et ne peut pas être modifiée.")
         model = self.model(table_name)
         entity = self.require(table_name, entity_id)
         old = row_to_dict(entity)
@@ -111,6 +117,8 @@ class EntityCrudService:
         return entity
 
     def remove(self, table_name: str, entity_id: str, *, actor: str = "local") -> None:
+        if table_name == "baselines":
+            raise ValueError("Une baseline est immuable et ne peut pas être supprimée.")
         entity = self.require(table_name, entity_id)
         old = row_to_dict(entity)
         if hasattr(entity, "archived"):
@@ -131,6 +139,8 @@ class EntityCrudService:
         )
 
     def restore(self, table_name: str, entity_id: str, *, actor: str = "local") -> Base:
+        if table_name == "baselines":
+            raise ValueError("Une baseline est immuable et ne peut pas être restaurée.")
         entity = self.require(table_name, entity_id)
         if not hasattr(entity, "archived"):
             raise ValueError("Cette entité ne prend pas en charge l'archivage.")

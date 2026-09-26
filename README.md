@@ -157,6 +157,10 @@ Chaque nouveau projet fige l’identifiant, la version, un snapshot YAML canoniq
 
 Les archives `.pm2` (format 1.2, avec lecture des formats 1.0 et 1.1) embarquent `methodology/PM2_METHODOLOGY.yaml`. Le manifeste vérifie la cohérence avec SQLite ainsi que la taille et le SHA-256 de chaque document, pièce jointe et export. Les anciens projets sans snapshot ne peuvent être complétés automatiquement que si leur identifiant et leur version correspondent à ceux de la méthodologie installée ; le contenu historique exact ne peut pas être reconstitué a posteriori.
 
+## 📏 Baselines immuables
+
+La page **Baselines** fige l’état du projet — budget, Work Plan, jalons, exigences, livrables, risques, documents et données des artefacts — dans un snapshot JSON signé par SHA-256. Une référence `B-001`, `B-002`, etc. ne peut être ni modifiée ni supprimée. Son approbation est nominative et définitive. L’application compare ensuite cette référence à l’état courant et détaille les ajouts, retraits et modifications. Voir [le contrat des baselines](docs/BASELINES_IMMUABLES.md).
+
 ```text
 projet.pm2
 ├── manifest.json
@@ -177,6 +181,7 @@ projet.pm2
 | [🏛️ Architecture](01_ARCHITECTURE.md) | Organisation et couches applicatives |
 | [🗃️ Schéma de données](03_DATABASE_SCHEMA.md) | Tables, contraintes et migrations |
 | [🔒 Méthodologie figée](docs/METHODOLOGIE_FIGEE.md) | Snapshots, intégrité et mises à niveau |
+| [📏 Baselines immuables](docs/BASELINES_IMMUABLES.md) | Références approuvées et calcul des écarts |
 | [🧪 Plan de test](10_TEST_PLAN.md) | Scénarios de validation |
 | [👁️ Recette visuelle V0.1](docs/RECETTE_VISUELLE_V0.1.md) | Contrôles des écrans |
 | [📝 Notes de version 0.1.6](docs/RELEASE_0.1.6.md) | Nouveautés et installation |

@@ -2,6 +2,10 @@
 
 from pm2.application.acceptance_services import AcceptanceService as AcceptanceService
 from pm2.application.audit import AuditService as AuditService
+from pm2.application.baselines import (
+    BaselineIntegrityError as BaselineIntegrityError,
+)
+from pm2.application.baselines import BaselineService as BaselineService
 from pm2.application.dashboard_metrics import project_counts as project_counts
 from pm2.application.gates import GateService as GateService
 from pm2.application.governance import (

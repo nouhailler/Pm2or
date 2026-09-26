@@ -33,6 +33,7 @@ from pm2.infrastructure.archive import ArchiveError, ProjectArchiveService
 from pm2.infrastructure.orm import ProjectModel
 from pm2.methodology.models import PM2Configuration
 from pm2.ui.attachments_page import AttachmentsPage
+from pm2.ui.baselines_page import BaselinesPage
 from pm2.ui.crud import EntityCatalogPage
 from pm2.ui.dialogs import ProjectDialog
 from pm2.ui.navigation import ProjectNavigation
@@ -269,6 +270,7 @@ class MainWindow(QMainWindow):
                     "Le suivi transversal consolide les données du Work Plan et des registres.",
                 ),
             ),
+            ("Baselines", BaselinesPage(self.session, project)),
             ("Gates", GatesPage(self.session, project, methodology)),
             (
                 "Clôture",

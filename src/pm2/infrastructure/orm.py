@@ -612,6 +612,34 @@ class DocumentLinkModel(Base, UUIDMixin):
     relation_type: Mapped[str] = mapped_column(String(40), default="referenced_by")
 
 
+class BaselineModel(Base, UUIDMixin):
+    """Append-only project reference used for planned-versus-actual comparisons."""
+
+    __tablename__ = "baselines"
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    code: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    type: Mapped[str] = mapped_column(String(40), nullable=False, default="PROJECT")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    created_by: Mapped[str] = mapped_column(String(255), nullable=False)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    approved_by: Mapped[str | None] = mapped_column(String(255))
+    hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    snapshot: Mapped[str] = mapped_column(Text, nullable=False)
+    __table_args__ = (
+        UniqueConstraint("project_id", "code"),
+        CheckConstraint("length(hash) = 64", name="ck_baseline_hash_length"),
+        CheckConstraint("length(trim(created_by)) > 0", name="ck_baseline_created_by"),
+        CheckConstraint(
+            "(approved_at IS NULL AND approved_by IS NULL) OR "
+            "(approved_at IS NOT NULL AND length(trim(approved_by)) > 0)",
+            name="ck_baseline_approval_complete",
+        ),
+    )
+
+
 class GateReviewModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
     __tablename__ = "gate_reviews"
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)

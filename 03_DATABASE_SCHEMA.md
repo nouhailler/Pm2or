@@ -43,6 +43,7 @@ documents
 document_versions
 attachments
 document_links
+baselines
 gate_reviews
 gate_checklist_items
 gate_decisions
@@ -63,6 +64,7 @@ settings
 - Change approval obligatoire avant passage à IMPLEMENTING.
 - Acceptance finale impossible sans critères applicables.
 - Un seul R et un seul Cm par sujet.
+- Les snapshots de `baselines` sont append-only : aucun UPDATE ou DELETE n'est permis ; seule l'approbation initiale peut compléter `approved_at` et `approved_by`.
 
 ## Index
 Créer des index sur :
@@ -80,4 +82,4 @@ trace source/target
 ## Migration
 Alembic obligatoire. Première migration crée le schéma complet.
 
-La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite. La migration `0003` ajoute les pièces jointes stockées en base avec leur taille, leur type et leur empreinte SHA-256. Avant toute migration d'une base existante, l'application crée une sauvegarde horodatée `.pre-migration-*.bak`.
+La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite. La migration `0003` ajoute les pièces jointes stockées en base avec leur taille, leur type et leur empreinte SHA-256. La migration `0004` ajoute les baselines et leurs triggers d'immuabilité. Avant toute migration d'une base existante, l'application crée une sauvegarde horodatée `.pre-migration-*.bak`.

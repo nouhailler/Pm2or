@@ -10,7 +10,7 @@ a = Analysis(
         (str(root / "templates"), "pm2/templates"),
         (str(root / "migrations"), "pm2/migrations"),
     ],
-    hiddenimports=["sqlalchemy.dialects.sqlite", "jinja2.ext"],
+    hiddenimports=["logging.config", "sqlalchemy.dialects.sqlite", "jinja2.ext"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

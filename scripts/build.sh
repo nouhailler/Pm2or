@@ -19,5 +19,7 @@ uv export --frozen --no-dev --no-emit-project --format requirements-txt \
 .venv/bin/cyclonedx-py environment --pyproject pyproject.toml --output-reproducible \
     --of JSON -o build/sbom.cdx.json .venv
 .venv/bin/pyinstaller --noconfirm pm2-desktop.spec
+bundle_data="$(mktemp -d)"
+PM2_DATA_DIR="$bundle_data" dist/pm2-desktop/pm2-desktop --headless-check
 
 echo "Paquet créé dans dist/pm2-desktop"

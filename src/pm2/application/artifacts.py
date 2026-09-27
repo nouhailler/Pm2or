@@ -678,6 +678,7 @@ class ArtifactDataService:
             old=old,
             new=clean,
             actor=actor,
+            origin="artefacts",
         )
         self.session.flush()
 

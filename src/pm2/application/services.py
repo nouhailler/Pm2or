@@ -2,6 +2,7 @@
 
 from pm2.application.acceptance_services import AcceptanceService as AcceptanceService
 from pm2.application.audit import AuditService as AuditService
+from pm2.application.audit import AuditTrailService as AuditTrailService
 from pm2.application.baselines import (
     BaselineIntegrityError as BaselineIntegrityError,
 )

@@ -68,7 +68,7 @@ def test_complete_schema_and_foreign_keys(context: ApplicationContext) -> None:
     assert set(inspect(context.database.engine).get_table_names()) == EXPECTED_TABLES
     with context.database.engine.connect() as connection:
         assert connection.scalar(text("PRAGMA foreign_keys")) == 1
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0004"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0005"
 
 
 def test_alembic_initial_migration(tmp_path: Path) -> None:
@@ -142,7 +142,7 @@ def test_failed_migration_restores_database_and_keeps_backup(tmp_path: Path, mon
     assert backups[0].read_bytes() == original
 
 
-@pytest.mark.parametrize("revision", ["0001", "0002", "0003"])
+@pytest.mark.parametrize("revision", ["0001", "0002", "0003", "0004"])
 def test_upgrade_from_every_published_schema_revision(tmp_path: Path, revision: str) -> None:
     destination = tmp_path / f"release-{revision}.db"
     config = Config("alembic.ini")
@@ -152,7 +152,7 @@ def test_upgrade_from_every_published_schema_revision(tmp_path: Path, revision: 
     database = Database(destination)
     database.upgrade_schema()
     with database.engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0004"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0005"
     database.dispose()
     assert len(list(tmp_path.glob(f"release-{revision}.db.pre-migration-*.bak"))) == 1
 

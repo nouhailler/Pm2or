@@ -15,6 +15,16 @@
 
 ## À venir
 
+### Audit Trail professionnel — 27 septembre 2026
+
+- Ajout d'une timeline projet filtrable regroupant les événements métier et leurs
+  changements champ par champ.
+- Chaque événement conserve désormais l'utilisateur, la date, l'origine, l'objet,
+  la raison ainsi que les états avant et après modification.
+- Le journal est append-only : des protections applicatives et SQLite interdisent
+  toute modification ou suppression d'un événement existant.
+- Ajout d'un export JSON atomique du journal d'audit et de la migration Alembic `0005`.
+
 ### Baselines immuables — 26 septembre 2026
 
 - Ajout de snapshots projet append-only couvrant budget, Work Plan, jalons,

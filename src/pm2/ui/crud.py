@@ -85,6 +85,7 @@ FRIENDLY_NAMES = {
     "lessons_learned": "Leçons apprises",
     "recommendations": "Recommandations",
     "audit_events": "Événements d’audit",
+    "baselines": "Baselines immuables",
     "settings": "Paramètres",
 }
 
@@ -111,6 +112,9 @@ FIELD_LABELS = {
     "methodology_version": "Version méthodologique",
     "methodology_hash": "Empreinte méthodologique",
     "methodology_snapshot": "Snapshot méthodologique",
+    "object_label": "Objet",
+    "origin": "Origine",
+    "reason": "Raison",
     "person_id": "Personne",
     "role_code": "Rôle",
     "due_date": "Échéance",
@@ -400,6 +404,7 @@ class EntityCatalogPage(Page):
             "gate_checklist_items",
             "gate_decisions",
             "audit_events",
+            "baselines",
         }
         if self.table_name() in controlled:
             QMessageBox.information(

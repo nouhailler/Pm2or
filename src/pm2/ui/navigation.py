@@ -12,7 +12,14 @@ NAVIGATION_GROUPS = (
     ),
     (
         "Pilotage",
-        ("Suivi & Contrôle", "Baselines", "Registres", "Traçabilité", "Validation"),
+        (
+            "Suivi & Contrôle",
+            "Baselines",
+            "Audit Trail",
+            "Registres",
+            "Traçabilité",
+            "Validation",
+        ),
     ),
     ("Données et documents", ("Données métier", "Documents", "Pièces jointes")),
     ("Outils avancés", ("Catalogue", "Paramètres")),

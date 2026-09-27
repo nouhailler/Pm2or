@@ -48,6 +48,8 @@ class EntityCrudService:
         return self.session.scalars(statement).all()
 
     def create(self, table_name: str, values: dict[str, Any], *, actor: str = "local") -> Base:
+        if table_name == "audit_events":
+            raise ValueError("Le journal d’audit est append-only et alimenté par l’application.")
         if table_name == "projects":
             raise ValueError(
                 "La création d’un projet doit passer par ProjectService pour figer sa méthodologie."
@@ -78,12 +80,15 @@ class EntityCrudService:
             "CREATE",
             new=row_to_dict(entity),
             actor=actor,
+            origin="catalogue",
         )
         return entity
 
     def update(
         self, table_name: str, entity_id: str, values: dict[str, Any], *, actor: str = "local"
     ) -> Base:
+        if table_name == "audit_events":
+            raise ValueError("Un événement d’audit est immuable et ne peut pas être modifié.")
         if table_name == "baselines":
             raise ValueError("Une baseline est immuable et ne peut pas être modifiée.")
         model = self.model(table_name)
@@ -113,10 +118,13 @@ class EntityCrudService:
             old=old,
             new=row_to_dict(entity),
             actor=actor,
+            origin="catalogue",
         )
         return entity
 
     def remove(self, table_name: str, entity_id: str, *, actor: str = "local") -> None:
+        if table_name == "audit_events":
+            raise ValueError("Un événement d’audit est immuable et ne peut pas être supprimé.")
         if table_name == "baselines":
             raise ValueError("Une baseline est immuable et ne peut pas être supprimée.")
         entity = self.require(table_name, entity_id)
@@ -135,10 +143,18 @@ class EntityCrudService:
                 "Archivez ou détachez d'abord ses relations."
             ) from exc
         AuditService(self.session).record(
-            self.project_id, table_name, entity_id, action, old=old, actor=actor
+            self.project_id,
+            table_name,
+            entity_id,
+            action,
+            old=old,
+            actor=actor,
+            origin="catalogue",
         )
 
     def restore(self, table_name: str, entity_id: str, *, actor: str = "local") -> Base:
+        if table_name == "audit_events":
+            raise ValueError("Un événement d’audit est immuable et ne peut pas être restauré.")
         if table_name == "baselines":
             raise ValueError("Une baseline est immuable et ne peut pas être restaurée.")
         entity = self.require(table_name, entity_id)
@@ -148,7 +164,12 @@ class EntityCrudService:
         if hasattr(entity, "deleted_at"):
             entity.deleted_at = None
         AuditService(self.session).record(
-            self.project_id, table_name, entity_id, "RESTORE", actor=actor
+            self.project_id,
+            table_name,
+            entity_id,
+            "RESTORE",
+            actor=actor,
+            origin="catalogue",
         )
         self.session.flush()
         return entity

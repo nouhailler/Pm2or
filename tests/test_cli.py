@@ -36,7 +36,7 @@ def test_anonymized_diagnostics(
     payload = json.loads(destination.read_text(encoding="utf-8"))
     serialized = destination.read_text(encoding="utf-8")
     assert response == {"status": "ok", "diagnostics": str(destination)}
-    assert payload["database"]["schema_revision"] == "0004"
+    assert payload["database"]["schema_revision"] == "0005"
     assert payload["application"]["version"] == __version__
     assert "private-profile" not in serialized
     assert "database" not in payload["runtime"]

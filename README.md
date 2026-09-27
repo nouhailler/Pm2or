@@ -161,6 +161,10 @@ Les archives `.pm2` (format 1.2, avec lecture des formats 1.0 et 1.1) embarquent
 
 La page **Baselines** fige l’état du projet — budget, Work Plan, jalons, exigences, livrables, risques, documents et données des artefacts — dans un snapshot JSON signé par SHA-256. Une référence `B-001`, `B-002`, etc. ne peut être ni modifiée ni supprimée. Son approbation est nominative et définitive. L’application compare ensuite cette référence à l’état courant et détaille les ajouts, retraits et modifications. Voir [le contrat des baselines](docs/BASELINES_IMMUABLES.md).
 
+## 🕰️ Audit Trail
+
+La page **Audit Trail** présente la chronologie du projet avec date, utilisateur, origine, objet, action et raison. Chaque événement permet d'examiner les valeurs **Avant** et **Après** champ par champ. Le journal, append-only et protégé contre la modification ou la suppression, est filtrable et exportable en JSON pour contrôle ou diagnostic.
+
 ```text
 projet.pm2
 ├── manifest.json

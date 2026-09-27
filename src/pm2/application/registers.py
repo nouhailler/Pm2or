@@ -68,7 +68,16 @@ class WorkflowService:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-    def transition(self, kind: str, entity_id: str, target: str, *, actor: str = "local") -> Any:
+    def transition(
+        self,
+        kind: str,
+        entity_id: str,
+        target: str,
+        *,
+        actor: str = "local",
+        reason: str = "",
+        origin: str = "workflow",
+    ) -> Any:
         model = MODEL_BY_KIND.get(kind)
         if model is None or kind == "project":
             raise ValueError(f"Workflow non pris en charge : {kind}")
@@ -123,6 +132,8 @@ class WorkflowService:
             old=old,
             new=row_to_dict(entity),
             actor=actor,
+            reason=reason,
+            origin=origin,
         )
         self.session.flush()
         return entity
@@ -147,8 +158,9 @@ class WorkflowService:
             "APPROVE",
             new=row_to_dict(change),
             actor=approver,
+            origin="workflow",
+            reason=comments,
         )
         self.session.flush()
         return approval
-
 

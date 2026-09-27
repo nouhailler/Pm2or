@@ -25,7 +25,7 @@ La barre latérale regroupe les écrans dans cinq tiroirs. Cliquez sur un titre 
 
 - **Vue d’ensemble** : Tableau de bord, Projet et Gouvernance.
 - **Étapes du projet** : les quatre assistants de phase, Plan de travail et Passages de phase.
-- **Pilotage** : Suivi & Contrôle, Baselines, Registres, Traçabilité et Validation.
+- **Pilotage** : Suivi & Contrôle, Baselines, Audit Trail, Registres, Traçabilité et Validation.
 - **Données et documents** : Données du projet et Documents.
 - **Outils avancés** : Catalogue des entités et Paramètres.
 
@@ -83,6 +83,12 @@ Une modification ne peut entrer en implémentation sans approbation formelle. Un
 Dans **Baselines**, créez une référence nommée et indiquez son type et son auteur. L'application attribue une référence `B-001`, `B-002`, etc., capture le budget, le Work Plan, les jalons, les exigences, les livrables, les risques et les documents, puis signe ce snapshot avec SHA-256.
 
 Une baseline ne peut ensuite être ni modifiée ni supprimée. Elle peut être approuvée une seule fois en indiquant l'approbateur. **Comparer à l'état actuel** présente chaque ajout, retrait et modification depuis la référence. Lorsqu'un changement doit devenir la nouvelle référence officielle, créez une nouvelle baseline au lieu de modifier l'ancienne.
+
+## Audit Trail
+
+La page **Audit Trail** consolide toutes les opérations du projet dans une timeline. Chaque ligne indique la date, l'objet métier, l'action, l'utilisateur et l'origine. La sélection d'un événement affiche sa raison, les champs modifiés ainsi que les valeurs complètes **Avant** et **Après**.
+
+Les filtres permettent de limiter le journal à un type d'objet, un utilisateur ou une recherche libre. **Exporter le journal JSON** produit une copie exploitable contenant les mêmes métadonnées et valeurs, sans modifier l'historique en base.
 
 Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 49 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les baselines y sont en lecture seule ; les changements de statut restent exclusivement pilotés par les workflows métier.
 

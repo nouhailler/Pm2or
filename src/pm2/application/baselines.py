@@ -223,6 +223,7 @@ class BaselineService:
                 "hash": baseline.hash,
             },
             actor=created_by,
+            origin="baselines",
         )
         return baseline
 
@@ -243,6 +244,7 @@ class BaselineService:
             "APPROVE",
             new={"approved_at": baseline.approved_at, "approved_by": approved_by},
             actor=approved_by,
+            origin="baselines",
         )
         return baseline
 

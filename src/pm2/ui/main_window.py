@@ -33,6 +33,7 @@ from pm2.infrastructure.archive import ArchiveError, ProjectArchiveService
 from pm2.infrastructure.orm import ProjectModel
 from pm2.methodology.models import PM2Configuration
 from pm2.ui.attachments_page import AttachmentsPage
+from pm2.ui.audit_trail_page import AuditTrailPage
 from pm2.ui.baselines_page import BaselinesPage
 from pm2.ui.crud import EntityCatalogPage
 from pm2.ui.dialogs import ProjectDialog
@@ -271,6 +272,7 @@ class MainWindow(QMainWindow):
                 ),
             ),
             ("Baselines", BaselinesPage(self.session, project)),
+            ("Audit Trail", AuditTrailPage(self.session, project)),
             ("Gates", GatesPage(self.session, project, methodology)),
             (
                 "Clôture",

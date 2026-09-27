@@ -722,7 +722,10 @@ class AuditEventModel(Base, UUIDMixin):
     actor: Mapped[str] = mapped_column(String(255), default="local")
     entity_type: Mapped[str] = mapped_column(String(80), index=True)
     entity_id: Mapped[str] = mapped_column(String(36), index=True)
+    object_label: Mapped[str] = mapped_column(String(255), default="")
     action: Mapped[str] = mapped_column(String(80))
+    origin: Mapped[str] = mapped_column(String(80), default="application", index=True)
+    reason: Mapped[str] = mapped_column(Text, default="")
     old_value_json: Mapped[str | None] = mapped_column(Text)
     new_value_json: Mapped[str | None] = mapped_column(Text)
 

@@ -73,7 +73,7 @@ QMenuBar, QMenu, QStatusBar { background: white; }
 #pageSubtitle, #welcomeSubtitle { color: #667788; }
 #welcomeTitle { font-size: 38px; font-weight: 700; color: #18324a; }
 #sectionTitle { font-size: 17px; font-weight: 600; color: #254e70; }
-#metricCard { background: white; border: 1px solid #dbe2e8; border-radius: 7px; min-width: 125px; }
+#metricCard { background: white; border: 1px solid #dbe2e8; border-radius: 7px; min-width: 90px; }
 #metricTitle { color: #667788; font-size: 12px; }
 #metricValue { color: #18324a; font-size: 20px; font-weight: 700; }
 #validationBadge { background: #e8eef8; color: #254e70; border-radius: 12px; padding: 7px 12px; }
@@ -311,6 +311,8 @@ class MainWindow(QMainWindow):
             page.changed.connect(self.refresh_all)
             if isinstance(page, (TraceabilityPage, DashboardPage)):
                 page.navigate_requested.connect(self.navigate_to)
+            if isinstance(page, DashboardPage):
+                page.correction_requested.connect(self._focus_correction)
             if isinstance(page, ValidationPage):
                 page.navigate_requested.connect(self.navigate_to)
                 page.correction_requested.connect(self._focus_correction)

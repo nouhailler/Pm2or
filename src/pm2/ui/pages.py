@@ -29,6 +29,7 @@ from sqlalchemy.orm import Session
 
 from pm2.application.services import (
     AcceptanceService,
+    DashboardService,
     DeliverableService,
     MeetingService,
     QualityService,
@@ -36,7 +37,6 @@ from pm2.application.services import (
     TraceabilityService,
     TransitionService,
     WorkflowService,
-    project_counts,
 )
 from pm2.application.validation import ValidationService
 from pm2.infrastructure.orm import (
@@ -110,16 +110,22 @@ class MetricCard(QFrame):
         self.title.setObjectName("metricTitle")
         self.value = QLabel("—")
         self.value.setObjectName("metricValue")
+        self.detail = QLabel()
+        self.detail.setObjectName("pageSubtitle")
+        self.detail.setWordWrap(True)
         layout.addWidget(self.title)
         layout.addWidget(self.value)
+        layout.addWidget(self.detail)
 
 
 class DashboardPage(Page):
     navigate_requested = Signal(str)
+    correction_requested = Signal(str, str)
 
     def __init__(self, session: Session, project: ProjectModel, methodology: PM2Configuration) -> None:
         super().__init__()
         self.session, self.project = session, project
+        self.cockpit_service = DashboardService(session)
         outer = QVBoxLayout(self)
         scroll = QScrollArea()
         self.dashboard_scroll = scroll
@@ -145,35 +151,49 @@ class DashboardPage(Page):
         self.validation_badge.setObjectName("validationBadge")
         heading.addWidget(self.validation_badge)
         root.addLayout(heading)
+        scroll.viewport().installEventFilter(self)
+        self.cards: dict[str, MetricCard] = {}
+        performance = QGroupBox("Performance")
+        performance_layout = QGridLayout(performance)
+        for column, (key, label) in enumerate(
+            (("progress", "Avancement"), ("budget", "Budget"), ("schedule", "Échéancier"))
+        ):
+            card = MetricCard(label)
+            self.cards[key] = card
+            performance_layout.addWidget(card, 0, column)
+        root.addWidget(performance)
+
+        registers = QGroupBox("Pilotage")
+        registers_layout = QGridLayout(registers)
+        register_cards = (
+            ("risks", "Risques"),
+            ("issues", "Issues"),
+            ("changes", "Changes"),
+            ("decisions", "Décisions"),
+        )
+        for column, (key, label) in enumerate(register_cards):
+            card = MetricCard(label)
+            self.cards[key] = card
+            registers_layout.addWidget(card, 0, column)
+        root.addWidget(registers)
+
+        health_group = QGroupBox("Santé du projet")
+        self.health_layout = QGridLayout(health_group)
+        root.addWidget(health_group)
+
+        actions_group = QGroupBox("Prochaines actions")
+        actions_layout = QVBoxLayout(actions_group)
+        self.actions_table = QTableWidget(0, 3)
+        self.actions_table.setHorizontalHeaderLabels(["Objet", "Action attendue", "Accès"])
+        self.actions_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.actions_table.setProperty("pm2CustomRowDetail", True)
+        self.actions_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        actions_layout.addWidget(self.actions_table)
+        root.addWidget(actions_group)
+
         self.workflow = ProjectWorkflow(session, project, methodology)
         self.workflow.navigate_requested.connect(self.navigate_requested)
         root.addWidget(self.workflow)
-        scroll.viewport().installEventFilter(self)
-        cards_layout = QGridLayout()
-        titles = [
-            ("phase", "Phase"),
-            ("gate", "Prochain gate"),
-            ("progress", "Avancement"),
-            ("budget", "Budget"),
-            ("risks", "Risques ouverts"),
-            ("issues", "Problèmes ouverts"),
-            ("changes", "Modifications"),
-            ("deliverables", "Livrables"),
-            ("requirements", "Exigences"),
-            ("documents", "Documents"),
-        ]
-        self.cards: dict[str, MetricCard] = {}
-        for index, (key, label) in enumerate(titles):
-            card = MetricCard(label)
-            self.cards[key] = card
-            cards_layout.addWidget(card, index // 3, index % 3)
-        root.addLayout(cards_layout)
-        actions_group = QGroupBox("Actions requises")
-        actions_layout = QVBoxLayout(actions_group)
-        self.actions_label = QLabel()
-        self.actions_label.setWordWrap(True)
-        actions_layout.addWidget(self.actions_label)
-        root.addWidget(actions_group)
         root.addStretch()
         self.reload()
 
@@ -184,33 +204,76 @@ class DashboardPage(Page):
 
     def reload(self) -> None:
         self.session.refresh(self.project)
-        counts = project_counts(self.session, self.project.id)
-        phase_names: dict[str, str] = {
-            phase.code: phase.name for phase in self.workflow.phases
-        }
-        gate_names: dict[str, str] = {
-            gate.from_phase: gate.name for gate in self.workflow.methodology.gates
-        }
-        closed = self.project.status in {"CLOSED", "ARCHIVED"}
-        values = {
-            **counts,
-            "phase": "Clos" if closed else phase_names.get(self.project.current_phase, self.project.current_phase),
-            "gate": "—" if closed else gate_names.get(self.project.current_phase, "Fermeture"),
-            "budget": f"{self.project.approved_budget:,.2f} {self.project.currency}",
-            "progress": f"{counts['progress']} %",
-        }
-        for key, card in self.cards.items():
-            card.value.setText(str(values[key]))
+        cockpit = self.cockpit_service.cockpit(self.project.id)
+        kpis = cockpit.kpis
+        self.cards["progress"].value.setText(f"{kpis.progress_percent} %")
+        self.cards["progress"].detail.setText("Avancement moyen des tâches")
+        self.cards["budget"].value.setText(
+            "—" if kpis.budget_percent is None else f"{kpis.budget_percent} %"
+        )
+        self.cards["budget"].detail.setText(
+            "Budget non défini"
+            if kpis.budget_percent is None
+            else f"{kpis.budget_actual:,.0f} / {kpis.budget_approved:,.0f} {self.project.currency}"
+        )
+        variance = kpis.schedule_variance_days
+        self.cards["schedule"].value.setText(
+            "—" if variance is None else "À l’heure" if variance <= 0 else f"+{variance} j"
+        )
+        self.cards["schedule"].detail.setText("Dérive maximale des tâches ouvertes")
+        for key in ("risks", "issues", "changes", "decisions"):
+            self.cards[key].value.setText(str(getattr(kpis, key)))
+            self.cards[key].detail.setText("Éléments actifs")
         self.project_label.setText(f"{self.project.reference} — {self.project.name}")
         self.workflow.reload()
-        problems = ValidationService(self.session).validate_project(self.project.id)
-        errors = sum(problem.severity == "ERROR" for problem in problems)
-        warnings = sum(problem.severity == "WARNING" for problem in problems)
-        self.validation_badge.setText(f"{errors} erreur(s) · {warnings} avertissement(s)")
-        urgent = [problem for problem in problems if problem.severity in {"ERROR", "WARNING"}][:5]
-        self.actions_label.setText(
-            "\n".join(f"• [{p.severity}] {p.message}" for p in urgent) or "Aucune action requise."
+        compliance = ValidationService(self.session).compliance_report(
+            self.project.id, self.workflow.methodology
         )
+        self.validation_badge.setText(f"Conformité PM² · {compliance.score} %")
+        self._reload_health(cockpit.health)
+        self._reload_actions(cockpit.actions)
+
+    def _reload_health(self, indicators: tuple[Any, ...]) -> None:
+        while self.health_layout.count():
+            item = self.health_layout.takeAt(0)
+            widget = item.widget() if item is not None else None
+            if widget is not None:
+                widget.deleteLater()
+        symbols = {"GREEN": "🟢", "ORANGE": "🟠", "RED": "🔴", "GRAY": "⚪"}
+        for row, indicator in enumerate(indicators):
+            button = QPushButton(f"{symbols[indicator.status]}  {indicator.name}")
+            button.setFlat(True)
+            button.setStyleSheet("text-align: left; font-weight: 600;")
+            button.clicked.connect(
+                lambda _checked=False, page=indicator.page, section=indicator.section:
+                self._request_correction(page, section)
+            )
+            self.health_layout.addWidget(button, row, 0)
+            detail = QLabel(indicator.detail)
+            detail.setObjectName("pageSubtitle")
+            self.health_layout.addWidget(detail, row, 1)
+        self.health_layout.setColumnStretch(1, 1)
+
+    def _reload_actions(self, actions: tuple[Any, ...]) -> None:
+        self.actions_table.clearSpans()
+        self.actions_table.setRowCount(max(1, len(actions)))
+        if not actions:
+            self.actions_table.setSpan(0, 0, 1, 3)
+            self.actions_table.setItem(0, 0, QTableWidgetItem("✓ Aucune action prioritaire."))
+            return
+        for row, action in enumerate(actions):
+            self.actions_table.setItem(row, 0, QTableWidgetItem(action.label))
+            self.actions_table.setItem(row, 1, QTableWidgetItem(action.detail))
+            button = QPushButton("Ouvrir")
+            button.clicked.connect(
+                lambda _checked=False, page=action.page, section=action.section:
+                self._request_correction(page, section)
+            )
+            self.actions_table.setCellWidget(row, 2, button)
+
+    def _request_correction(self, page: str, section: str = "") -> None:
+        self.navigate_requested.emit(page)
+        self.correction_requested.emit(page, section)
 
 
 class ProjectPage(Page):

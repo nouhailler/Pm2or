@@ -7,6 +7,7 @@ from pm2.application.baselines import (
     BaselineIntegrityError as BaselineIntegrityError,
 )
 from pm2.application.baselines import BaselineService as BaselineService
+from pm2.application.dashboard_metrics import DashboardService as DashboardService
 from pm2.application.dashboard_metrics import project_counts as project_counts
 from pm2.application.gates import GateService as GateService
 from pm2.application.governance import (

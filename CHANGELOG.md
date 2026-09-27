@@ -15,6 +15,15 @@
 
 ## À venir
 
+### Cockpit projet — 27 septembre 2026
+
+- Refonte du Dashboard autour de trois indicateurs de décision : avancement, consommation
+  budgétaire et dérive d'échéance, complétés par les registres actifs.
+- Ajout d'une santé Gouvernance, Planning, Risques, Budget et Qualité calculée à partir
+  des données projet et des validations existantes.
+- Ajout d'une file de prochaines actions priorisées et cliquables pour les approbations,
+  mitigations échues, acceptations, décisions et issues en retard.
+
 ### Centre de conformité PM² — 27 septembre 2026
 
 - Remplacement de la simple liste de validation par un score global et une progression

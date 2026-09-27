@@ -33,6 +33,14 @@ Replier un tiroir conserve l’écran affiché. Un raccourci ouvre automatiqueme
 
 Chaque assistant Lancement, Planification, Exécution ou Clôture regroupe les artefacts de sa phase, affiche leur complétude et la synthèse des validations, et fournit des accès directs aux données sources. Les assistants concernés intègrent également le gate, l'exécution des tests d'acceptation, l'acceptation finale ou la fermeture administrative.
 
+## Cockpit projet
+
+Le **Tableau de bord** est le point d'entrée quotidien du chef de projet. La première ligne rapproche l'avancement moyen des tâches, la consommation du budget approuvé et la dérive maximale des tâches ouvertes. Une consommation budgétaire supérieure de plus de dix points à l'avancement place la santé budgétaire au rouge, même si le budget total n'est pas encore dépassé.
+
+La deuxième ligne compte les risques, issues, changes et décisions encore actifs. **Santé du projet** synthétise la gouvernance, le planning, les risques, le budget et la qualité avec un état vert, orange, rouge ou gris lorsque les données manquent. Chaque indicateur ouvre sa page métier.
+
+**Prochaines actions** remonte en priorité les changes en attente d'approbation, mitigations de risque échues, livrables prêts pour acceptation, décisions à instruire et issues en retard. **Ouvrir** affiche directement le registre ou l'onglet concerné. Le parcours graphique PM² reste disponible sous le cockpit pour reprendre la phase courante.
+
 Le passage d'une phase à la suivante se fait dans **Passages de phase** :
 
 1. ouvrez RfP, RfE ou RfC selon la phase courante ;

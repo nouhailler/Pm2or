@@ -22,6 +22,8 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
   tableaux, avec une présentation enrichie pour les documents et artefacts ;
 - navigation par cinq tiroirs repliables : Vue d’ensemble, Étapes du projet, Pilotage,
   Données et documents, Outils avancés ; ouverture automatique du tiroir de l’écran demandé ;
+- cockpit projet quotidien : avancement, consommation budgétaire, dérive d'échéance,
+  registres actifs, santé par domaine et prochaines actions cliquables ;
 - parcours graphique sur le tableau de bord : position réelle du projet, phases cliquables,
   revues de passage et raccourcis vers les assistants, registres, planning et contrôles ;
 - assistants complets Lancement, Planification, Exécution et Clôture avec complétude,
@@ -33,8 +35,8 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 - exigences, livrables, critères/tests d'acceptation et liens de traçabilité ;
 - registres des risques, problèmes, décisions et modifications avec workflows contrôlés ;
 - qualité, transition, mise en œuvre organisationnelle et réunions ;
-- validation PM² agrégée et filtrable ;
-- catalogue détaillé des 48 entités avec CRUD, relations, validation et audit ;
+- Centre de conformité PM² avec scores par phase, readiness des gates et corrections guidées ;
+- catalogue détaillé des 49 entités avec CRUD, relations, validation et audit ;
 - pièces jointes intégrées au projet, contrôlées par SHA-256 et conservées dans la base ;
 - exécution des tests d'acceptation et acceptation finale contrôlée depuis l'interface ;
 - 21 artefacts spécialisés, avec saisie structurée, aperçu, versions et exports Markdown,
@@ -100,7 +102,9 @@ Un rapport de support anonymisé peut être écrit sans ouvrir l'interface :
 
 ### 🧭 Tester le parcours graphique
 
-Ouvrez un projet puis sélectionnez **Vue d’ensemble → Tableau de bord**. Le bloc **Votre parcours PM²** indique
+Ouvrez un projet puis sélectionnez **Vue d’ensemble → Tableau de bord**. Le cockpit présente immédiatement l'avancement, la consommation du budget, la dérive d'échéance, les éléments actifs, la santé du projet et les actions prioritaires. Les indicateurs de santé et les actions ouvrent directement la section à traiter.
+
+Le bloc **Votre parcours PM²** indique
 « Vous êtes ici ». Cliquez sur une phase pour ouvrir son assistant ou sur
 **Continuer l’étape actuelle** pour reprendre le travail. Ces clics naviguent dans
 l’application ; les changements de phase passent par une décision de revue.

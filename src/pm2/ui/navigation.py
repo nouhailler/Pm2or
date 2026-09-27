@@ -30,6 +30,7 @@ PAGE_LABELS = {
     "Gates": "Passages de phase",
     "Données métier": "Données du projet",
     "Catalogue": "Catalogue des entités",
+    "Validation": "Conformité PM²",
 }
 
 GROUP_HINTS = {

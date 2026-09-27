@@ -15,6 +15,15 @@
 
 ## À venir
 
+### Centre de conformité PM² — 27 septembre 2026
+
+- Remplacement de la simple liste de validation par un score global et une progression
+  détaillée pour les quatre phases et le Suivi & Contrôle.
+- Ajout d'une vue de readiness RfP, RfE et RfC avec score, statut bloqué/prêt/approuvé
+  et détail de chaque contrôle obligatoire.
+- Regroupement des écarts identiques et ajout d'actions correctives cliquables ouvrant
+  directement la page et l'onglet métier concernés, avec recalcul immédiat.
+
 ### Audit Trail professionnel — 27 septembre 2026
 
 - Ajout d'une timeline projet filtrable regroupant les événements métier et leurs

@@ -292,7 +292,7 @@ class MainWindow(QMainWindow):
                     self.paths.data_dir / "attachment-cache" / project.id,
                 ),
             ),
-            ("Validation", ValidationPage(self.session, project)),
+            ("Validation", ValidationPage(self.session, project, methodology)),
             (
                 "Paramètres",
                 LifecyclePage(
@@ -311,6 +311,9 @@ class MainWindow(QMainWindow):
             page.changed.connect(self.refresh_all)
             if isinstance(page, (TraceabilityPage, DashboardPage)):
                 page.navigate_requested.connect(self.navigate_to)
+            if isinstance(page, ValidationPage):
+                page.navigate_requested.connect(self.navigate_to)
+                page.correction_requested.connect(self._focus_correction)
             if isinstance(page, PhaseAssistantPage):
                 page.navigate_requested.connect(self.navigate_to)
             self.pages.append(page)
@@ -338,6 +341,14 @@ class MainWindow(QMainWindow):
 
     def navigate_to(self, name: str) -> None:
         self.navigation.select_page(name)
+
+    def _focus_correction(self, page_name: str, section: str) -> None:
+        if not section:
+            return
+        index = self.page_indexes.get(page_name)
+        page = self.pages[index] if index is not None else None
+        if isinstance(page, (CoreDataPage, RegistersPage, GatesPage)):
+            page.focus_section(section)
 
     def new_project(self) -> None:
         dialog = ProjectDialog(self)

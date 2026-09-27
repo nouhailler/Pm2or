@@ -285,3 +285,8 @@ class RegistersPage(Page):
     def reload(self) -> None:
         for tab in self.register_tabs:
             tab.reload()
+
+    def focus_section(self, kind: str) -> None:
+        kinds = ("risk", "issue", "decision", "change")
+        if kind in kinds:
+            self.tabs.setCurrentIndex(kinds.index(kind))

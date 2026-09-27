@@ -354,6 +354,11 @@ class CoreDataPage(Page):
     def _current_key(self) -> str:
         return list(self.CONFIG)[self.tabs.currentIndex()]
 
+    def focus_section(self, key: str) -> None:
+        keys = list(self.CONFIG)
+        if key in keys:
+            self.tabs.setCurrentIndex(keys.index(key))
+
     def _selected_entity(self) -> Any | None:
         key = self._current_key()
         table = self.tables[key]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date
 
 from sqlalchemy import func, or_, select
@@ -17,6 +18,7 @@ from pm2.infrastructure.orm import (
     GateChecklistItemModel,
     GateReviewModel,
     IssueModel,
+    PhaseModel,
     ProjectModel,
     ProjectRoleAssignmentModel,
     QualityActionModel,
@@ -28,6 +30,43 @@ from pm2.infrastructure.orm import (
     TraceLinkModel,
     WbsNodeModel,
 )
+from pm2.methodology.models import PM2Configuration
+
+
+@dataclass(frozen=True, slots=True)
+class PhaseCompliance:
+    code: str
+    name: str
+    score: int | None
+    status: str
+    errors: int
+    warnings: int
+
+
+@dataclass(frozen=True, slots=True)
+class GateComplianceCheck:
+    code: str
+    description: str
+    required: bool
+    satisfied: bool
+
+
+@dataclass(frozen=True, slots=True)
+class GateCompliance:
+    code: str
+    name: str
+    label: str
+    status: str
+    score: int
+    checks: tuple[GateComplianceCheck, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ComplianceReport:
+    score: int
+    phases: tuple[PhaseCompliance, ...]
+    gates: tuple[GateCompliance, ...]
+    problems: tuple[ValidationProblem, ...]
 
 
 class ValidationService:
@@ -376,6 +415,161 @@ class ValidationService:
         return sorted(
             problems, key=lambda p: ({"ERROR": 0, "WARNING": 1, "INFO": 2}[p.severity], p.code)
         )
+
+    def compliance_report(
+        self, project_id: str, methodology: PM2Configuration | None = None
+    ) -> ComplianceReport:
+        project = self.session.get(ProjectModel, project_id)
+        if project is None:
+            raise LookupError(f"Projet introuvable : {project_id}")
+        problems = tuple(self.validate_project(project_id))
+        gates = self._gate_compliance(project_id, methodology)
+        gate_by_phase = {
+            "LAUNCH": next((gate for gate in gates if gate.code == "RFP"), None),
+            "PLANNING": next((gate for gate in gates if gate.code == "RFE"), None),
+            "EXECUTION": next((gate for gate in gates if gate.code == "RFC"), None),
+        }
+        phase_rows = {
+            phase.methodology_phase_code: phase
+            for phase in self.session.scalars(
+                select(PhaseModel).where(PhaseModel.project_id == project_id)
+            )
+        }
+        order = ("LAUNCH", "PLANNING", "EXECUTION", "CLOSING")
+        names = {
+            "LAUNCH": "Lancement",
+            "PLANNING": "Planification",
+            "EXECUTION": "Exécution",
+            "CLOSING": "Clôture",
+            "MONITORING_CONTROL": "Suivi & Contrôle",
+        }
+        current_index = order.index(project.current_phase) if project.current_phase in order else 3
+        phases: list[PhaseCompliance] = []
+        for index, code in enumerate(order):
+            row = phase_rows.get(code)
+            started = index <= current_index or (row is not None and row.status != "NOT_STARTED")
+            relevant = [problem for problem in problems if self._problem_phase(problem) == code]
+            errors = sum(problem.severity == "ERROR" for problem in relevant)
+            warnings = sum(problem.severity == "WARNING" for problem in relevant)
+            if not started:
+                phases.append(PhaseCompliance(code, names[code], None, "Non commencée", 0, 0))
+                continue
+            quality = max(
+                0,
+                100
+                - errors * 18
+                - warnings * 7
+                - sum(problem.severity == "INFO" for problem in relevant) * 2,
+            )
+            gate = gate_by_phase.get(code)
+            score = round(quality if gate is None else quality * 0.35 + gate.score * 0.65)
+            status = "Conforme" if score == 100 else "À renforcer" if score >= 70 else "Bloquée"
+            phases.append(PhaseCompliance(code, names[code], score, status, errors, warnings))
+
+        monitoring = [
+            problem
+            for problem in problems
+            if self._problem_phase(problem) == "MONITORING_CONTROL"
+        ]
+        monitoring_errors = sum(problem.severity == "ERROR" for problem in monitoring)
+        monitoring_warnings = sum(problem.severity == "WARNING" for problem in monitoring)
+        monitoring_score = max(0, 100 - monitoring_errors * 18 - monitoring_warnings * 7)
+        phases.insert(
+            3,
+            PhaseCompliance(
+                "MONITORING_CONTROL",
+                names["MONITORING_CONTROL"],
+                monitoring_score,
+                "Conforme" if monitoring_score == 100 else "À renforcer",
+                monitoring_errors,
+                monitoring_warnings,
+            ),
+        )
+        scored = [phase.score for phase in phases if phase.score is not None]
+        return ComplianceReport(
+            score=round(sum(scored) / len(scored)) if scored else 0,
+            phases=tuple(phases),
+            gates=gates,
+            problems=problems,
+        )
+
+    def _gate_compliance(
+        self, project_id: str, methodology: PM2Configuration | None
+    ) -> tuple[GateCompliance, ...]:
+        reviews = {
+            review.gate_code: review
+            for review in self.session.scalars(
+                select(GateReviewModel).where(GateReviewModel.project_id == project_id)
+            )
+        }
+        definitions = {gate.code: gate for gate in methodology.gates} if methodology else {}
+        codes = tuple(definitions) or ("RFP", "RFE", "RFC")
+        results: list[GateCompliance] = []
+        for code in codes:
+            definition = definitions.get(code)
+            review = reviews.get(code)
+            stored = (
+                self.session.scalars(
+                    select(GateChecklistItemModel)
+                    .where(GateChecklistItemModel.gate_review_id == review.id)
+                    .order_by(GateChecklistItemModel.item_code)
+                ).all()
+                if review is not None
+                else []
+            )
+            if stored:
+                checks = tuple(
+                    GateComplianceCheck(
+                        item.item_code,
+                        item.description,
+                        item.required,
+                        item.satisfied,
+                    )
+                    for item in stored
+                )
+            elif definition is not None:
+                checks = tuple(
+                    GateComplianceCheck(item.id, item.description, item.required, False)
+                    for item in definition.checklist
+                )
+            else:
+                checks = ()
+            required = [item for item in checks if item.required]
+            score = round(
+                100 * sum(item.satisfied for item in required) / len(required)
+            ) if required else 0
+            stored_status = review.status if review is not None else "NOT_READY"
+            if stored_status in {"APPROVED", "APPROVED_WITH_RESERVES"}:
+                status = "APPROUVÉ" if stored_status == "APPROVED" else "APPROUVÉ AVEC RÉSERVES"
+            elif required and all(item.satisfied for item in required):
+                status = "PRÊT"
+            else:
+                status = "BLOQUÉ"
+            results.append(
+                GateCompliance(
+                    code=code,
+                    name=definition.name if definition is not None else code,
+                    label=definition.label if definition is not None else code,
+                    status=status,
+                    score=score,
+                    checks=checks,
+                )
+            )
+        return tuple(results)
+
+    @staticmethod
+    def _problem_phase(problem: ValidationProblem) -> str:
+        if problem.entity in {"project", "governance", "stakeholder"}:
+            return "LAUNCH"
+        if problem.entity in {"task", "requirement", "deliverable"}:
+            return "PLANNING"
+        if problem.entity in {"acceptance", "acceptance_test", "quality_action"}:
+            return "EXECUTION"
+        if problem.entity in {"risk", "issue", "change", "decision", "traceability"}:
+            return "MONITORING_CONTROL"
+        if problem.entity == "gate":
+            return "EXECUTION"
+        return "MONITORING_CONTROL"
 
     def _has_test_link(self, requirement_id: str) -> bool:
         return bool(

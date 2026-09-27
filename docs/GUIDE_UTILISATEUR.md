@@ -25,7 +25,7 @@ La barre latérale regroupe les écrans dans cinq tiroirs. Cliquez sur un titre 
 
 - **Vue d’ensemble** : Tableau de bord, Projet et Gouvernance.
 - **Étapes du projet** : les quatre assistants de phase, Plan de travail et Passages de phase.
-- **Pilotage** : Suivi & Contrôle, Baselines, Audit Trail, Registres, Traçabilité et Validation.
+- **Pilotage** : Suivi & Contrôle, Baselines, Audit Trail, Registres, Traçabilité et Conformité PM².
 - **Données et documents** : Données du projet et Documents.
 - **Outils avancés** : Catalogue des entités et Paramètres.
 
@@ -92,9 +92,13 @@ Les filtres permettent de limiter le journal à un type d'objet, un utilisateur 
 
 Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 49 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les baselines y sont en lecture seule ; les changements de statut restent exclusivement pilotés par les workflows métier.
 
-## Validation
+## Centre de conformité PM²
 
-Le Dashboard montre les actions requises. La page **Validation** filtre les règles par `ERROR`, `WARNING` ou `INFO`. Les erreurs bloquent les gates concernés, mais n'empêchent pas un export ordinaire ; le rapport d'export les mentionne.
+La page **Conformité PM²** transforme les contrôles de cohérence en plan d'action. Elle affiche le score global, la progression du Lancement, de la Planification, de l'Exécution, du Suivi & Contrôle et de la Clôture, ainsi que les erreurs et avertissements qui affectent chaque domaine. Une phase future apparaît comme **Non commencée** plutôt que comme non conforme.
+
+Les onglets RfP, RfE et RfC détaillent chaque condition obligatoire et indiquent si le gate est **BLOQUÉ**, **PRÊT** ou **APPROUVÉ**. **Examiner le gate** ouvre sa checklist et ses preuves.
+
+Les écarts identiques sont regroupés : trois livrables sans critère d'acceptation donnent ainsi une seule ligne avec un compteur de trois. Chaque ligne propose une action comme **Créer les critères**, **Relier les tests**, **Créer une relation** ou **Corriger**. Le bouton ouvre la page et l'onglet métier pertinents ; après correction, utilisez **Recalculer**. Le filtre permet de se concentrer sur les erreurs, avertissements ou informations. Les erreurs bloquent les gates concernés, mais n'empêchent pas un export ordinaire ; le rapport d'export les mentionne.
 
 ## Documents et archives
 

@@ -124,4 +124,8 @@ class GatesPage(Page):
                     box.setChecked(item.satisfied)
                     box.blockSignals(False)
 
+    def focus_section(self, gate_code: str) -> None:
+        codes = [definition.code for definition in self.methodology.gates]
+        if gate_code in codes:
+            self.tabs.setCurrentIndex(codes.index(gate_code))
 

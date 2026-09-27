@@ -165,6 +165,10 @@ La page **Baselines** fige l’état du projet — budget, Work Plan, jalons, ex
 
 La page **Audit Trail** présente la chronologie du projet avec date, utilisateur, origine, objet, action et raison. Chaque événement permet d'examiner les valeurs **Avant** et **Après** champ par champ. Le journal, append-only et protégé contre la modification ou la suppression, est filtrable et exportable en JSON pour contrôle ou diagnostic.
 
+## ✅ Centre de conformité PM²
+
+La page **Conformité PM²** calcule un score global et une progression par phase, puis présente la readiness des gates RfP, RfE et RfC à partir de leurs contrôles obligatoires. Les écarts identiques sont regroupés, filtrables par sévérité et associés à une action corrective cliquable qui ouvre directement la section métier concernée. Le bouton **Recalculer** actualise immédiatement les scores après correction.
+
 ```text
 projet.pm2
 ├── manifest.json

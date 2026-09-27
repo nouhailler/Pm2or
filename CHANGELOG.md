@@ -1,5 +1,17 @@
 # Historique des changements
 
+## 0.1.7 — 27 septembre 2026
+
+- Transformation du Dashboard en cockpit quotidien avec avancement, budget,
+  échéancier, santé du projet et actions prioritaires cliquables.
+- Ajout du Centre de conformité PM² avec score global, progression par phase,
+  readiness RfP/RfE/RfC et corrections guidées.
+- Ajout d'un Audit Trail append-only avec timeline, contexte complet,
+  comparaison Avant/Après et export JSON.
+- Ajout de baselines projet immuables, approuvables et comparables à l'état courant.
+- Ajout des migrations Alembic `0004` et `0005` et couverture portée à 81,93 %
+  avec 127 tests automatisés.
+
 ## 0.1.6 — 26 septembre 2026
 
 - Ajout d'une interface complète de pièces jointes, de la migration `0003`, des
@@ -12,47 +24,6 @@
 - Couverture portée à 80,84 % avec 111 tests et seuil CI relevé à 80 %.
 - Actions GitHub épinglées par SHA, audit `pip-audit`, SBOM CycloneDX et tests CI
   du bundle PyInstaller et de l'installation du paquet Debian.
-
-## À venir
-
-### Cockpit projet — 27 septembre 2026
-
-- Refonte du Dashboard autour de trois indicateurs de décision : avancement, consommation
-  budgétaire et dérive d'échéance, complétés par les registres actifs.
-- Ajout d'une santé Gouvernance, Planning, Risques, Budget et Qualité calculée à partir
-  des données projet et des validations existantes.
-- Ajout d'une file de prochaines actions priorisées et cliquables pour les approbations,
-  mitigations échues, acceptations, décisions et issues en retard.
-
-### Centre de conformité PM² — 27 septembre 2026
-
-- Remplacement de la simple liste de validation par un score global et une progression
-  détaillée pour les quatre phases et le Suivi & Contrôle.
-- Ajout d'une vue de readiness RfP, RfE et RfC avec score, statut bloqué/prêt/approuvé
-  et détail de chaque contrôle obligatoire.
-- Regroupement des écarts identiques et ajout d'actions correctives cliquables ouvrant
-  directement la page et l'onglet métier concernés, avec recalcul immédiat.
-
-### Audit Trail professionnel — 27 septembre 2026
-
-- Ajout d'une timeline projet filtrable regroupant les événements métier et leurs
-  changements champ par champ.
-- Chaque événement conserve désormais l'utilisateur, la date, l'origine, l'objet,
-  la raison ainsi que les états avant et après modification.
-- Le journal est append-only : des protections applicatives et SQLite interdisent
-  toute modification ou suppression d'un événement existant.
-- Ajout d'un export JSON atomique du journal d'audit et de la migration Alembic `0005`.
-
-### Baselines immuables — 26 septembre 2026
-
-- Ajout de snapshots projet append-only couvrant budget, Work Plan, jalons,
-  exigences, livrables, risques, documents et données des artefacts.
-- Empreinte SHA-256 vérifiée à chaque lecture, approbation nominative unique et
-  triggers SQLite interdisant toute modification ou suppression.
-- Ajout d'une page de création, d'approbation et de comparaison entre baseline et
-  état courant, avec détail des ajouts, retraits et modifications.
-- Ajout de la migration Alembic `0004` et des tests de migration, d'intégrité,
-  d'immuabilité et d'interface.
 
 ### Pièces jointes et support — 17 septembre 2026
 

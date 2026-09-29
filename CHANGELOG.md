@@ -7,6 +7,12 @@
   et au plus tard, marge totale et chemins critiques.
 - Ajout d'une vue de calcul dédiée dans l'interface, avec mise en évidence des
   tâches critiques et saisie du décalage lors de la création d'une dépendance.
+- Ajout d'un centre de gestion des ressources couvrant personnes, équipes,
+  fournisseurs externes, équipements et ressources budgétaires.
+- Ajout des disponibilités hebdomadaires, allocations d'effort aux tâches,
+  calcul de charge/capacité et alertes visuelles au-delà de 100 %.
+- Ajout de la migration Alembic `0006` et intégration des ressources aux
+  baselines projet.
 
 ## 0.1.7 — 27 septembre 2026
 

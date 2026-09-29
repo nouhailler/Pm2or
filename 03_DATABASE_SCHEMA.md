@@ -13,6 +13,9 @@ responsibility_assignments
 wbs_nodes
 tasks
 task_dependencies
+resources
+resource_availabilities
+task_resource_allocations
 deliverables
 requirements
 requirement_tasks
@@ -60,6 +63,9 @@ settings
 - Les objets métier ne doivent pas être supprimés physiquement lorsqu'ils sont référencés : préférer archived/deleted_at.
 - UNIQUE(project_id, code) pour les codes métier des registres.
 - CHECK progress_percent BETWEEN 0 AND 100.
+- Les types de ressources sont limités à PERSON, TEAM, SUPPLIER, EQUIPMENT et BUDGET.
+- Les disponibilités sont comprises entre 0 et 100 % et les allocations d'effort sont positives.
+- Des triggers empêchent la somme des allocations de dépasser l'effort planifié d'une tâche.
 - Dates cohérentes : actual_end >= actual_start ; planned_end >= planned_start.
 - Change approval obligatoire avant passage à IMPLEMENTING.
 - Acceptance finale impossible sans critères applicables.
@@ -82,4 +88,4 @@ trace source/target
 ## Migration
 Alembic obligatoire. Première migration crée le schéma complet.
 
-La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite. La migration `0003` ajoute les pièces jointes stockées en base avec leur taille, leur type et leur empreinte SHA-256. La migration `0004` ajoute les baselines et leurs triggers d'immuabilité. La migration `0005` enrichit chaque événement d'audit avec son objet, son origine et sa raison. Avant toute migration d'une base existante, l'application crée une sauvegarde horodatée `.pre-migration-*.bak`.
+La migration `0002` ajoute le hash et le snapshot méthodologique aux anciennes bases. Leur complétion ne peut être inférée que pour une identité/version identique à celle installée, avec audit explicite. La migration `0003` ajoute les pièces jointes stockées en base avec leur taille, leur type et leur empreinte SHA-256. La migration `0004` ajoute les baselines et leurs triggers d'immuabilité. La migration `0005` enrichit chaque événement d'audit avec son objet, son origine et sa raison. La migration `0006` ajoute les ressources, leurs disponibilités hebdomadaires et leurs allocations aux tâches. Avant toute migration d'une base existante, l'application crée une sauvegarde horodatée `.pre-migration-*.bak`.

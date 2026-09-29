@@ -53,6 +53,7 @@ from pm2.ui.pages import (
     WelcomePage,
     WorkPlanPage,
 )
+from pm2.ui.resources_page import ResourcesPage
 from pm2.ui.row_details import enable_row_details, install_row_detail_support
 from pm2.ui.tooltips import enhance_tooltips, install_tooltip_support
 from pm2.ui.wizards import PhaseAssistantPage
@@ -248,6 +249,7 @@ class MainWindow(QMainWindow):
                 PhaseAssistantPage(self.session, project, methodology, "PLANNING"),
             ),
             ("Plan de travail", WorkPlanPage(self.session, project)),
+            ("Ressources", ResourcesPage(self.session, project)),
             ("Données métier", CoreDataPage(self.session, project)),
             ("Catalogue", EntityCatalogPage(self.session, project.id)),
             (

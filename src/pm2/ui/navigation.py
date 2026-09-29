@@ -8,7 +8,15 @@ NAVIGATION_GROUPS = (
     ("Vue d’ensemble", ("Dashboard", "Projet", "Gouvernance")),
     (
         "Étapes du projet",
-        ("Lancement", "Planification", "Plan de travail", "Exécution", "Clôture", "Gates"),
+        (
+            "Lancement",
+            "Planification",
+            "Plan de travail",
+            "Ressources",
+            "Exécution",
+            "Clôture",
+            "Gates",
+        ),
     ),
     (
         "Pilotage",

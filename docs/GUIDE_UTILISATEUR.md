@@ -69,6 +69,22 @@ et caractère critique de chaque tâche. Le chemin critique est présenté sous 
 forme `T1 → T4 → D03`. Le bouton **Recalculer le planning** actualise ces résultats
 après toute modification du Work Plan.
 
+## Ressources
+
+Dans **Ressources**, créez une personne liée à la gouvernance, une équipe, un
+fournisseur externe, un équipement ou une ressource budgétaire. Chaque ressource
+possède une disponibilité hebdomadaire par défaut, qui peut être remplacée pour
+une semaine donnée.
+
+L'onglet **Affectations** répartit l'effort planifié d'une tâche entre plusieurs
+ressources, par exemple `Patrick : 8 j` et `Marie : 4 j` pour une tâche de 12 jours.
+La somme des affectations ne peut pas dépasser l'effort planifié de la tâche.
+
+L'onglet **Capacité hebdomadaire** répartit cet effort sur les jours ouvrés de la
+période planifiée, compare la charge à la capacité disponible et signale en rouge
+toute utilisation supérieure à 100 %. Les données de ressources sont également
+figées dans les baselines du projet.
+
 ## Besoins, livrables et acceptation
 
 La page **Données du projet** permet de créer :
@@ -107,7 +123,7 @@ La page **Audit Trail** consolide toutes les opérations du projet dans une time
 
 Les filtres permettent de limiter le journal à un type d'objet, un utilisateur ou une recherche libre. **Exporter le journal JSON** produit une copie exploitable contenant les mêmes métadonnées et valeurs, sans modifier l'historique en base.
 
-Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 49 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les baselines y sont en lecture seule ; les changements de statut restent exclusivement pilotés par les workflows métier.
+Le bouton **Fiche détaillée** ouvre les données, relations, validations et événements d'audit de la ligne. Le **Catalogue des entités** offre la même vue pour les 52 entités contractuelles, avec création, modification, archivage et restauration lorsque l'entité le permet. Les baselines y sont en lecture seule ; les changements de statut restent exclusivement pilotés par les workflows métier.
 
 ## Centre de conformité PM²
 

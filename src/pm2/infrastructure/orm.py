@@ -84,6 +84,7 @@ class ProjectModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
     wbs_nodes: Mapped[list[WbsNodeModel]] = relationship(back_populates="project")
     deliverables: Mapped[list[DeliverableModel]] = relationship(back_populates="project")
     requirements: Mapped[list[RequirementModel]] = relationship(back_populates="project")
+    resources: Mapped[list[ResourceModel]] = relationship(back_populates="project")
 
     __table_args__ = (
         CheckConstraint("approved_budget >= 0", name="ck_project_budget_nonnegative"),
@@ -217,6 +218,9 @@ class TaskModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
     actual_cost: Mapped[Decimal] = mapped_column(Numeric(16, 2), default=0)
     progress_percent: Mapped[int] = mapped_column(Integer, default=0)
     wbs_node: Mapped[WbsNodeModel] = relationship(back_populates="task")
+    resource_allocations: Mapped[list[TaskResourceAllocationModel]] = relationship(
+        back_populates="task", cascade="all, delete-orphan"
+    )
     __table_args__ = (
         CheckConstraint("progress_percent BETWEEN 0 AND 100", name="ck_task_progress"),
         CheckConstraint(
@@ -239,6 +243,73 @@ class TaskDependencyModel(Base, UUIDMixin):
     __table_args__ = (
         UniqueConstraint("predecessor_task_id", "successor_task_id"),
         CheckConstraint("predecessor_task_id != successor_task_id", name="ck_task_dependency_self"),
+    )
+
+
+class ResourceModel(Base, UUIDMixin, TimestampMixin, ArchiveMixin):
+    __tablename__ = "resources"
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    person_id: Mapped[str | None] = mapped_column(ForeignKey("persons.id"), index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    resource_type: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    description: Mapped[str] = mapped_column(Text, default="")
+    default_availability_percent: Mapped[Decimal] = mapped_column(
+        Numeric(5, 2), default=100
+    )
+    project: Mapped[ProjectModel] = relationship(back_populates="resources")
+    person: Mapped[PersonModel | None] = relationship()
+    availabilities: Mapped[list[ResourceAvailabilityModel]] = relationship(
+        back_populates="resource", cascade="all, delete-orphan"
+    )
+    task_allocations: Mapped[list[TaskResourceAllocationModel]] = relationship(
+        back_populates="resource", cascade="all, delete-orphan"
+    )
+    __table_args__ = (
+        UniqueConstraint("project_id", "name", "resource_type"),
+        CheckConstraint(
+            "resource_type IN ('PERSON','TEAM','SUPPLIER','EQUIPMENT','BUDGET')",
+            name="ck_resource_type",
+        ),
+        CheckConstraint(
+            "default_availability_percent BETWEEN 0 AND 100",
+            name="ck_resource_default_availability",
+        ),
+    )
+
+
+class ResourceAvailabilityModel(Base, UUIDMixin):
+    __tablename__ = "resource_availabilities"
+    resource_id: Mapped[str] = mapped_column(
+        ForeignKey("resources.id", ondelete="CASCADE"), index=True
+    )
+    week_start: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    availability_percent: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False)
+    resource: Mapped[ResourceModel] = relationship(back_populates="availabilities")
+    __table_args__ = (
+        UniqueConstraint("resource_id", "week_start"),
+        CheckConstraint(
+            "availability_percent BETWEEN 0 AND 100",
+            name="ck_resource_week_availability",
+        ),
+    )
+
+
+class TaskResourceAllocationModel(Base, UUIDMixin, TimestampMixin):
+    __tablename__ = "task_resource_allocations"
+    task_id: Mapped[str] = mapped_column(
+        ForeignKey("tasks.id", ondelete="CASCADE"), index=True
+    )
+    resource_id: Mapped[str] = mapped_column(
+        ForeignKey("resources.id", ondelete="CASCADE"), index=True
+    )
+    effort_days: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    task: Mapped[TaskModel] = relationship(back_populates="resource_allocations")
+    resource: Mapped[ResourceModel] = relationship(back_populates="task_allocations")
+    __table_args__ = (
+        UniqueConstraint("task_id", "resource_id"),
+        CheckConstraint("effort_days > 0", name="ck_task_resource_effort_positive"),
     )
 
 

@@ -34,11 +34,14 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
   archivage, tâches, jalons, dates, effort, coût et avancement ;
 - moteur de planning CPM avec dépendances FS/SS/FF/SF, lag/lead, dates au plus
   tôt et au plus tard, marge totale et chemins critiques ;
+- gestion des personnes, équipes, fournisseurs, équipements et ressources
+  budgétaires avec disponibilités hebdomadaires, allocations aux tâches et
+  alertes de surcharge ;
 - exigences, livrables, critères/tests d'acceptation et liens de traçabilité ;
 - registres des risques, problèmes, décisions et modifications avec workflows contrôlés ;
 - qualité, transition, mise en œuvre organisationnelle et réunions ;
 - Centre de conformité PM² avec scores par phase, readiness des gates et corrections guidées ;
-- catalogue détaillé des 49 entités avec CRUD, relations, validation et audit ;
+- catalogue détaillé des 52 entités avec CRUD, relations, validation et audit ;
 - pièces jointes intégrées au projet, contrôlées par SHA-256 et conservées dans la base ;
 - exécution des tests d'acceptation et acceptation finale contrôlée depuis l'interface ;
 - 21 artefacts spécialisés, avec saisie structurée, aperçu, versions et exports Markdown,
@@ -133,7 +136,7 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **135 tests automatisés** et **82,33 % de
+La branche courante est validée avec **146 tests automatisés** et **82,35 % de
 couverture**, ainsi que Ruff, mypy sur toutes les couches et un audit des
 dépendances d'exécution. La suite couvre les parcours Qt du
 [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les

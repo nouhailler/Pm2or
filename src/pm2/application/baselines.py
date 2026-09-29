@@ -19,9 +19,12 @@ from pm2.infrastructure.orm import (
     DocumentVersionModel,
     ProjectModel,
     RequirementModel,
+    ResourceAvailabilityModel,
+    ResourceModel,
     RiskModel,
     SettingModel,
     TaskModel,
+    TaskResourceAllocationModel,
     WbsNodeModel,
 )
 
@@ -148,6 +151,30 @@ class BaselineService:
             }
             for node in wbs_nodes
         }
+        resources = self.session.scalars(
+            select(ResourceModel)
+            .where(ResourceModel.project_id == project_id)
+            .order_by(ResourceModel.resource_type, ResourceModel.name)
+        ).all()
+        resource_ids = [resource.id for resource in resources]
+        availabilities = (
+            self.session.scalars(
+                select(ResourceAvailabilityModel).where(
+                    ResourceAvailabilityModel.resource_id.in_(resource_ids)
+                )
+            ).all()
+            if resource_ids
+            else []
+        )
+        allocations = (
+            self.session.scalars(
+                select(TaskResourceAllocationModel).where(
+                    TaskResourceAllocationModel.resource_id.in_(resource_ids)
+                )
+            ).all()
+            if resource_ids
+            else []
+        )
         payload = {
             "format": "pm2-desktop-baseline",
             "format_version": "1.0",
@@ -159,6 +186,20 @@ class BaselineService:
                 "actual_cost": str(sum((task.actual_cost for task in tasks), Decimal("0"))),
             },
             "work_plan": work_plan,
+            "resources": {
+                f"{resource.resource_type}:{resource.name}": {
+                    **_row(resource),
+                    "availability": [
+                        _row(item)
+                        for item in availabilities
+                        if item.resource_id == resource.id
+                    ],
+                    "task_allocations": [
+                        _row(item) for item in allocations if item.resource_id == resource.id
+                    ],
+                }
+                for resource in resources
+            },
             "milestones": {
                 node.code: work_plan[node.code]
                 for node in wbs_nodes

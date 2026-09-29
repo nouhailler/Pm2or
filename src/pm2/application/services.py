@@ -61,4 +61,5 @@ from pm2.application.registers import (
 from pm2.application.registers import (
     WorkflowService as WorkflowService,
 )
+from pm2.application.resources import ResourceService as ResourceService
 from pm2.application.traceability import TraceabilityService as TraceabilityService

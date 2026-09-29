@@ -34,7 +34,8 @@ Pour une nouvelle migration, modifiez d'abord les modèles, ajoutez une révisio
 
 - `ProjectService`, `GovernanceService`, `ResponsibilityService` ;
 - `GateService`, `WorkflowService`, `ValidationService` ;
-- `WorkPlanService`, `RequirementService`, `DeliverableService`, `AcceptanceService` ;
+- `WorkPlanService`, `ResourceService`, `RequirementService`, `DeliverableService`,
+  `AcceptanceService` ;
 - `RiskService`, `IssueService`, `DecisionService`, `ChangeService` ;
 - `QualityService`, `TransitionService`, `MeetingService` ;
 - `TraceabilityService`, `DocumentService`, `ArtifactDataService`, `EntityCrudService`,

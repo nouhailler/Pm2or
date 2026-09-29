@@ -351,6 +351,15 @@ class WorkPlanPage(Page):
                     "Relations / Traçabilité disponibles dans la page dédiée.",
                 ]
             )
+            if task.resource_allocations:
+                lines.extend(["", "Ressources affectées :"])
+                lines.extend(
+                    f"• {allocation.resource.name} : {allocation.effort_days} j"
+                    for allocation in sorted(
+                        task.resource_allocations,
+                        key=lambda item: item.resource.name,
+                    )
+                )
         self.details.setPlainText("\n".join(lines))
 
     def reload(self, select_id: str | None = None) -> None:

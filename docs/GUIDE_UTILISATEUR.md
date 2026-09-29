@@ -58,7 +58,16 @@ Dans **Gouvernance**, ajoutez les membres de l'équipe et choisissez leur rôle 
 
 Dans **Plan de travail**, créez un lot, une tâche ou un jalon. Sélectionner un élément avant la création le désigne comme parent. Les tâches enregistrent dates, effort, coût et progression ; les jalons utilisent une date unique. Les commandes permettent de renommer, monter, descendre, indenter, désindenter et archiver les éléments.
 
-Les dépendances peuvent être ajoutées ou retirées dans la même vue. Elles sont contrôlées par le service de planification, qui interdit l'auto-dépendance, les liens entre projets et les cycles.
+Les dépendances peuvent être ajoutées ou retirées dans la même vue. Choisissez
+leur type (`FS`, `SS`, `FF` ou `SF`) et un décalage en jours : une valeur positive
+est un retard (*lag*), une valeur négative une avance (*lead*). Le service de
+planification interdit l'auto-dépendance, les liens entre projets et les cycles.
+
+La section **Calcul CPM · chemin critique** calcule sans modifier les dates
+enregistrées : début et fin au plus tôt, début et fin au plus tard, marge totale
+et caractère critique de chaque tâche. Le chemin critique est présenté sous la
+forme `T1 → T4 → D03`. Le bouton **Recalculer le planning** actualise ces résultats
+après toute modification du Work Plan.
 
 ## Besoins, livrables et acceptation
 

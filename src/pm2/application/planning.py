@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from datetime import date
+from dataclasses import dataclass
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -11,6 +12,7 @@ from pm2.application.audit import AuditService
 from pm2.application.traceability import TraceabilityService as TraceabilityService
 from pm2.infrastructure.orm import (
     DeliverableModel,
+    ProjectModel,
     RequirementDeliverableModel,
     RequirementModel,
     RequirementTaskModel,
@@ -20,6 +22,29 @@ from pm2.infrastructure.orm import (
     row_to_dict,
 )
 from pm2.infrastructure.repositories import Repository
+
+
+@dataclass(frozen=True, slots=True)
+class TaskSchedule:
+    task_id: str
+    code: str
+    name: str
+    duration_days: int
+    early_start: date
+    early_finish: date
+    late_start: date
+    late_finish: date
+    total_float_days: int
+    critical: bool
+
+
+@dataclass(frozen=True, slots=True)
+class ScheduleResult:
+    project_start: date
+    project_finish: date
+    duration_days: int
+    tasks: tuple[TaskSchedule, ...]
+    critical_paths: tuple[tuple[str, ...], ...]
 
 
 class WorkPlanService:
@@ -251,6 +276,206 @@ class WorkPlanService:
         )
         return dependency
 
+    def calculate_schedule(
+        self, project_id: str, *, project_start: date | None = None
+    ) -> ScheduleResult:
+        """Calculate a deterministic calendar-day CPM schedule without changing saved dates."""
+        project = Repository(self.session, ProjectModel).require(project_id)
+        tasks = list(
+            self.session.scalars(
+                select(TaskModel)
+                .join(WbsNodeModel)
+                .where(
+                    WbsNodeModel.project_id == project_id,
+                    WbsNodeModel.archived.is_(False),
+                    TaskModel.archived.is_(False),
+                )
+                .order_by(WbsNodeModel.code)
+            ).all()
+        )
+        base_date = project_start or project.start_date or min(
+            (task.planned_start for task in tasks if task.planned_start),
+            default=date.today(),
+        )
+        if not tasks:
+            return ScheduleResult(base_date, base_date, 0, (), ())
+
+        task_by_id = {task.id: task for task in tasks}
+        durations = {
+            task.id: self._duration_days(task)
+            for task in tasks
+        }
+        dependencies = list(
+            self.session.scalars(
+                select(TaskDependencyModel).where(
+                    TaskDependencyModel.predecessor_task_id.in_(task_by_id),
+                    TaskDependencyModel.successor_task_id.in_(task_by_id),
+                )
+            ).all()
+        )
+        successors: dict[str, list[tuple[str, int]]] = {task.id: [] for task in tasks}
+        predecessors: dict[str, list[tuple[str, int]]] = {task.id: [] for task in tasks}
+        indegree = {task.id: 0 for task in tasks}
+        for dependency in dependencies:
+            predecessor_id = dependency.predecessor_task_id
+            successor_id = dependency.successor_task_id
+            weight = self._dependency_weight(
+                dependency.dependency_type,
+                durations[predecessor_id],
+                durations[successor_id],
+                dependency.lag_days,
+            )
+            successors[predecessor_id].append((successor_id, weight))
+            predecessors[successor_id].append((predecessor_id, weight))
+            indegree[successor_id] += 1
+
+        codes = {task.id: task.wbs_node.code for task in tasks}
+        ready = sorted(
+            (task_id for task_id, value in indegree.items() if value == 0),
+            key=lambda task_id: codes[task_id],
+        )
+        topological: list[str] = []
+        while ready:
+            current = ready.pop(0)
+            topological.append(current)
+            for successor_id, _weight in successors[current]:
+                indegree[successor_id] -= 1
+                if indegree[successor_id] == 0:
+                    ready.append(successor_id)
+                    ready.sort(key=lambda task_id: codes[task_id])
+        if len(topological) != len(tasks):
+            raise ValueError("Le réseau de dépendances contient un cycle.")
+
+        early_starts = {task.id: 0 for task in tasks}
+        for task_id in topological:
+            if predecessors[task_id]:
+                early_starts[task_id] = max(
+                    0,
+                    max(
+                        early_starts[predecessor_id] + weight
+                        for predecessor_id, weight in predecessors[task_id]
+                    ),
+                )
+        project_duration = max(
+            early_starts[task.id] + durations[task.id] for task in tasks
+        )
+        late_starts = {
+            task.id: project_duration - durations[task.id]
+            for task in tasks
+        }
+        for task_id in reversed(topological):
+            if successors[task_id]:
+                late_starts[task_id] = min(
+                    late_starts[task_id],
+                    min(
+                        late_starts[successor_id] - weight
+                        for successor_id, weight in successors[task_id]
+                    ),
+                )
+
+        schedules: list[TaskSchedule] = []
+        for task_id in topological:
+            task = task_by_id[task_id]
+            duration = durations[task_id]
+            early_start_offset = early_starts[task_id]
+            late_start_offset = late_starts[task_id]
+            total_float = late_start_offset - early_start_offset
+            schedules.append(
+                TaskSchedule(
+                    task_id=task_id,
+                    code=task.wbs_node.code,
+                    name=task.wbs_node.name,
+                    duration_days=duration,
+                    early_start=base_date + timedelta(days=early_start_offset),
+                    early_finish=self._finish_date(base_date, early_start_offset, duration),
+                    late_start=base_date + timedelta(days=late_start_offset),
+                    late_finish=self._finish_date(base_date, late_start_offset, duration),
+                    total_float_days=total_float,
+                    critical=total_float == 0,
+                )
+            )
+
+        critical_ids = {
+            schedule.task_id for schedule in schedules if schedule.critical
+        }
+        critical_successors: dict[str, list[str]] = {task_id: [] for task_id in critical_ids}
+        critical_incoming: set[str] = set()
+        for predecessor_id in critical_ids:
+            for successor_id, weight in successors[predecessor_id]:
+                if (
+                    successor_id in critical_ids
+                    and early_starts[successor_id] == early_starts[predecessor_id] + weight
+                ):
+                    critical_successors[predecessor_id].append(successor_id)
+                    critical_incoming.add(successor_id)
+        critical_paths: list[tuple[str, ...]] = []
+        roots = sorted(critical_ids - critical_incoming, key=lambda task_id: codes[task_id])
+        for root in roots:
+            self._collect_critical_paths(
+                root, critical_successors, codes, (codes[root],), critical_paths
+            )
+
+        project_finish = self._finish_date(base_date, 0, project_duration)
+        return ScheduleResult(
+            project_start=base_date,
+            project_finish=project_finish,
+            duration_days=project_duration,
+            tasks=tuple(schedules),
+            critical_paths=tuple(critical_paths),
+        )
+
+    @staticmethod
+    def _duration_days(task: TaskModel) -> int:
+        if task.wbs_node.node_type == "milestone":
+            return 0
+        if task.planned_start and task.planned_end:
+            return max(1, (task.planned_end - task.planned_start).days + 1)
+        return 1
+
+    @staticmethod
+    def _dependency_weight(
+        dependency_type: str,
+        predecessor_duration: int,
+        successor_duration: int,
+        lag_days: int,
+    ) -> int:
+        weights = {
+            "FS": predecessor_duration + lag_days,
+            "SS": lag_days,
+            "FF": predecessor_duration + lag_days - successor_duration,
+            "SF": lag_days - successor_duration,
+        }
+        try:
+            return weights[dependency_type]
+        except KeyError as exc:
+            raise ValueError(f"Type de dépendance inconnu : {dependency_type}") from exc
+
+    @staticmethod
+    def _finish_date(base_date: date, start_offset: int, duration: int) -> date:
+        return base_date + timedelta(days=start_offset + max(0, duration - 1))
+
+    @classmethod
+    def _collect_critical_paths(
+        cls,
+        task_id: str,
+        successors: dict[str, list[str]],
+        codes: dict[str, str],
+        path: tuple[str, ...],
+        result: list[tuple[str, ...]],
+    ) -> None:
+        next_tasks = sorted(successors[task_id], key=lambda next_id: codes[next_id])
+        if not next_tasks:
+            result.append(path)
+            return
+        for successor_id in next_tasks:
+            cls._collect_critical_paths(
+                successor_id,
+                successors,
+                codes,
+                (*path, codes[successor_id]),
+                result,
+            )
+
     def _reachable(self, start: str, target: str) -> bool:
         seen: set[str] = set()
         frontier = [start]
@@ -354,5 +579,3 @@ class DeliverableService:
             project_id, "deliverable", deliverable.id, "CREATE", new=row_to_dict(deliverable)
         )
         return deliverable
-
-

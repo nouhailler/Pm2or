@@ -1,5 +1,13 @@
 # Historique des changements
 
+## À venir
+
+- Ajout d'un moteur de planification CPM au Work Plan : relations FS, SS, FF et
+  SF, décalages positifs (lag) ou négatifs (lead), calcul des dates au plus tôt
+  et au plus tard, marge totale et chemins critiques.
+- Ajout d'une vue de calcul dédiée dans l'interface, avec mise en évidence des
+  tâches critiques et saisie du décalage lors de la création d'une dépendance.
+
 ## 0.1.7 — 27 septembre 2026
 
 - Transformation du Dashboard en cockpit quotidien avec avancement, budget,

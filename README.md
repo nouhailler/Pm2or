@@ -31,7 +31,9 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 - gates RfP, RfE et RfC avec checklists issues de la configuration méthodologique ;
 - gouvernance, personnes, rôles PM², parties prenantes et matrice RCmSCI ;
 - WBS arborescente avec déplacement, réordonnancement, indentation/désindentation,
-  archivage, tâches, jalons, dates, effort, coût, avancement et dépendances ;
+  archivage, tâches, jalons, dates, effort, coût et avancement ;
+- moteur de planning CPM avec dépendances FS/SS/FF/SF, lag/lead, dates au plus
+  tôt et au plus tard, marge totale et chemins critiques ;
 - exigences, livrables, critères/tests d'acceptation et liens de traçabilité ;
 - registres des risques, problèmes, décisions et modifications avec workflows contrôlés ;
 - qualité, transition, mise en œuvre organisationnelle et réunions ;
@@ -131,7 +133,13 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **111 tests automatisés**, ainsi que Ruff, mypy sur toutes les couches et un audit des dépendances d'exécution. La suite couvre les parcours Qt du [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les archives et leurs fichiers annexes, les pièces jointes, le diagnostic anonymisé, les scénarios de gel méthodologique, les infobulles et les fiches détaillées des tableaux.
+La branche courante est validée avec **135 tests automatisés** et **82,33 % de
+couverture**, ainsi que Ruff, mypy sur toutes les couches et un audit des
+dépendances d'exécution. La suite couvre les parcours Qt du
+[plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les
+archives et leurs fichiers annexes, les pièces jointes, le diagnostic anonymisé,
+le moteur CPM, les scénarios de gel méthodologique, les infobulles et les fiches
+détaillées des tableaux.
 
 ```bash
 QT_QPA_PLATFORM=offscreen .venv/bin/pytest --cov=pm2 --cov-report=term-missing

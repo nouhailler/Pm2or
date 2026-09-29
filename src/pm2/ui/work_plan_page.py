@@ -117,6 +117,42 @@ class WorkPlanPage(Page):
         gantt_layout.addWidget(QLabel("Dépendances"))
         gantt_layout.addWidget(self.dependencies)
         layout.addWidget(gantt_group)
+        schedule_group = QGroupBox("Calcul CPM · chemin critique")
+        schedule_layout = QVBoxLayout(schedule_group)
+        schedule_actions = QHBoxLayout()
+        recalculate_button = QPushButton("Recalculer le planning")
+        recalculate_button.setToolTip(
+            "Recalculer les dates au plus tôt/au plus tard, les marges et le chemin critique"
+        )
+        recalculate_button.clicked.connect(lambda: self.reload())
+        schedule_actions.addWidget(recalculate_button)
+        schedule_actions.addStretch()
+        schedule_layout.addLayout(schedule_actions)
+        self.schedule_summary = QLabel()
+        self.schedule_summary.setWordWrap(True)
+        schedule_layout.addWidget(self.schedule_summary)
+        self.critical_path = QLabel()
+        self.critical_path.setWordWrap(True)
+        self.critical_path.setObjectName("sectionTitle")
+        schedule_layout.addWidget(self.critical_path)
+        self.schedule = QTableWidget(0, 8)
+        self.schedule.setHorizontalHeaderLabels(
+            [
+                "Tâche",
+                "Durée",
+                "Début +tôt",
+                "Fin +tôt",
+                "Début +tard",
+                "Fin +tard",
+                "Marge",
+                "Critique",
+            ]
+        )
+        self.schedule.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.schedule.setMaximumHeight(260)
+        self.schedule.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        schedule_layout.addWidget(self.schedule)
+        layout.addWidget(schedule_group)
         self.reload()
 
     def _selected_node(self) -> WbsNodeModel | None:
@@ -223,10 +259,21 @@ class WorkPlanPage(Page):
         )
         if not ok:
             return
+        lag_days, ok = QInputDialog.getInt(
+            self,
+            "Nouvelle dépendance",
+            "Décalage en jours (valeur négative = avance / lead)",
+            0,
+            -3650,
+            3650,
+            1,
+        )
+        if not ok:
+            return
         predecessor = candidates[labels.index(selected)]
         try:
             WorkPlanService(self.session).add_dependency(
-                predecessor.id, successor_node.task.id, dependency_type
+                predecessor.id, successor_node.task.id, dependency_type, lag_days
             )
             self.session.commit()
             self.reload(select_id=successor_node.id)
@@ -379,13 +426,51 @@ class WorkPlanPage(Page):
                 f"{predecessor.code} — {predecessor.name}",
                 dependency.dependency_type,
                 f"{successor.code} — {successor.name}",
-                f"{dependency.lag_days} j",
+                self._lag_label(dependency.lag_days),
             )
             for column, value in enumerate(dependency_values):
                 dependency_table_item = QTableWidgetItem(value)
                 if column == 0:
                     dependency_table_item.setData(Qt.ItemDataRole.UserRole, dependency.id)
                 self.dependencies.setItem(row, column, dependency_table_item)
+        calculation = WorkPlanService(self.session).calculate_schedule(self.project.id)
+        if calculation.tasks:
+            self.schedule_summary.setText(
+                f"Horizon calculé : {calculation.project_start} → "
+                f"{calculation.project_finish} · {calculation.duration_days} jours calendaires"
+            )
+            paths = [" → ".join(path) for path in calculation.critical_paths]
+            self.critical_path.setText(
+                "CHEMIN CRITIQUE\n" + ("\n".join(paths) if paths else "Aucun")
+            )
+        else:
+            self.schedule_summary.setText("Aucune tâche à planifier.")
+            self.critical_path.setText("CHEMIN CRITIQUE\n—")
+        self.schedule.setRowCount(len(calculation.tasks))
+        for row, task_schedule in enumerate(calculation.tasks):
+            values = (
+                f"{task_schedule.code} — {task_schedule.name}",
+                f"{task_schedule.duration_days} j",
+                str(task_schedule.early_start),
+                str(task_schedule.early_finish),
+                str(task_schedule.late_start),
+                str(task_schedule.late_finish),
+                f"{task_schedule.total_float_days} j",
+                "OUI" if task_schedule.critical else "Non",
+            )
+            for column, value in enumerate(values):
+                schedule_item = QTableWidgetItem(value)
+                if task_schedule.critical:
+                    schedule_item.setBackground(QColor("#ffe4e0"))
+                    schedule_item.setForeground(QColor("#8c1d18"))
+                self.schedule.setItem(row, column, schedule_item)
         if select_id and select_id in items:
             self.tree.setCurrentItem(items[select_id])
 
+    @staticmethod
+    def _lag_label(lag_days: int) -> str:
+        if lag_days > 0:
+            return f"+{lag_days} j (lag)"
+        if lag_days < 0:
+            return f"{lag_days} j (lead)"
+        return "0 j"

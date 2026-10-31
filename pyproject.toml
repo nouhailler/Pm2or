@@ -44,6 +44,7 @@ packages = ["src/pm2"]
 "04_PM2_METHODOLOGY.yaml" = "pm2/resources/PM2_METHODOLOGY.yaml"
 "templates" = "pm2/templates"
 "migrations" = "pm2/migrations"
+"src/pm2/assets" = "pm2/assets"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

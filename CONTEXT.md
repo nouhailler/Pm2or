@@ -1,22 +1,26 @@
 # Contexte du projet PM² Desktop
 
-Dernière mise à jour : **27 septembre 2026**.
+Dernière mise à jour : **31 octobre 2026**.
 
-## Point de reprise : 15 septembre 2026
+## Point de reprise
 
-L’utilisateur a testé et apprécié le parcours graphique et la navigation par tiroirs.
-La prochaine priorité est de travailler en profondeur sur les données du projet
-**Les Colibris**, pour fournir un vrai projet de démonstration clé en main montrant
-le fonctionnement de l’outil. Ce chantier est prévu pour demain, le **15 septembre 2026** ;
-il n’a pas encore commencé. Reprendre sur ce sujet avant de proposer d’autres fonctionnalités.
+La release publiée reste la **0.1.7**. La branche `main` contient désormais les
+fonctions prévues pour la prochaine version : moteur CPM, gestion des ressources,
+graphe de traçabilité, nouvelle expérience d'accueil et système de mises à jour.
+Avant publication, reconstruire et tester le bundle PyInstaller et le paquet Debian,
+puis préparer les notes et le numéro de la prochaine release.
 
-Le résultat attendu dépasse un simple jeu de données : un scénario compréhensible,
-des informations métier cohérentes, des documents exploitables et un déroulé guidé
-permettant de démontrer les écrans, les décisions et les transitions du projet.
+Le nouveau parcours utilisateur comprend un menu hamburger, cinq catégories métier,
+un onboarding légal obligatoire, une aide contextuelle à la première visite et des
+infobulles sur les champs et les actions. Les paramètres système exposent la date de
+sortie et la dernière vérification, déclenchent un contrôle manuel et configurent la
+recherche périodique de releases. L'installation automatique reste volontaire : elle
+exige le SHA-256 fourni par GitHub et passe par l'autorisation système Linux.
 
 ## État livré
 
 - Version publiée : **0.1.7**, sur `main`, tag `v0.1.7`.
+- État de développement : changements non encore publiés destinés à la prochaine release.
 - Dépôt : <https://github.com/nouhailler/Pm2or>.
 - Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.7>.
 - Correctif de démarrage : PyInstaller embarque désormais
@@ -26,15 +30,21 @@ permettant de démontrer les écrans, les décisions et les transitions du proje
 - La revue RfC se trouve dans l’assistant d’exécution, avant la clôture.
 - Navigation : cinq catégories repliables — Vue d’ensemble, Étapes du projet, Pilotage,
   Données et documents, Outils avancés. Une destination ouverte par un raccourci
-  déplie automatiquement son tiroir ; replier un titre ne change pas l’écran affiché.
+  déplie automatiquement son tiroir ; le bouton `☰` masque ou affiche l'ensemble.
+- Paramètres système : version et date de sortie, dernière vérification, recherche
+  manuelle ou périodique, installation optionnelle et création d'un raccourci desktop.
+- Onboarding : mentions légales sur la responsabilité des données, visite guidée,
+  aides contextuelles par écran et nouveau logo intégré à l'application et au paquet.
 - Aide contextuelle : infobulles sur les menus, boutons, onglets, formulaires, listes et
   tableaux, y compris les composants créés dynamiquement ; descriptions accessibles associées.
 - Détail des tableaux : double-clic ou touche Entrée sur une ligne pour afficher toutes ses
   valeurs ; fenêtre enrichie pour les documents avec objectif et rendu complet.
 - Exemple documentaire : les 21 artefacts PM² de l’archive Les Colibris contiennent désormais
   178 champs illustratifs renseignés.
-- Validation de la 0.1.7 : **127 tests**, couverture lignes/branches de **81,93 %**,
+- Validation publiée de la 0.1.7 : **127 tests**, couverture lignes/branches de **81,93 %**,
   Ruff, mypy sur toute l'interface, audit des dépendances et SBOM CycloneDX.
+- Validation de la branche courante : **155 tests**, couverture de **82,29 %**,
+  Ruff et mypy sans erreur.
 
 Les releases 0.1.2 à 0.1.7 incluent le `.deb` et un fichier d'empreintes SHA-256.
 Les versions de formation incluent aussi `portail-association.pm2` et `EXERCICES.md`.
@@ -67,7 +77,7 @@ Un exemplaire a également été ajouté dans la base locale habituelle
 `~/.local/share/pm2-desktop/project.db`. L’utilisateur peut avoir modifié cette copie
 pendant son entraînement : utiliser une base dédiée pour préparer le nouveau cas.
 
-## Travail à mener demain
+## Backlog du projet de démonstration
 
 1. Définir le fil de la démonstration : quels écrans montrer, dans quel ordre,
    quelles décisions faire prendre, et quelle histoire raconter autour du portail.
@@ -86,7 +96,7 @@ pendant son entraînement : utiliser une base dédiée pour préparer le nouveau
 8. Réviser le guide de démonstration et vérifier le parcours dans l’application installée,
    de l’ouverture de l’archive à l’export et à la réouverture.
 
-À discuter au début du chantier : conserver un cas unique progressif ou fournir
+À décider au début de ce chantier : conserver un cas unique progressif ou fournir
 plusieurs archives correspondant aux étapes du même projet. Distinguer clairement
 le support d’entraînement, qui laisse des actions à réaliser, du cas de démonstration
 préparé pour montrer des situations et des résultats.

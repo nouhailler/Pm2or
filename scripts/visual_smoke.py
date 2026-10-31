@@ -25,6 +25,7 @@ from pm2.application.services import (
     RegisterService,
     WorkPlanService,
 )
+from pm2.application.system_settings import SystemSettingsStore
 from pm2.config import AppPaths
 from pm2.infrastructure.orm import RiskModel
 from pm2.ui.crud import EntityCatalogPage
@@ -193,6 +194,9 @@ def main() -> int:
     seed(context, output)
     app = QApplication.instance() or QApplication([])
     paths = AppPaths(output, database, output / "visual-qa.log", output / "recent.json")
+    system_settings = SystemSettingsStore(output / "system-settings.json")
+    system_settings.value.legal_accepted_version = "1"
+    system_settings.save()
     window = MainWindow(context, paths)
     window.resize(1500, 950)
     window.show()

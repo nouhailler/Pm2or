@@ -36,16 +36,14 @@ def main() -> None:
                 "Comment=Gestion de projets PM² hors ligne\nExec=pm2-desktop\n"
                 "Icon=pm2-desktop\nTerminal=false\nCategories=Office;ProjectManagement;\n"
             ),
-            "usr/share/icons/hicolor/scalable/apps/pm2-desktop.svg": (
-                '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'
-                '<rect width="128" height="128" rx="24" fill="#18324a"/>'
-                '<text x="64" y="82" text-anchor="middle" font-family="sans-serif" font-size="49" fill="white">PM²</text></svg>\n'
-            ),
         }
         for relative, content in files.items():
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(content, encoding="utf-8")
+        icon_target = staging / "usr/share/icons/hicolor/512x512/apps/pm2-desktop.png"
+        icon_target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(root / "src/pm2/assets/pm2-desktop-logo.png", icon_target)
         (staging / "usr/bin/pm2-desktop").chmod(0o755)
         subprocess.run(
             ["dpkg-deb", "--root-owner-group", "--build", str(staging), str(destination)],

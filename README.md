@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="src/pm2/assets/pm2-desktop-logo.png" width="150" alt="Logo PM² Desktop">
+</p>
+
 # 🧭 PM² Desktop 0.1.7
 
 **Pilotez vos projets PM², du lancement à la clôture, dans une application locale en français.**
@@ -6,7 +10,8 @@
 ![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
 ![PySide6](https://img.shields.io/badge/interface-PySide6-41CD52?logo=qt&logoColor=white)
 ![SQLite](https://img.shields.io/badge/stockage-SQLite-003B57?logo=sqlite&logoColor=white)
-![Hors ligne](https://img.shields.io/badge/fonctionnement-hors_ligne-2E7D32)
+![Hors ligne](https://img.shields.io/badge/projets-hors_ligne-2E7D32)
+![Couverture](https://img.shields.io/badge/couverture-%E2%89%A580%25-7A4EA3)
 
 PM² Desktop est une application de gestion de projets locale, en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Elle utilise PySide6/Qt6, SQLAlchemy 2 et SQLite et ne requiert aucun serveur ni accès Internet à l'exécution.
 
@@ -14,14 +19,24 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 
 **[📦 Télécharger le .deb](https://github.com/nouhailler/Pm2or/releases/download/v0.1.7/pm2-desktop_0.1.7_amd64.deb)** · **[📖 Guide utilisateur](docs/GUIDE_UTILISATEUR.md)** · **[📝 Notes de version](docs/RELEASE_0.1.7.md)**
 
+![PM² Desktop — cockpit projet, menu hamburger et aide contextuelle](docs/images/pm2-desktop-dashboard.png)
+
+> 💡 **Conçu pour être pris en main sans formation préalable.** Le menu `☰`
+> regroupe les fonctions par métier, l'aide contextuelle présente chaque écran et
+> les infobulles expliquent les champs et les actions.
+
 ## ✨ Fonctions disponibles
 
 - infobulles explicatives et accessibles sur les menus, boutons, onglets, champs,
   listes et tableaux, y compris dans les fenêtres créées dynamiquement ;
+- onboarding initial avec mentions légales, guide contextuel à la première visite de
+  chaque écran et possibilité de revoir le parcours depuis le menu **Aide** ;
 - fiches détaillées accessibles par double-clic ou touche Entrée sur toutes les lignes de
   tableaux, avec une présentation enrichie pour les documents et artefacts ;
-- navigation par cinq tiroirs repliables : Vue d’ensemble, Étapes du projet, Pilotage,
-  Données et documents, Outils avancés ; ouverture automatique du tiroir de l’écran demandé ;
+- menu hamburger et navigation par cinq catégories repliables : Vue d’ensemble,
+  Étapes du projet, Pilotage, Données et documents, Outils avancés ;
+- paramètres système indiquant la version, sa date de sortie et la dernière vérification,
+  avec contrôle manuel ou périodique des nouvelles versions ;
 - cockpit projet quotidien : avancement, consommation budgétaire, dérive d'échéance,
   registres actifs, santé par domaine et prochaines actions cliquables ;
 - parcours graphique sur le tableau de bord : position réelle du projet, phases cliquables,
@@ -60,6 +75,11 @@ pm2-desktop
 
 Un lanceur avec icône est installé dans le menu des applications. Python est embarqué dans le paquet.
 
+Le bouton **Installer l'application**, disponible sur l'accueil et dans les paramètres
+système, crée également un raccourci avec le logo dans le menu du bureau Linux. Cette
+version est une application desktop ; aucun paquet Android ou iOS signé n'est fourni à
+ce stade.
+
 > ℹ️ Le paquet nécessite glibc 2.41 ou ultérieure. La compatibilité avec Debian 12 et Ubuntu 24.04 n’est pas assurée.
 
 Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.7](https://github.com/nouhailler/Pm2or/releases/download/v0.1.7/SHA256SUMS-0.1.7) à côté du `.deb` :
@@ -67,6 +87,18 @@ Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.7](https:/
 ```bash
 sha256sum -c SHA256SUMS-0.1.7
 ```
+
+### 🔄 Mises à jour
+
+Les **Paramètres système** affichent la date de sortie et la date de la dernière
+vérification. La recherche de mises à jour s'effectue en arrière-plan à intervalle
+régulier et peut être désactivée. Elle contacte uniquement l'API des releases GitHub ;
+les données des projets ne sont jamais envoyées.
+
+L'installation automatique est un choix explicite de l'utilisateur. Le paquet Debian
+n'est lancé qu'après vérification de l'empreinte SHA-256 publiée par GitHub, puis Linux
+peut demander une autorisation administrateur via sa boîte de dialogue système. En
+l'absence d'empreinte, l'installation automatique est refusée.
 
 ## 🛠️ Installation développeur
 
@@ -119,16 +151,13 @@ Un [projet fictif d’entraînement](examples/portail-association.pm2) et son
 [parcours d’exercices](examples/EXERCICES.md) sont fournis. Pour repartir du cas initial,
 utilisez **Fichier → Ouvrir un projet…** et sélectionnez cette archive.
 
-### Projet de démonstration : prochaine étape
+### 🎓 Projet d'entraînement
 
 Le cas **Les Colibris** est aujourd’hui un support d’entraînement : il commence en
 lancement, avec un planning proposé, des documents en brouillon et des tests à exécuter.
-Il doit être enrichi pour devenir un véritable projet de démonstration clé en main,
-avec des données réalistes et cohérentes, des documents renseignés, des décisions,
-des preuves d’acceptation et un parcours guidé couvrant le fonctionnement de l’outil.
-
-Ce travail commencera le **15 septembre 2026**. Les priorités et le point de reprise
-sont consignés dans [CONTEXT.md](CONTEXT.md). L’historique est disponible dans
+Il peut être enrichi pour devenir un projet de démonstration complet avec des données
+réalistes, des décisions et des preuves d'acceptation. Le point de reprise courant est
+consigné dans [CONTEXT.md](CONTEXT.md) et l'historique dans
 [CHANGELOG.md](CHANGELOG.md).
 
 ### 💾 Stockage local
@@ -137,7 +166,7 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **149 tests automatisés** et **82,81 % de
+La branche courante est validée avec **155 tests automatisés** et **82,29 % de
 couverture**, ainsi que Ruff, mypy sur toutes les couches et un audit des
 dépendances d'exécution. La suite couvre les parcours Qt du
 [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les
@@ -152,7 +181,7 @@ QT_QPA_PLATFORM=offscreen .venv/bin/pytest --cov=pm2 --cov-report=term-missing
 ```
 
 La couverture de lignes et de branches ne peut pas descendre sous **80 %** ; le niveau
-mesuré pour la version 0.1.7 est de **81,93 %**.
+mesuré sur la branche courante est de **82,29 %**.
 
 ## 🏗️ Construction des paquets
 

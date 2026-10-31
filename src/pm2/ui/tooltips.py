@@ -10,9 +10,14 @@ from PySide6.QtWidgets import (
     QAbstractItemView,
     QApplication,
     QComboBox,
+    QDateEdit,
+    QDoubleSpinBox,
     QFormLayout,
+    QLineEdit,
     QMenu,
     QMessageBox,
+    QPlainTextEdit,
+    QSpinBox,
     QTabWidget,
     QWidget,
 )
@@ -41,6 +46,11 @@ ACTION_HELP = {
     "actualiser": "Recharger les données et recalculer les indicateurs affichés.",
     "panneau contextuel": "Afficher ou masquer le résumé du projet à droite de l’écran.",
     "à propos": "Afficher la version de l’application et les informations générales.",
+    "paramètres système": "Consulter la version, les mises à jour et les options système.",
+    "vérifier les mises à jour": "Interroger GitHub pour rechercher une version plus récente.",
+    "installer l'application": "Ajouter PM² Desktop au menu des applications de cet ordinateur.",
+    "revoir le guide de démarrage": "Afficher à nouveau l’accueil et les mentions légales.",
+    "compris": "Masquer cette aide contextuelle pour cet écran.",
     "créer": "Ajouter un nouvel élément dans la vue actuelle.",
     "modifier": "Modifier l’élément actuellement sélectionné.",
     "modifier / renommer": "Modifier ou renommer l’élément sélectionné du plan de travail.",
@@ -195,6 +205,18 @@ def enhance_tooltips(root: QWidget) -> None:
             )
         elif isinstance(widget, QComboBox):
             _set_help(widget, "Ouvrez la liste pour choisir une valeur.")
+        elif isinstance(widget, QLineEdit):
+            _set_help(
+                widget,
+                widget.placeholderText()
+                or "Saisissez la valeur attendue dans ce champ texte.",
+            )
+        elif isinstance(widget, QPlainTextEdit):
+            _set_help(widget, "Saisissez une description détaillée et compréhensible.")
+        elif isinstance(widget, QDateEdit):
+            _set_help(widget, "Choisissez une date à l’aide du calendrier.")
+        elif isinstance(widget, (QSpinBox, QDoubleSpinBox)):
+            _set_help(widget, "Saisissez ou ajustez cette valeur numérique.")
 
     for tabs in root.findChildren(QTabWidget):
         for index in range(tabs.count()):

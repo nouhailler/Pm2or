@@ -5,7 +5,8 @@ import json
 import logging
 from pathlib import Path
 
-from PySide6.QtGui import QAction, QCloseEvent, QKeySequence
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QAction, QCloseEvent, QIcon, QKeySequence, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -19,6 +20,7 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QPushButton,
     QStackedWidget,
+    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -27,6 +29,7 @@ from sqlalchemy.orm import Session
 from pm2 import __version__
 from pm2.application.context import ApplicationContext
 from pm2.application.services import ProjectMethodologyError, ProjectService
+from pm2.application.system_settings import SystemSettingsStore
 from pm2.application.validation import ValidationService
 from pm2.config import AppPaths
 from pm2.infrastructure.archive import ArchiveError, ProjectArchiveService
@@ -55,10 +58,29 @@ from pm2.ui.pages import (
 )
 from pm2.ui.resources_page import ResourcesPage
 from pm2.ui.row_details import enable_row_details, install_row_detail_support
+from pm2.ui.system_experience import (
+    LEGAL_VERSION,
+    OnboardingDialog,
+    SystemSettingsDialog,
+    UpdateController,
+    asset_path,
+)
 from pm2.ui.tooltips import enhance_tooltips, install_tooltip_support
 from pm2.ui.wizards import PhaseAssistantPage
 
 logger = logging.getLogger(__name__)
+
+PAGE_HELP = {
+    "Dashboard": "Commencez ici chaque jour : surveillez la santé du projet et ouvrez les actions prioritaires.",
+    "Projet": "Renseignez le cadrage général, les dates, le budget et les responsables du projet.",
+    "Gouvernance": "Définissez les personnes, rôles, parties prenantes et responsabilités PM².",
+    "Plan de travail": "Construisez la WBS, planifiez les tâches et contrôlez le chemin critique.",
+    "Ressources": "Affectez les ressources aux tâches et repérez les surcharges hebdomadaires.",
+    "Traçabilité": "Reliez besoins, tâches, livrables, risques et tests ; corrigez les objets orphelins.",
+    "Validation": "Traitez les contrôles bloquants avant les passages de phase.",
+    "Documents": "Générez et versionnez les artefacts PM² à partir des données structurées.",
+    "Audit Trail": "Consultez qui a modifié quoi, quand, pourquoi et depuis quelle origine.",
+}
 
 STYLE = """
 QMainWindow, QWidget { background: #f4f6f9; color: #172033; font-size: 13px; }
@@ -70,6 +92,8 @@ QMenuBar, QMenu, QStatusBar { background: white; }
 #sidebar::branch { background: #18324a; }
 #contextPanel { background: white; border-left: 1px solid #dce2e8; }
 #appBrand { color: #18324a; font-weight: 700; font-size: 17px; padding: 10px; background: white; }
+#hamburgerButton { font-size: 24px; min-width: 42px; border: none; background: white; }
+#contextCoach { background: #eaf4fb; border: 1px solid #b8d8ec; border-radius: 5px; }
 #pageTitle { font-size: 25px; font-weight: 700; color: #18324a; }
 #pageSubtitle, #welcomeSubtitle { color: #667788; }
 #welcomeTitle { font-size: 38px; font-weight: 700; color: #18324a; }
@@ -100,7 +124,13 @@ class MainWindow(QMainWindow):
         self.project_methodology: PM2Configuration | None = None
         self._methodology_cache: dict[tuple[str, str], PM2Configuration] = {}
         self.pages: list[Page] = []
+        self.system_settings = SystemSettingsStore(paths.data_dir / "system-settings.json")
+        self.updates = UpdateController(self.system_settings, paths.data_dir)
+        self.onboarding_dialog: OnboardingDialog | None = None
+        self.system_dialog: SystemSettingsDialog | None = None
+        self.current_help_page = ""
         self.setWindowTitle("PM² Desktop")
+        self.setWindowIcon(QIcon(str(asset_path("pm2-desktop-logo.png"))))
         self.resize(1440, 900)
         self.setMinimumSize(1050, 680)
         self.setStyleSheet(STYLE)
@@ -121,6 +151,14 @@ class MainWindow(QMainWindow):
             self.show_welcome()
         enhance_tooltips(self)
         enable_row_details(self)
+        self.updates.update_available.connect(self._update_available)
+        self.updates.failed.connect(
+            lambda message: self.statusBar().showMessage(
+                f"Mise à jour : {message}", 10_000
+            )
+        )
+        self.updates.start()
+        QTimer.singleShot(0, self._maybe_show_onboarding)
 
     def _build_menu(self) -> None:
         file_menu = self.menuBar().addMenu("&Fichier")
@@ -162,18 +200,57 @@ class MainWindow(QMainWindow):
 
         tools_menu = self.menuBar().addMenu("&Outils")
         tools_menu.addAction(validate_action)
+        settings_action = QAction("Paramètres système…", self)
+        settings_action.triggered.connect(self.open_system_settings)
+        tools_menu.addAction(settings_action)
         help_menu = self.menuBar().addMenu("&Aide")
+        onboarding_action = QAction("Revoir le guide de démarrage…", self)
+        onboarding_action.triggered.connect(lambda: self.open_onboarding(force=True))
         about_action = QAction("À propos", self)
         about_action.triggered.connect(self.about)
-        help_menu.addAction(about_action)
+        help_menu.addActions([onboarding_action, about_action])
 
     def _build_shell(self) -> None:
         central = QWidget()
         outer = QVBoxLayout(central)
         outer.setContentsMargins(0, 0, 0, 0)
+        header = QHBoxLayout()
+        self.menu_button = QToolButton()
+        self.menu_button.setText("☰")
+        self.menu_button.setObjectName("hamburgerButton")
+        self.menu_button.setToolTip("Afficher ou masquer le menu principal par catégories.")
+        self.menu_button.clicked.connect(self.toggle_navigation)
+        logo = QLabel()
+        logo.setPixmap(
+            QPixmap(str(asset_path("pm2-desktop-logo.png"))).scaled(
+                38,
+                38,
+                aspectMode=Qt.AspectRatioMode.KeepAspectRatio,
+                mode=Qt.TransformationMode.SmoothTransformation,
+            )
+        )
         brand = QLabel(f"PM² Desktop  ·  v{__version__}")
         brand.setObjectName("appBrand")
-        outer.addWidget(brand)
+        system_button = QPushButton("⚙ Paramètres système")
+        system_button.clicked.connect(self.open_system_settings)
+        header.addWidget(self.menu_button)
+        header.addWidget(logo)
+        header.addWidget(brand)
+        header.addStretch()
+        header.addWidget(system_button)
+        outer.addLayout(header)
+        self.coach = QFrame()
+        self.coach.setObjectName("contextCoach")
+        coach_layout = QHBoxLayout(self.coach)
+        self.coach_text = QLabel()
+        self.coach_text.setWordWrap(True)
+        coach_close = QPushButton("Compris")
+        coach_close.clicked.connect(self._dismiss_context_help)
+        coach_layout.addWidget(QLabel("💡"))
+        coach_layout.addWidget(self.coach_text, 1)
+        coach_layout.addWidget(coach_close)
+        self.coach.hide()
+        outer.addWidget(self.coach)
         body = QHBoxLayout()
         body.setContentsMargins(0, 0, 0, 0)
         self.navigation = ProjectNavigation()
@@ -223,6 +300,7 @@ class MainWindow(QMainWindow):
         welcome = WelcomePage()
         welcome.new_requested.connect(self.new_project)
         welcome.open_requested.connect(self.open_project)
+        welcome.install_requested.connect(self.open_system_settings)
         self.stack.addWidget(welcome)
         self.pages = [welcome]
         self.stack.setCurrentWidget(welcome)
@@ -342,9 +420,58 @@ class MainWindow(QMainWindow):
             page = self.stack.currentWidget()
             if isinstance(page, Page):
                 page.reload()
+            self._show_context_help(name)
 
     def navigate_to(self, name: str) -> None:
         self.navigation.select_page(name)
+
+    def toggle_navigation(self) -> None:
+        if self.project is None:
+            return
+        self.navigation.setVisible(not self.navigation.isVisible())
+
+    def open_system_settings(self) -> None:
+        self.system_dialog = SystemSettingsDialog(
+            self.system_settings, self.updates, self
+        )
+        enhance_tooltips(self.system_dialog)
+        self.system_dialog.open()
+
+    def _maybe_show_onboarding(self) -> None:
+        if self.system_settings.value.legal_accepted_version != LEGAL_VERSION:
+            self.open_onboarding(force=False)
+
+    def open_onboarding(self, *, force: bool = True) -> None:
+        if not force and self.system_settings.value.legal_accepted_version == LEGAL_VERSION:
+            return
+        self.onboarding_dialog = OnboardingDialog(self.system_settings, self)
+        enhance_tooltips(self.onboarding_dialog)
+        self.onboarding_dialog.open()
+
+    def _show_context_help(self, page_name: str) -> None:
+        self.current_help_page = page_name
+        if page_name in self.system_settings.value.seen_contextual_help:
+            self.coach.hide()
+            return
+        hint = PAGE_HELP.get(
+            page_name,
+            f"Explorez cet écran « {page_name} ». Survolez chaque champ ou bouton pour obtenir une explication.",
+        )
+        self.coach_text.setText(hint)
+        self.coach.show()
+
+    def _dismiss_context_help(self) -> None:
+        page_name = getattr(self, "current_help_page", "")
+        if page_name:
+            self.system_settings.mark_help_seen(page_name)
+        self.coach.hide()
+
+    def _update_available(self, value: object) -> None:
+        version = getattr(value, "version", "")
+        self.statusBar().showMessage(
+            f"Une nouvelle version {version} est disponible. Ouvrez les paramètres système.",
+            20_000,
+        )
 
     def _focus_correction(self, page_name: str, section: str) -> None:
         if not section:

@@ -9,6 +9,7 @@ a = Analysis(
     datas=[
         (str(root / "templates"), "pm2/templates"),
         (str(root / "migrations"), "pm2/migrations"),
+        (str(root / "src" / "pm2" / "assets"), "pm2/assets"),
     ],
     hiddenimports=["logging.config", "sqlalchemy.dialects.sqlite", "jinja2.ext"],
     hookspath=[],

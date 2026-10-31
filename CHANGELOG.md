@@ -2,6 +2,16 @@
 
 ## À venir
 
+- Ajout d'un menu hamburger donnant accès aux cinq catégories fonctionnelles et
+  conservation de la navigation repliable adaptée aux petits écrans.
+- Ajout des paramètres système avec version installée, date de sortie, date de la
+  dernière vérification et action manuelle **Vérifier les mises à jour**.
+- Vérification périodique des releases GitHub en arrière-plan et installation
+  automatique optionnelle des paquets Debian après contrôle obligatoire du SHA-256.
+- Ajout d'un onboarding initial avec mentions légales sur la responsabilité des
+  données, d'un accompagnement contextuel par écran et d'infobulles généralisées.
+- Ajout du bouton **Installer l'application**, qui crée un lanceur desktop Linux,
+  d'un nouveau logo, d'une icône de paquet et d'une capture réelle dans le README.
 - Ajout d'un moteur de planification CPM au Work Plan : relations FS, SS, FF et
   SF, décalages positifs (lag) ou négatifs (lead), calcul des dates au plus tôt
   et au plus tard, marge totale et chemins critiques.

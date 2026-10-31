@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from PySide6.QtCore import QEvent, QObject, Qt, Signal
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QFormLayout,
@@ -61,6 +62,7 @@ from pm2.ui.page_base import Page as Page
 from pm2.ui.project_workflow import ProjectWorkflow
 from pm2.ui.registers_page import RegistersPage as RegistersPage
 from pm2.ui.registers_page import RegisterTab as RegisterTab
+from pm2.ui.system_experience import asset_path
 from pm2.ui.traceability_page import TraceabilityPage as TraceabilityPage
 from pm2.ui.validation_page import ValidationPage as ValidationPage
 from pm2.ui.work_plan_page import WorkPlanPage as WorkPlanPage
@@ -69,11 +71,22 @@ from pm2.ui.work_plan_page import WorkPlanPage as WorkPlanPage
 class WelcomePage(Page):
     new_requested = Signal()
     open_requested = Signal()
+    install_requested = Signal()
 
     def __init__(self) -> None:
         super().__init__()
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        logo = QLabel()
+        logo.setPixmap(
+            QPixmap(str(asset_path("pm2-desktop-logo.png"))).scaled(
+                110,
+                110,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
+            )
+        )
+        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title = QLabel("PM² Desktop")
         title.setObjectName("welcomeTitle")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -85,14 +98,19 @@ class WelcomePage(Page):
         new_button.setMinimumSize(300, 44)
         open_button = QPushButton("Ouvrir un projet .pm2")
         open_button.setMinimumSize(300, 42)
+        install_button = QPushButton("Installer l'application")
+        install_button.setMinimumSize(300, 42)
         new_button.clicked.connect(self.new_requested)
         open_button.clicked.connect(self.open_requested)
+        install_button.clicked.connect(self.install_requested)
         layout.addStretch()
+        layout.addWidget(logo)
         layout.addWidget(title)
         layout.addWidget(subtitle)
         layout.addSpacing(32)
         layout.addWidget(new_button, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(open_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(install_button, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addSpacing(30)
         layout.addWidget(
             QLabel("Les projets récents apparaissent dans le menu Fichier."),

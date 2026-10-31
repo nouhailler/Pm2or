@@ -13,6 +13,12 @@
   calcul de charge/capacité et alertes visuelles au-delà de 100 %.
 - Ajout de la migration Alembic `0006` et intégration des ressources aux
   baselines projet.
+- Transformation de la Traçabilité en graphe navigable combinant relations
+  explicites et relations natives du modèle métier.
+- Ajout des vues Exigence → Tâche → Livrable → Acceptation, Risque → Mitigation
+  et Changement → Impact, avec branches échéancier, coût et objets affectés.
+- Détection automatique et correction guidée des exigences sans livrable,
+  risques sans réponse, livrables sans test et tâches sans parent WBS.
 
 ## 0.1.7 — 27 septembre 2026
 

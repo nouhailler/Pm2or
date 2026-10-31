@@ -37,7 +37,8 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 - gestion des personnes, équipes, fournisseurs, équipements et ressources
   budgétaires avec disponibilités hebdomadaires, allocations aux tâches et
   alertes de surcharge ;
-- exigences, livrables, critères/tests d'acceptation et liens de traçabilité ;
+- graphe de traçabilité navigable couvrant exigences, tâches, livrables,
+  acceptation, risques, mitigations et impacts, avec détection des orphelins ;
 - registres des risques, problèmes, décisions et modifications avec workflows contrôlés ;
 - qualité, transition, mise en œuvre organisationnelle et réunions ;
 - Centre de conformité PM² avec scores par phase, readiness des gates et corrections guidées ;
@@ -136,7 +137,7 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **146 tests automatisés** et **82,35 % de
+La branche courante est validée avec **149 tests automatisés** et **82,81 % de
 couverture**, ainsi que Ruff, mypy sur toutes les couches et un audit des
 dépendances d'exécution. La suite couvre les parcours Qt du
 [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les

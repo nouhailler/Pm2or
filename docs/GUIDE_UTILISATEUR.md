@@ -96,7 +96,21 @@ La page **Données du projet** permet de créer :
 - activités de transition et mise en œuvre ;
 - réunions.
 
-Utilisez **Traçabilité** pour relier exigences, tâches, livrables, tests, décisions et documents. Les relations sont typées et les liens critiques ne peuvent pas être supprimés.
+Utilisez **Traçabilité** pour relier exigences, tâches, livrables, tests,
+décisions et documents. Les relations sont typées et les liens critiques ne
+peuvent pas être supprimés.
+
+L'onglet **Graphe** combine ces liens explicites avec les relations natives du
+projet. Ses filtres isolent les chaînes **Exigence → Tâche → Livrable →
+Acceptation**, **Risque → Mitigation → Tâche** et **Changement → Impact**. Pour
+les changements, l'analyse fait apparaître les branches échéancier, coût,
+risque, exigence et livrable lorsqu'elles sont renseignées ou reliées. Sélectionnez
+un nœud puis **Ouvrir l'objet sélectionné** pour rejoindre sa page métier.
+
+L'onglet **Objets orphelins** détecte les exigences sans livrable, les risques
+sans réponse, les livrables sans test d'acceptation et les tâches placées sans
+parent dans la WBS. Chaque contrôle liste les codes concernés et propose un
+raccourci vers la page où les corriger.
 
 Dans l'assistant d'Exécution ou de Clôture, l'onglet **Acceptation finale** permet d'enregistrer le verdict et la preuve de chaque test. Une acceptation finale est refusée tant que chaque critère applicable ne dispose pas d'un test exécuté avec succès.
 

@@ -276,7 +276,12 @@ class TraceLinkDialog(QDialog):
                 "issue",
                 "decision",
                 "change",
+                "change_impact",
                 "document",
+                "acceptance_criterion",
+                "acceptance_test",
+                "risk_action",
+                "transition_activity",
             ]
         )
         self.source_id = QLineEdit()
@@ -284,10 +289,16 @@ class TraceLinkDialog(QDialog):
         self.target_type.addItems(
             [
                 "task",
+                "requirement",
                 "deliverable",
+                "acceptance_criterion",
                 "acceptance_test",
+                "risk",
+                "risk_action",
+                "issue",
                 "decision",
                 "change",
+                "change_impact",
                 "document",
                 "transition_activity",
             ]

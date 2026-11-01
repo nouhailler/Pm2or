@@ -156,5 +156,5 @@ def test_system_settings_dialog_exposes_release_information(
     qtbot.addWidget(dialog)
 
     labels = [label.text() for label in dialog.findChildren(type(dialog.last_check))]
-    assert "27.09.2026" in labels
+    assert "01.11.2026" in labels
     assert any("Dernière vérification" in label for label in labels)

@@ -1,6 +1,6 @@
 # Historique des changements
 
-## À venir
+## 0.1.8 — 1er novembre 2026
 
 - Ajout d'un centre de connaissances hors ligne comprenant plus de 60 notions,
   12 fiches méthodologiques, une chronologie historique et un guide de choix.

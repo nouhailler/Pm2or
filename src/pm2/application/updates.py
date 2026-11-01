@@ -14,7 +14,7 @@ from urllib.request import Request, urlopen
 from pm2 import __version__
 
 REPOSITORY = "nouhailler/Pm2or"
-RELEASE_DATE = date(2026, 9, 27)
+RELEASE_DATE = date(2026, 11, 1)
 
 
 class UpdateError(RuntimeError):

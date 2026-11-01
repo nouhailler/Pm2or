@@ -4,13 +4,12 @@ Dernière mise à jour : **1er novembre 2026**.
 
 ## Point de reprise
 
-La release publiée reste la **0.1.7**. La branche `main` contient désormais les
-fonctions prévues pour la prochaine version : moteur CPM, gestion des ressources,
-graphe de traçabilité, nouvelle expérience d'accueil et système de mises à jour.
+La release publiée est la **0.1.8**. Elle comprend le moteur CPM, la gestion des
+ressources, le graphe de traçabilité, la nouvelle expérience d'accueil et le système de mises à jour.
 Un centre de connaissances hors ligne complète désormais l'accompagnement des novices :
 glossaire, méthodologies, historique, guide de choix et sources officielles.
-Avant publication, reconstruire et tester le bundle PyInstaller et le paquet Debian,
-puis préparer les notes et le numéro de la prochaine release.
+Le bundle PyInstaller, le paquet Debian, son empreinte SHA-256 et le SBOM CycloneDX
+font partie des artefacts de publication.
 
 Le nouveau parcours utilisateur comprend un menu hamburger, cinq catégories métier,
 un onboarding légal obligatoire, une aide contextuelle à la première visite et des
@@ -21,10 +20,9 @@ exige le SHA-256 fourni par GitHub et passe par l'autorisation système Linux.
 
 ## État livré
 
-- Version publiée : **0.1.7**, sur `main`, tag `v0.1.7`.
-- État de développement : changements non encore publiés destinés à la prochaine release.
+- Version publiée : **0.1.8**, sur `main`, tag `v0.1.8`.
 - Dépôt : <https://github.com/nouhailler/Pm2or>.
-- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.7>.
+- Release : <https://github.com/nouhailler/Pm2or/releases/tag/v0.1.8>.
 - Correctif de démarrage : PyInstaller embarque désormais
   `pm2/resources/PM2_METHODOLOGY.yaml`, comme le paquet Python et le chargeur.
 - Tableau de bord : parcours graphique des quatre phases, position réelle du projet,
@@ -43,12 +41,11 @@ exige le SHA-256 fourni par GitHub et passe par l'autorisation système Linux.
   valeurs ; fenêtre enrichie pour les documents avec objectif et rendu complet.
 - Exemple documentaire : les 21 artefacts PM² de l’archive Les Colibris contiennent désormais
   178 champs illustratifs renseignés.
-- Validation publiée de la 0.1.7 : **127 tests**, couverture lignes/branches de **81,93 %**,
-  Ruff, mypy sur toute l'interface, audit des dépendances et SBOM CycloneDX.
-- Validation de la branche courante : **158 tests**, couverture de **82,59 %**,
-  Ruff et mypy sans erreur.
+- Validation publiée de la 0.1.8 : **158 tests**, couverture lignes/branches de **82,70 %**,
+  Ruff, mypy sur toute l'interface, audit des dépendances, SBOM CycloneDX,
+  démarrage du bundle PyInstaller et inspection du paquet Debian.
 
-Les releases 0.1.2 à 0.1.7 incluent le `.deb` et un fichier d'empreintes SHA-256.
+Les releases 0.1.2 à 0.1.8 incluent le `.deb` et un fichier d'empreintes SHA-256.
 Les versions de formation incluent aussi `portail-association.pm2` et `EXERCICES.md`.
 Le paquet vise Debian 13 amd64, glibc 2.41 ou ultérieure.
 

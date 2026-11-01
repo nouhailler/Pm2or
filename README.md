@@ -37,6 +37,8 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
   Étapes du projet, Pilotage, Données et documents, Outils avancés ;
 - paramètres système indiquant la version, sa date de sortie et la dernière vérification,
   avec contrôle manuel ou périodique des nouvelles versions ;
+- glossaire et mini-encyclopédie hors ligne avec recherche, comparaison de 12 approches,
+  chronologie historique, guide de choix et sources officielles ;
 - cockpit projet quotidien : avancement, consommation budgétaire, dérive d'échéance,
   registres actifs, santé par domaine et prochaines actions cliquables ;
 - parcours graphique sur le tableau de bord : position réelle du projet, phases cliquables,
@@ -166,7 +168,7 @@ Les données applicatives sont conservées par défaut dans `~/.local/share/pm2-
 
 ## 🧪 Tests et contrôles
 
-La branche courante est validée avec **155 tests automatisés** et **82,29 % de
+La branche courante est validée avec **158 tests automatisés** et **82,59 % de
 couverture**, ainsi que Ruff, mypy sur toutes les couches et un audit des
 dépendances d'exécution. La suite couvre les parcours Qt du
 [plan de test](10_TEST_PLAN.md), un cycle de vie complet, les migrations, les
@@ -181,7 +183,7 @@ QT_QPA_PLATFORM=offscreen .venv/bin/pytest --cov=pm2 --cov-report=term-missing
 ```
 
 La couverture de lignes et de branches ne peut pas descendre sous **80 %** ; le niveau
-mesuré sur la branche courante est de **82,29 %**.
+mesuré sur la branche courante est de **82,59 %**.
 
 ## 🏗️ Construction des paquets
 
@@ -235,6 +237,7 @@ projet.pm2
 | [🗃️ Schéma de données](03_DATABASE_SCHEMA.md) | Tables, contraintes et migrations |
 | [🔒 Méthodologie figée](docs/METHODOLOGIE_FIGEE.md) | Snapshots, intégrité et mises à niveau |
 | [📏 Baselines immuables](docs/BASELINES_IMMUABLES.md) | Références approuvées et calcul des écarts |
+| [📚 Glossaire & encyclopédie](docs/GLOSSAIRE_ENCYCLOPEDIE.md) | Notions, méthodes, histoire et guide de choix |
 | [🧪 Plan de test](10_TEST_PLAN.md) | Scénarios de validation |
 | [👁️ Recette visuelle V0.1](docs/RECETTE_VISUELLE_V0.1.md) | Contrôles des écrans |
 | [📝 Notes de version 0.1.7](docs/RELEASE_0.1.7.md) | Nouveautés et installation |

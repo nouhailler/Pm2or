@@ -30,7 +30,7 @@ NAVIGATION_GROUPS = (
         ),
     ),
     ("Données et documents", ("Données métier", "Documents", "Pièces jointes")),
-    ("Outils avancés", ("Catalogue", "Paramètres")),
+    ("Outils avancés", ("Glossaire", "Catalogue", "Paramètres")),
 )
 
 PAGE_LABELS = {
@@ -39,6 +39,7 @@ PAGE_LABELS = {
     "Données métier": "Données du projet",
     "Catalogue": "Catalogue des entités",
     "Validation": "Conformité PM²",
+    "Glossaire": "Glossaire & encyclopédie",
 }
 
 GROUP_HINTS = {
@@ -46,7 +47,7 @@ GROUP_HINTS = {
     "Étapes du projet": "Avancer du lancement à la clôture et décider des passages de phase.",
     "Pilotage": "Suivre les écarts, les risques et la cohérence du projet.",
     "Données et documents": "Gérer les exigences, livrables, données métier et documents PM².",
-    "Outils avancés": "Accéder au catalogue détaillé des entités et aux paramètres.",
+    "Outils avancés": "Apprendre, consulter le catalogue détaillé des entités et régler l'application.",
 }
 
 

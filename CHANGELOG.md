@@ -2,6 +2,12 @@
 
 ## À venir
 
+- Ajout d'un centre de connaissances hors ligne comprenant plus de 60 notions,
+  12 fiches méthodologiques, une chronologie historique et un guide de choix.
+- Ajout de la recherche par terme, alias, catégorie, principe ou contexte, avec
+  accès depuis la navigation du projet et depuis le menu Aide sans projet ouvert.
+- Documentation des différences entre méthode, cadre, norme, approche de livraison
+  et pratiques d'ingénierie, avec liens vers les sources officielles.
 - Ajout d'un menu hamburger donnant accès aux cinq catégories fonctionnelles et
   conservation de la navigation repliable adaptée aux petits écrans.
 - Ajout des paramètres système avec version installée, date de sortie, date de la

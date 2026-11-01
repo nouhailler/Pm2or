@@ -1,12 +1,14 @@
 # Contexte du projet PM² Desktop
 
-Dernière mise à jour : **31 octobre 2026**.
+Dernière mise à jour : **1er novembre 2026**.
 
 ## Point de reprise
 
 La release publiée reste la **0.1.7**. La branche `main` contient désormais les
 fonctions prévues pour la prochaine version : moteur CPM, gestion des ressources,
 graphe de traçabilité, nouvelle expérience d'accueil et système de mises à jour.
+Un centre de connaissances hors ligne complète désormais l'accompagnement des novices :
+glossaire, méthodologies, historique, guide de choix et sources officielles.
 Avant publication, reconstruire et tester le bundle PyInstaller et le paquet Debian,
 puis préparer les notes et le numéro de la prochaine release.
 
@@ -43,7 +45,7 @@ exige le SHA-256 fourni par GitHub et passe par l'autorisation système Linux.
   178 champs illustratifs renseignés.
 - Validation publiée de la 0.1.7 : **127 tests**, couverture lignes/branches de **81,93 %**,
   Ruff, mypy sur toute l'interface, audit des dépendances et SBOM CycloneDX.
-- Validation de la branche courante : **155 tests**, couverture de **82,29 %**,
+- Validation de la branche courante : **158 tests**, couverture de **82,59 %**,
   Ruff et mypy sans erreur.
 
 Les releases 0.1.2 à 0.1.7 incluent le `.deb` et un fichier d'empreintes SHA-256.

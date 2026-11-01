@@ -50,6 +50,7 @@ ACTION_HELP = {
     "vérifier les mises à jour": "Interroger GitHub pour rechercher une version plus récente.",
     "installer l'application": "Ajouter PM² Desktop au menu des applications de cet ordinateur.",
     "revoir le guide de démarrage": "Afficher à nouveau l’accueil et les mentions légales.",
+    "glossaire & encyclopédie": "Consulter les notions, méthodologies et repères historiques de la gestion de projet.",
     "compris": "Masquer cette aide contextuelle pour cet écran.",
     "créer": "Ajouter un nouvel élément dans la vue actuelle.",
     "modifier": "Modifier l’élément actuellement sélectionné.",

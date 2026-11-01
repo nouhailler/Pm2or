@@ -40,6 +40,7 @@ from pm2.ui.audit_trail_page import AuditTrailPage
 from pm2.ui.baselines_page import BaselinesPage
 from pm2.ui.crud import EntityCatalogPage
 from pm2.ui.dialogs import ProjectDialog
+from pm2.ui.knowledge_page import KnowledgeDialog, KnowledgePage
 from pm2.ui.navigation import ProjectNavigation
 from pm2.ui.pages import (
     CoreDataPage,
@@ -80,6 +81,7 @@ PAGE_HELP = {
     "Validation": "Traitez les contrôles bloquants avant les passages de phase.",
     "Documents": "Générez et versionnez les artefacts PM² à partir des données structurées.",
     "Audit Trail": "Consultez qui a modifié quoi, quand, pourquoi et depuis quelle origine.",
+    "Glossaire": "Recherchez une notion, comparez les méthodologies et parcourez l'histoire de la gestion de projet.",
 }
 
 STYLE = """
@@ -128,6 +130,7 @@ class MainWindow(QMainWindow):
         self.updates = UpdateController(self.system_settings, paths.data_dir)
         self.onboarding_dialog: OnboardingDialog | None = None
         self.system_dialog: SystemSettingsDialog | None = None
+        self.knowledge_dialog: KnowledgeDialog | None = None
         self.current_help_page = ""
         self.setWindowTitle("PM² Desktop")
         self.setWindowIcon(QIcon(str(asset_path("pm2-desktop-logo.png"))))
@@ -204,11 +207,13 @@ class MainWindow(QMainWindow):
         settings_action.triggered.connect(self.open_system_settings)
         tools_menu.addAction(settings_action)
         help_menu = self.menuBar().addMenu("&Aide")
+        knowledge_action = QAction("Glossaire & encyclopédie…", self)
+        knowledge_action.triggered.connect(self.open_knowledge)
         onboarding_action = QAction("Revoir le guide de démarrage…", self)
         onboarding_action.triggered.connect(lambda: self.open_onboarding(force=True))
         about_action = QAction("À propos", self)
         about_action.triggered.connect(self.about)
-        help_menu.addActions([onboarding_action, about_action])
+        help_menu.addActions([knowledge_action, onboarding_action, about_action])
 
     def _build_shell(self) -> None:
         central = QWidget()
@@ -329,6 +334,7 @@ class MainWindow(QMainWindow):
             ("Plan de travail", WorkPlanPage(self.session, project)),
             ("Ressources", ResourcesPage(self.session, project)),
             ("Données métier", CoreDataPage(self.session, project)),
+            ("Glossaire", KnowledgePage()),
             ("Catalogue", EntityCatalogPage(self.session, project.id)),
             (
                 "Exécution",
@@ -436,6 +442,11 @@ class MainWindow(QMainWindow):
         )
         enhance_tooltips(self.system_dialog)
         self.system_dialog.open()
+
+    def open_knowledge(self) -> None:
+        self.knowledge_dialog = KnowledgeDialog(self)
+        enhance_tooltips(self.knowledge_dialog)
+        self.knowledge_dialog.open()
 
     def _maybe_show_onboarding(self) -> None:
         if self.system_settings.value.legal_accepted_version != LEGAL_VERSION:

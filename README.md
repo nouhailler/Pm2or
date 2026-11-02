@@ -243,3 +243,4 @@ projet.pm2
 | [📝 Notes de version 0.1.8](docs/RELEASE_0.1.8.md) | Nouveautés et installation |
 | [Contexte et reprise](CONTEXT.md) | État du projet et prochain chantier |
 | [Historique des changements](CHANGELOG.md) | Versions publiées et travaux à venir |
+| [Site de présentation](landing/README.md) | Page statique et PWA, construction et déploiement |

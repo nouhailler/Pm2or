@@ -1,0 +1,3 @@
+.nav-toggle { display: none !important; }
+.site-nav { display: flex !important; position: static !important; box-shadow: none !important; }
+.site-header__row { flex-wrap: wrap; }

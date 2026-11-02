@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "PM² Desktop — Site de présentation",
+  "short_name": "PM² Site",
+  "description": "Site de présentation de PM² Desktop, consultable hors ligne. Il ne remplace pas l'application de bureau.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafd",
+  "theme_color": "#0f2a47",
+  "categories": ["productivity", "business"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

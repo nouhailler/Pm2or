@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PM² Desktop — Gestion de projets avec la méthodologie PM²</title>
+  <meta name="description" content="Découvrez PM² Desktop, une application locale de gestion de projets en français fondée sur la méthodologie PM² v3.1. Consultez les fonctionnalités et téléchargez l'application.">
+  <!--SEO_LINKS-->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="PM² Desktop">
+  <meta property="og:title" content="PM² Desktop — Gestion de projets avec la méthodologie PM²">
+  <meta property="og:description" content="Une application de bureau en français, fondée sur la méthodologie PM² v3.1, pour organiser et suivre vos projets depuis votre poste de travail.">
+  <meta property="og:image" content="{{ORIGIN}}/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Logo PM² Desktop et capture du tableau de bord de l'application">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0f2a47">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preload" href="/assets/fonts/bricolage-grotesque-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/source-sans-3-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <noscript><link rel="stylesheet" href="/assets/noscript.css"></noscript>
+  <script src="/assets/main.js" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "PM² Desktop",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Debian 13 (amd64)",
+    "softwareVersion": "{{VERSION}}",
+    "inLanguage": "fr",
+    "downloadUrl": "https://github.com/nouhailler/Pm2or/releases",
+    "license": "https://github.com/nouhailler/Pm2or/blob/main/LICENSE"
+  }
+  </script>
+</head>
+<body>
+<!--ICONS-->
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+
+<header class="site-header">
+  <div class="wrap site-header__row">
+    <a class="brand" href="#haut" aria-label="PM² Desktop, retour en haut de la page">
+      <img src="/assets/img/logo-96.png" width="40" height="40" alt="">
+      <span>PM² Desktop</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu-principal">
+      <svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg>
+      <span class="nav-toggle__label">Menu</span>
+    </button>
+    <nav class="site-nav" id="menu-principal" aria-label="Navigation principale">
+      <ul>
+        <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+        <li><a href="#methodologie">Méthodologie PM²</a></li>
+        <li><a href="#pour-qui">Pour qui&nbsp;?</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <a class="btn btn--primary btn--small" href="https://github.com/nouhailler/Pm2or/releases" target="_blank" rel="noopener">
+        Télécharger PM² Desktop
+        <svg class="icon icon--xs" aria-hidden="true"><use href="#i-external-link"></use></svg>
+        <span class="sr-only">(GitHub, nouvel onglet)</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <span id="haut"></span>
+
+  <!-- B. Hero -->
+  <section class="hero" aria-labelledby="hero-titre">
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <p class="eyebrow">Application de bureau · Version {{VERSION}}</p>
+        <h1 id="hero-titre">Pilotez vos projets avec méthode. <em>Gardez le contrôle en&nbsp;local.</em></h1>
+        <p class="hero__lead">PM² Desktop est une application de gestion de projets en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Organisez et suivez vos projets depuis votre poste de travail, du lancement à la clôture.</p>
+        <div class="actions">
+          <a class="btn btn--primary" href="https://github.com/nouhailler/Pm2or/releases" target="_blank" rel="noopener">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+            Télécharger l'application
+            <span class="sr-only">(GitHub, nouvel onglet)</span>
+          </a>
+          <a class="btn btn--ghost" href="#fonctionnalites">Découvrir les fonctionnalités</a>
+        </div>
+        <p class="hero__note">Paquet disponible pour <strong>Debian 13 amd64</strong> uniquement. <a href="#telecharger">Voir les prérequis</a></p>
+      </div>
+      <figure class="hero__shot">
+        <a class="shot" href="/assets/img/cockpit-1500.webp" data-lightbox data-caption="Tableau de bord de PM² Desktop {{VERSION}}, avec le projet d'entraînement fictif Les Colibris.">
+          <img src="/assets/img/cockpit-800.webp" srcset="/assets/img/cockpit-800.webp 800w, /assets/img/cockpit-1500.webp 1500w" sizes="(min-width: 1000px) 56vw, 100vw" width="1500" height="950" fetchpriority="high" alt="Tableau de bord de PM² Desktop : navigation latérale par catégories, indicateurs d'avancement, de budget et d'échéancier, compteurs de risques, problèmes, changements et décisions.">
+        </a>
+        <figcaption>Capture réelle de la version {{VERSION}}, avec un projet d'entraînement fictif.</figcaption>
+      </figure>
+    </div>
+    <div class="wrap">
+      <ul class="facts" aria-label="En bref">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-monitor"></use></svg>Application de bureau pour Linux</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-book-open"></use></svg>Interface en français</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-route"></use></svg>Structure issue de PM² v3.1</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-hard-drive"></use></svg>Données stockées sur votre poste</li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-user-round-x"></use></svg>Sans compte à créer</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- C. Pourquoi -->
+  <section class="section why" id="pourquoi" aria-labelledby="pourquoi-titre">
+    <div class="wrap why__grid">
+      <div>
+        <p class="eyebrow">Pourquoi PM² Desktop&nbsp;?</p>
+        <h2 id="pourquoi-titre">Une méthode qui tient au même endroit que le travail.</h2>
+        <p class="lead">Un projet se perd vite entre un tableur, un dossier de documents et quelques listes. PM² Desktop réunit le plan, les décisions et les preuves dans une même application, reliés aux étapes de la méthode.</p>
+      </div>
+      <ul class="milestones">
+        <li><h3>Des responsabilités explicites</h3><p>Rôles PM², parties prenantes et matrice RCmSCI indiquent qui décide, qui réalise et qui doit être informé.</p></li>
+        <li><h3>Des objectifs reliés aux livrables</h3><p>Chaque exigence peut être suivie jusqu'à la tâche, au livrable, au test et à l'acceptation.</p></li>
+        <li><h3>Un suivi quotidien plus simple</h3><p>Le tableau de bord réunit l'avancement, le budget, les dérives et les prochaines actions à traiter.</p></li>
+        <li><h3>Une vision d'ensemble cohérente</h3><p>Les contrôles signalent les données manquantes et ouvrent directement l'écran où les corriger.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- D. Fonctionnalités -->
+  <section class="section features" id="fonctionnalites" aria-labelledby="fonctionnalites-titre">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">Fonctionnalités</p>
+        <h2 id="fonctionnalites-titre">Tout le cycle du projet, du premier cadrage à la clôture.</h2>
+        <p class="lead">Chaque fonction décrite ici a été vérifiée dans le code de la version {{VERSION}}.</p>
+      </header>
+
+      <article class="spot">
+        <div class="spot__text">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-gauge"></use></svg>
+          <h3>Savoir chaque matin où en est le projet</h3>
+          <p>Le tableau de bord rapproche l'avancement, le budget consommé et la dérive d'échéance. Il remonte les actions prioritaires et ouvre directement l'écran concerné.</p>
+          <ul class="ticks">
+            <li>État de santé par domaine : gouvernance, planning, risques, budget, qualité</li>
+            <li>Parcours graphique des phases, avec votre position réelle</li>
+            <li>Compteurs de risques, problèmes, modifications et décisions actifs</li>
+          </ul>
+        </div>
+        <a class="shot spot__shot" href="/assets/img/parcours-1500.webp" data-lightbox data-caption="Tableau de bord : parcours des phases et indicateurs du projet.">
+          <img src="/assets/img/parcours-800.webp" width="1500" height="950" loading="lazy" decoding="async" alt="Tableau de bord de PM² Desktop, bloc Votre parcours PM² : les phases et les revues de passage, avec la position actuelle du projet et un bouton pour continuer l'étape.">
+        </a>
+      </article>
+
+      <article class="spot spot--flip">
+        <div class="spot__text">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-calendar-range"></use></svg>
+          <h3>Bâtir un planning réaliste</h3>
+          <p>Décomposez le travail en lots, tâches et jalons, avec dates, effort, coût et avancement. Le calcul du chemin critique montre quelles tâches ne peuvent pas glisser sans décaler le projet.</p>
+          <ul class="ticks">
+            <li>Structure WBS arborescente et réorganisable</li>
+            <li>Dépendances FS, SS, FF et SF, avec avance ou retard</li>
+            <li>Dates au plus tôt et au plus tard, marge totale, chemin critique</li>
+          </ul>
+        </div>
+        <a class="shot spot__shot" href="/assets/img/plan-de-travail-1500.webp" data-lightbox data-caption="Plan de travail : structure des tâches, dates, effort et coût.">
+          <img src="/assets/img/plan-de-travail-800.webp" width="1500" height="950" loading="lazy" decoding="async" alt="Écran Plan de travail de PM² Desktop : arborescence des lots et des tâches avec leurs dates, leur effort et leur coût.">
+        </a>
+      </article>
+
+      <article class="spot">
+        <div class="spot__text">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-git-fork"></use></svg>
+          <h3>Voir ce qui relie les décisions aux résultats</h3>
+          <p>La traçabilité suit les chaînes exigence, tâche, livrable et acceptation, mais aussi risque et mitigation, ou changement et impact. Les éléments orphelins sont détectés, avec un raccourci pour les corriger.</p>
+          <ul class="ticks">
+            <li>Exigences sans livrable, risques sans réponse</li>
+            <li>Livrables sans test, tâches sans parent</li>
+          </ul>
+        </div>
+        <a class="shot spot__shot" href="/assets/img/objets-orphelins-1500.webp" data-lightbox data-caption="Traçabilité, onglet Objets orphelins : contrôles et raccourcis de correction.">
+          <img src="/assets/img/objets-orphelins-800.webp" width="1500" height="950" loading="lazy" decoding="async" alt="Écran Traçabilité de PM² Desktop, onglet Objets orphelins : contrôles des exigences, risques, livrables et tâches sans lien.">
+        </a>
+      </article>
+
+      <h3 class="features__more">Et aussi, dans la même application</h3>
+      <ul class="cards">
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-route"></use></svg>
+          <h4>Avancer phase après phase</h4>
+          <p>Un assistant par phase, avec complétude et validations. Les revues de passage RfP, RfE et RfC bloquent l'approbation si un élément obligatoire manque.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-users-round"></use></svg>
+          <h4>Clarifier qui fait quoi</h4>
+          <p>Personnes, rôles PM², parties prenantes avec intérêt, influence et stratégie d'engagement, et matrice des responsabilités RCmSCI.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-boxes"></use></svg>
+          <h4>Anticiper la charge</h4>
+          <p>Personnes, équipes, fournisseurs, équipements et budgets, avec disponibilités hebdomadaires, allocations et alerte au-delà de 100&nbsp;% de capacité.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-package-check"></use></svg>
+          <h4>Faire accepter les livrables</h4>
+          <p>Exigences, livrables, critères et tests. L'acceptation finale est refusée tant qu'un critère applicable n'a pas de test réussi.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-shield-alert"></use></svg>
+          <h4>Tenir les registres à jour</h4>
+          <p>Risques, problèmes, décisions et modifications, chacun avec ses états successifs. Une modification ne s'implémente pas sans approbation.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-badge-check"></use></svg>
+          <h4>Repérer les écarts à la méthode</h4>
+          <p>Un score par phase et l'état des revues, à partir des règles de l'application, avec un accès direct à chaque correction.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+          <h4>Figer une référence</h4>
+          <p>Les baselines capturent budget, plan, exigences, livrables, risques et documents. Elles se comparent ensuite à l'état courant.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-history"></use></svg>
+          <h4>Retrouver qui a changé quoi</h4>
+          <p>Le journal d'audit présente chaque événement avec les valeurs avant et après, des filtres et un export JSON.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-file-text"></use></svg>
+          <h4>Produire les documents du projet</h4>
+          <p>21 artefacts PM², de la charte au rapport de fin de projet, à exporter en Markdown, HTML, DOCX ou PDF, avec historique des versions.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-paperclip"></use></svg>
+          <h4>Garder les preuves avec le projet</h4>
+          <p>Pièces jointes jusqu'à 25&nbsp;Mio par fichier, conservées dans la base avec leur empreinte SHA-256.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-archive"></use></svg>
+          <h4>Sauvegarder et rouvrir</h4>
+          <p>Exportez une archive <code>.pm2</code> et rouvrez-la plus tard. Son intégrité est contrôlée avant toute écriture.</p>
+        </li>
+        <li class="card">
+          <svg class="icon" aria-hidden="true"><use href="#i-life-buoy"></use></svg>
+          <h4>Apprendre en utilisant</h4>
+          <p>Guide de démarrage, infobulles, glossaire de plus de 60 notions, 12 fiches de méthodes et projet d'entraînement avec exercices.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- E. Méthodologie -->
+  <section class="section method" id="methodologie" aria-labelledby="methodologie-titre">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">La méthodologie PM²</p>
+        <h2 id="methodologie-titre">Un cadre commun pour conduire un projet.</h2>
+        <p class="lead">PM² est une méthodologie de gestion de projet développée par la Commission européenne et ouverte à tous depuis 2018. Elle relie la gouvernance, un cycle de vie, des activités et des documents, et s'adapte aux besoins de chaque projet.</p>
+      </header>
+
+      <ol class="lifecycle">
+        <li class="phase">
+          <span class="phase__num">1</span>
+          <h3>Lancement</h3>
+          <p>Définir les résultats attendus, justifier le projet et poser son périmètre initial.</p>
+        </li>
+        <li class="gate"><span class="gate__mark" aria-hidden="true"></span><strong>RfP</strong> <span>Prêt pour la Planification</span></li>
+        <li class="phase">
+          <span class="phase__num">2</span>
+          <h3>Planification</h3>
+          <p>Transformer l'objectif en un plan précis et réalisable.</p>
+        </li>
+        <li class="gate"><span class="gate__mark" aria-hidden="true"></span><strong>RfE</strong> <span>Prêt pour l'Exécution</span></li>
+        <li class="phase">
+          <span class="phase__num">3</span>
+          <h3>Exécution</h3>
+          <p>Produire les livrables et préparer leur arrivée dans l'organisation.</p>
+        </li>
+        <li class="gate"><span class="gate__mark" aria-hidden="true"></span><strong>RfC</strong> <span>Prêt pour la Clôture</span></li>
+        <li class="phase">
+          <span class="phase__num">4</span>
+          <h3>Clôture</h3>
+          <p>Faire accepter le résultat, documenter l'expérience et fermer le projet.</p>
+        </li>
+      </ol>
+      <p class="lifecycle__band"><strong>Suivi et Contrôle</strong> <span>Pendant toute la durée du projet : mesurer les progrès, contrôler les écarts, gérer changements, risques et problèmes.</span></p>
+
+      <div class="method__cols">
+        <div>
+          <h3>Des rôles nommés</h3>
+          <p>PM² distingue ceux qui orientent et ceux qui réalisent. Le Comité de Pilotage réunit notamment le Porteur du Projet, le Maître d'Œuvre, le Responsable MOA et le Chef de Projet, qui s'appuie sur l'Équipe Centrale du Projet.</p>
+        </div>
+        <div>
+          <h3>Des décisions de passage</h3>
+          <p>La fin de chaque phase donne lieu à une revue : RfP, RfE puis RfC. On ne passe pas à la suite par défaut, mais parce qu'une décision a été prise à partir d'éléments vérifiés.</p>
+        </div>
+        <div>
+          <h3>Des documents qui servent</h3>
+          <p>Charte, plan de travail, plans de gestion, rapports : chaque artefact a sa phase et sa fonction. Le plan de travail approuvé sert de référence au suivi, et chaque livrable est accepté formellement.</p>
+        </div>
+      </div>
+
+      <aside class="notice" aria-labelledby="notice-titre">
+        <h3 id="notice-titre">Méthode et logiciel sont deux choses distinctes</h3>
+        <p>PM² Desktop est un projet indépendant, sans lien officiel avec la Commission européenne. Il traduit la méthode en écrans et en contrôles, mais certaines règles sont des conventions propres à l'application. Son score de conformité est une aide au pilotage : il ne vaut ni certification, ni garantie de conformité à PM².</p>
+        <p><a href="https://pm2.europa.eu/pm2-methodologies/pm2-project-management_en" target="_blank" rel="noopener">Consulter la présentation officielle de PM²<svg class="icon icon--xs" aria-hidden="true"><use href="#i-external-link"></use></svg><span class="sr-only">(site de la Commission européenne, nouvel onglet)</span></a></p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- F. Application locale -->
+  <section class="section local" id="local" aria-labelledby="local-titre">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">Une application locale</p>
+        <h2 id="local-titre">Vos projets restent sur votre poste. Voici précisément ce que cela veut dire.</h2>
+      </header>
+      <dl class="ledger">
+        <div>
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-hard-drive"></use></svg>Où sont les données&nbsp;?</dt>
+          <dd>Dans une base SQLite, par défaut dans <code>~/.local/share/pm2-desktop</code>. La variable <code>PM2_DATA_DIR</code> permet de choisir un autre dossier.</dd>
+        </div>
+        <div>
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-wifi-off"></use></svg>Faut-il Internet&nbsp;?</dt>
+          <dd>Non pour travailler sur vos projets. Une seule exception à connaître : la recherche de mises à jour, décrite ci-dessous.</dd>
+        </div>
+        <div>
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-user-round-x"></use></svg>Faut-il un compte&nbsp;?</dt>
+          <dd>Non. L'application ne demande ni inscription ni connexion. Le journal d'audit reprend votre nom d'utilisateur système.</dd>
+        </div>
+        <div>
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-network"></use></svg>Qu'est-ce qui sort du poste&nbsp;?</dt>
+          <dd>La recherche de mises à jour, <strong>activée par défaut</strong>, interroge l'API des releases GitHub toutes les 6&nbsp;heures, sans envoyer de données de projet. Vous pouvez la désactiver dans les Paramètres système. L'installation automatique est désactivée par défaut.</dd>
+        </div>
+        <div>
+          <dt><svg class="icon" aria-hidden="true"><use href="#i-archive"></use></svg>Comment sauvegarder&nbsp;?</dt>
+          <dd>Exportez une archive <code>.pm2</code> depuis le menu Fichier, et gardez-la en lieu sûr. Seules les mises à niveau du schéma créent une copie automatique. La sauvegarde reste de votre responsabilité.</dd>
+        </div>
+      </dl>
+      <aside class="limits" aria-labelledby="limites-titre">
+        <h3 id="limites-titre">Les limites à connaître</h3>
+        <ul>
+          <li><strong>Pas de collaboration en temps réel</strong>, de serveur ni de synchronisation : le partage passe par l'échange d'archives.</li>
+          <li><strong>Pas de chiffrement intégré</strong> : la base et les archives ne sont pas chiffrées par l'application. Protégez-les comme tout fichier sensible.</li>
+          <li><strong>Une archive contient toute la base</strong> : si plusieurs projets y coexistent, vérifiez ce que vous partagez avant d'envoyer un fichier <code>.pm2</code>.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- G. Pour qui -->
+  <section class="section audience" id="pour-qui" aria-labelledby="pour-qui-titre">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">Pour qui&nbsp;?</p>
+        <h2 id="pour-qui-titre">Pour celles et ceux qui veulent structurer un projet sans installer de serveur.</h2>
+      </header>
+      <ul class="people">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-briefcase"></use></svg><h3>Chefs de projet</h3><p>Un point d'entrée quotidien pour le plan, les registres, les revues et les documents.</p></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-presentation"></use></svg><h3>Consultants et formateurs</h3><p>Un projet fictif, Les Colibris, et un parcours d'exercices pour démontrer la méthode sur un cas concret.</p></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-users-round"></use></svg><h3>Équipes projet</h3><p>Des rôles et des responsabilités explicites. L'outil reste mono-poste : les archives servent aux échanges.</p></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-hand-heart"></use></svg><h3>Associations et petites structures</h3><p>Un cadre complet, sans infrastructure à administrer, adaptable à la taille du projet.</p></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-building-2"></use></svg><h3>Organismes publics ou privés</h3><p>Des baselines et un journal d'audit pour documenter les décisions, sous réserve de vos propres règles internes.</p></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-graduation-cap"></use></svg><h3>Étudiants</h3><p>Un glossaire, des fiches comparant 12 approches et un cas d'entraînement pour apprendre en pratiquant.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- H. Galerie -->
+  <section class="section gallery" id="captures" aria-labelledby="captures-titre">
+    <div class="wrap">
+      <header class="section__head">
+        <p class="eyebrow">Découvrez l'application</p>
+        <h2 id="captures-titre">De vrais écrans, sans retouche.</h2>
+        <p class="lead">Captures de la version {{VERSION}}, réalisées avec le projet d'entraînement fictif fourni dans le dépôt. Les noms et les chiffres sont inventés.</p>
+      </header>
+      <ul class="shots">
+        <!--GALLERY-->
+      </ul>
+    </div>
+  </section>
+
+  <!-- I. Téléchargement -->
+  <section class="download" id="telecharger" aria-labelledby="telecharger-titre">
+    <div class="wrap download__grid">
+      <div>
+        <h2 id="telecharger-titre">Prêt à structurer vos projets&nbsp;?</h2>
+        <p class="lead">Découvrez PM² Desktop et consultez les versions disponibles sur GitHub. Le logiciel est open source, sous licence EUPL-1.2.</p>
+        <div class="actions">
+          <a class="btn btn--gold" href="https://github.com/nouhailler/Pm2or/releases" target="_blank" rel="noopener">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+            Télécharger PM² Desktop
+            <span class="sr-only">(GitHub, nouvel onglet)</span>
+          </a>
+          <a class="link-light" href="https://github.com/nouhailler/Pm2or" target="_blank" rel="noopener">Voir le dépôt<svg class="icon icon--xs" aria-hidden="true"><use href="#i-external-link"></use></svg><span class="sr-only">(GitHub, nouvel onglet)</span></a>
+        </div>
+      </div>
+      <div class="install">
+        <h3>Ce qui est publié aujourd'hui</h3>
+        <dl class="install__facts">
+          <div><dt>Version</dt><dd>{{VERSION}}, du {{RELEASE_DATE}}</dd></div>
+          <div><dt>Système</dt><dd>Debian 13 amd64, glibc 2.41 ou ultérieure</dd></div>
+          <div><dt>Format</dt><dd>Paquet <code>.deb</code> d'environ {{DEB_SIZE}}, Python inclus</dd></div>
+          <div><dt>Contrôle</dt><dd>Empreintes SHA-256 et inventaire SBOM publiés</dd></div>
+        </dl>
+        <p class="install__label">Dans le dossier du paquet téléchargé&nbsp;:</p>
+        <pre tabindex="0" aria-label="Commandes de vérification et d'installation"><code>sha256sum -c SHA256SUMS-{{VERSION}}
+sudo apt install ./pm2-desktop_{{VERSION}}_amd64.deb
+pm2-desktop</code></pre>
+        <p class="install__warn">Aucun paquet n'est publié pour Windows, macOS, Android ou iOS. La compatibilité avec Debian 12 et Ubuntu 24.04 n'est pas assurée. Une <a href="https://github.com/nouhailler/Pm2or#%EF%B8%8F-installation-d%C3%A9veloppeur" target="_blank" rel="noopener">installation depuis les sources<span class="sr-only"> (GitHub, nouvel onglet)</span></a> est documentée (Python 3.12 ou ultérieur).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- J. FAQ -->
+  <section class="section faq" id="faq" aria-labelledby="faq-titre">
+    <div class="wrap faq__grid">
+      <header>
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-titre">Questions fréquentes</h2>
+      </header>
+      <div class="faq__list">
+        <details><summary>Qu'est-ce que PM² Desktop&nbsp;?</summary><p>Une application de bureau de gestion de projets, en français. Elle accompagne un projet du lancement à la clôture : gouvernance, planning, registres, livrables, documents et archives.</p></details>
+        <details><summary>Qu'est-ce que la méthodologie PM²&nbsp;?</summary><p>Une méthodologie de gestion de projet développée par la Commission européenne, ouverte à tous. Elle s'organise autour de quatre phases, de revues de passage et de rôles définis. PM² Desktop s'appuie sur sa version 3.1. <a href="#methodologie">Lire la présentation</a></p></details>
+        <details><summary>Est-ce un logiciel officiel de la Commission européenne&nbsp;?</summary><p>Non. PM² Desktop est un projet indépendant. Son usage ne constitue ni une certification, ni une garantie de conformité à PM².</p></details>
+        <details><summary>L'application est-elle en français&nbsp;?</summary><p>Oui, l'interface et le guide utilisateur sont en français. Certains termes de la méthode ou états techniques restent affichés sous leur forme d'origine, comme <code>LAUNCH</code> ou <code>Gates</code>.</p></details>
+        <details><summary>Sur quels systèmes fonctionne-t-elle&nbsp;?</summary><p>Le paquet publié cible Debian 13 amd64, avec glibc 2.41 ou ultérieure. Aucun paquet n'est publié pour Windows, macOS, Android ou iOS. La compatibilité avec Debian 12 et Ubuntu 24.04 n'est pas assurée.</p></details>
+        <details><summary>Où la télécharger&nbsp;?</summary><p>Sur la <a href="https://github.com/nouhailler/Pm2or/releases" target="_blank" rel="noopener">page des releases GitHub<span class="sr-only"> (nouvel onglet)</span></a>, qui contient le paquet, ses empreintes SHA-256 et les notes de version.</p></details>
+        <details><summary>Est-elle gratuite et open source&nbsp;?</summary><p>Elle se télécharge librement et son code est publié sous licence European Union Public Licence 1.2 (EUPL-1.2). Le logiciel est fourni sans garantie, conformément à cette licence.</p></details>
+        <details><summary>Faut-il créer un compte&nbsp;?</summary><p>Non. Aucune inscription ni connexion n'est demandée.</p></details>
+        <details><summary>Mes données restent-elles sur mon poste&nbsp;?</summary><p>Oui, elles sont stockées localement et le code de mise à jour n'envoie aucune donnée de projet. Elles ne sont pas chiffrées par l'application : leur protection et leur sauvegarde restent de votre responsabilité. <a href="#local">Voir le détail</a></p></details>
+        <details><summary>Internet est-il nécessaire&nbsp;?</summary><p>Non pour utiliser l'application au quotidien. Internet sert à la recherche de mises à jour, activée par défaut et désactivable, ainsi qu'au téléchargement du paquet.</p></details>
+        <details><summary>Peut-on travailler à plusieurs&nbsp;?</summary><p>Pas en temps réel : il n'y a ni serveur, ni synchronisation. Il est possible d'échanger des archives <code>.pm2</code>, sans fusion automatique des modifications de chacun. Une archive contient toute la base locale.</p></details>
+        <details><summary>Comment sauvegarder ou exporter un projet&nbsp;?</summary><p>Le menu Fichier exporte une archive <code>.pm2</code>, qui se rouvre avec contrôle d'intégrité. Les documents s'exportent en Markdown, HTML, DOCX ou PDF, et le journal d'audit en JSON.</p></details>
+        <details><summary>Comment signaler un problème&nbsp;?</summary><p>Ouvrez un ticket sur les <a href="https://github.com/nouhailler/Pm2or/issues" target="_blank" rel="noopener">issues GitHub<span class="sr-only"> (nouvel onglet)</span></a>. La commande <code>pm2-desktop --diagnostics diagnostic.json</code> écrit un rapport anonymisé que vous pouvez relire avant de le joindre.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap site-footer__grid">
+    <div>
+      <p class="brand brand--footer"><img src="/assets/img/logo-96.png" width="40" height="40" alt=""><span>PM² Desktop</span></p>
+      <p class="site-footer__note">Projet indépendant, sans lien officiel avec la Commission européenne. Ce site n'utilise ni cookie, ni outil de mesure d'audience.</p>
+      <p class="pwa-install" hidden>
+        <button class="btn btn--ghost btn--small" type="button" data-install>Installer ce site</button>
+        <span>Installe seulement ce site de présentation, consultable hors ligne. Pour l'application, utilisez le paquet.</span>
+      </p>
+    </div>
+    <nav aria-label="Liens du projet">
+      <h2>Projet</h2>
+      <ul>
+        <li><a href="https://github.com/nouhailler/Pm2or" target="_blank" rel="noopener">Dépôt GitHub<span class="sr-only"> (nouvel onglet)</span></a></li>
+        <li><a href="https://github.com/nouhailler/Pm2or/releases" target="_blank" rel="noopener">Téléchargements<span class="sr-only"> (nouvel onglet)</span></a></li>
+        <li><a href="https://github.com/nouhailler/Pm2or/issues" target="_blank" rel="noopener">Signaler un problème<span class="sr-only"> (nouvel onglet)</span></a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Documentation">
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="https://github.com/nouhailler/Pm2or/blob/main/docs/GUIDE_UTILISATEUR.md" target="_blank" rel="noopener">Guide utilisateur<span class="sr-only"> (nouvel onglet)</span></a></li>
+        <li><a href="https://github.com/nouhailler/Pm2or/blob/main/examples/EXERCICES.md" target="_blank" rel="noopener">Exercices d'entraînement<span class="sr-only"> (nouvel onglet)</span></a></li>
+        <li><a href="https://github.com/nouhailler/Pm2or/blob/main/LICENSE" target="_blank" rel="noopener">Licence EUPL-1.2<span class="sr-only"> (nouvel onglet)</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<dialog class="lightbox" aria-label="Agrandissement de la capture">
+  <form method="dialog"><button class="lightbox__close" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg><span class="sr-only">Fermer</span></button></form>
+  <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="">
+  <p class="lightbox__caption"></p>
+</dialog>
+
+<div class="update-toast" role="status" hidden>
+  <span>Une nouvelle version de ce site est disponible.</span>
+  <button class="btn btn--small btn--primary" type="button" data-reload>Recharger</button>
+</div>
+</body>
+</html>

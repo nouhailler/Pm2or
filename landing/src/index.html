@@ -401,10 +401,17 @@
           <div><dt>Format</dt><dd>Paquet <code>.deb</code> d'environ {{DEB_SIZE}}, Python inclus</dd></div>
           <div><dt>Contrôle</dt><dd>Empreintes SHA-256 et inventaire SBOM publiés</dd></div>
         </dl>
-        <p class="install__label">Dans le dossier du paquet téléchargé&nbsp;:</p>
-        <pre tabindex="0" aria-label="Commandes de vérification et d'installation"><code>sha256sum -c SHA256SUMS-{{VERSION}}
-sudo apt install ./pm2-desktop_{{VERSION}}_amd64.deb
-pm2-desktop</code></pre>
+        <h4 class="install__label" id="installer-curl">Installer depuis un terminal</h4>
+        <p class="install__text">Ces commandes visent précisément la version {{VERSION}}. Le paquet n'est installé que si son empreinte SHA-256 est correcte.</p>
+        <div class="command">
+          <button class="btn btn--small btn--ghost command__copy" type="button" data-copy hidden>Copier</button>
+          <pre tabindex="0" aria-labelledby="installer-curl"><code>curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v{{VERSION}}/pm2-desktop_{{VERSION}}_amd64.deb \
+  &amp;&amp; curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v{{VERSION}}/SHA256SUMS-{{VERSION}} \
+  &amp;&amp; sha256sum -c --ignore-missing SHA256SUMS-{{VERSION}} \
+  &amp;&amp; sudo apt install ./pm2-desktop_{{VERSION}}_amd64.deb</code></pre>
+        </div>
+        <p class="install__text">Lancez ensuite l'application avec <code>pm2-desktop</code>. Si <code>curl</code> manque : <code>sudo apt install curl</code>.</p>
+        <p class="install__text">L'empreinte détecte un fichier incomplet ou modifié après sa publication. Elle provient du même dépôt GitHub que le paquet : elle ne remplace pas une signature. Une version plus récente peut exister sur la page des releases.</p>
         <p class="install__warn">Aucun paquet n'est publié pour Windows, macOS, Android ou iOS. La compatibilité avec Debian 12 et Ubuntu 24.04 n'est pas assurée. Une <a href="https://github.com/nouhailler/Pm2or#%EF%B8%8F-installation-d%C3%A9veloppeur" target="_blank" rel="noopener">installation depuis les sources<span class="sr-only"> (GitHub, nouvel onglet)</span></a> est documentée (Python 3.12 ou ultérieur).</p>
       </div>
     </div>
@@ -464,6 +471,8 @@ pm2-desktop</code></pre>
     </nav>
   </div>
 </footer>
+
+<p class="sr-only" role="status" data-copy-status></p>
 
 <dialog class="lightbox" aria-label="Agrandissement de la capture">
   <form method="dialog"><button class="lightbox__close" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg><span class="sr-only">Fermer</span></button></form>

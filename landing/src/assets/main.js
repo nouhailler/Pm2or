@@ -39,6 +39,27 @@
     if (event.target === dialog) dialog.close();
   });
 
+  // Copie des commandes d'installation, proposée seulement si le navigateur le permet.
+  const copy = document.querySelector("[data-copy]");
+  if (navigator.clipboard) {
+    const status = document.querySelector("[data-copy-status]");
+    copy.hidden = false;
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(copy.nextElementSibling.textContent);
+        copy.textContent = "Copié";
+        status.textContent = "Commandes copiées";
+      } catch {
+        copy.textContent = "Échec de la copie";
+        status.textContent = "La copie a échoué : sélectionnez les commandes manuellement";
+      }
+      setTimeout(() => {
+        copy.textContent = "Copier";
+        status.textContent = "";
+      }, 2500);
+    });
+  }
+
   // Installation du site, proposée uniquement si le navigateur le permet.
   const installBlock = document.querySelector(".pwa-install");
   let installEvent = null;

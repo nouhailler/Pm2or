@@ -68,12 +68,22 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 
 ## 📥 Installation Debian
 
-Téléchargez le paquet **Debian 13 amd64** dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases), puis exécutez :
+Ces commandes téléchargent exactement la version 0.1.8 depuis les [releases GitHub](https://github.com/nouhailler/Pm2or/releases), et n'installent le paquet **Debian 13 amd64** que si son empreinte SHA-256 est correcte :
 
 ```bash
-sudo apt install ./pm2-desktop_0.1.8_amd64.deb
+curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v0.1.8/pm2-desktop_0.1.8_amd64.deb \
+  && curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v0.1.8/SHA256SUMS-0.1.8 \
+  && sha256sum -c --ignore-missing SHA256SUMS-0.1.8 \
+  && sudo apt install ./pm2-desktop_0.1.8_amd64.deb
+```
+
+Lancez ensuite l'application :
+
+```bash
 pm2-desktop
 ```
+
+L'empreinte détecte un fichier incomplet ou modifié après sa publication. Elle provient du même dépôt GitHub que le paquet et ne remplace pas une signature.
 
 Un lanceur avec icône est installé dans le menu des applications. Python est embarqué dans le paquet.
 
@@ -84,10 +94,10 @@ ce stade.
 
 > ℹ️ Le paquet nécessite glibc 2.41 ou ultérieure. La compatibilité avec Debian 12 et Ubuntu 24.04 n’est pas assurée.
 
-Pour vérifier le téléchargement, placez le [fichier SHA256SUMS-0.1.8](https://github.com/nouhailler/Pm2or/releases/download/v0.1.8/SHA256SUMS-0.1.8) à côté du `.deb` :
+Pour vérifier un paquet téléchargé depuis la page des releases, placez le [fichier SHA256SUMS-0.1.8](https://github.com/nouhailler/Pm2or/releases/download/v0.1.8/SHA256SUMS-0.1.8) à côté du `.deb`. L'option `--ignore-missing` est nécessaire, car ce fichier liste aussi le SBOM :
 
 ```bash
-sha256sum -c SHA256SUMS-0.1.8
+sha256sum -c --ignore-missing SHA256SUMS-0.1.8
 ```
 
 ### 🔄 Mises à jour

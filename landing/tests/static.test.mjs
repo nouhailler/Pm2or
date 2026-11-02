@@ -26,6 +26,15 @@ test("les boutons de téléchargement pointent tous vers les releases", () => {
   assert.ok(!/href="[^"]*\.(deb|AppImage|exe|dmg|msi)"/.test(html), "lien direct vers un binaire");
 });
 
+test("l'installation curl vise la version et s'arrête si l'empreinte échoue", () => {
+  const block = html.match(/<pre[^>]*aria-labelledby="installer-curl"[^>]*>([\s\S]*?)<\/pre>/)[1].replace(/<[^>]+>/g, "").replaceAll("&amp;", "&");
+  const base = `https://github.com/nouhailler/Pm2or/releases/download/v${VERSION}`;
+  assert.ok(block.includes(`curl -fLO ${base}/pm2-desktop_${VERSION}_amd64.deb`));
+  assert.ok(block.includes(`curl -fLO ${base}/SHA256SUMS-${VERSION}`));
+  assert.ok(block.includes(`&& sha256sum -c --ignore-missing SHA256SUMS-${VERSION} \\\n  && sudo apt install ./pm2-desktop_${VERSION}_amd64.deb`));
+  assert.ok(!/releases\/latest|\|\s*(sudo\s+)?(ba)?sh/.test(block));
+});
+
 test("les ancres internes et les ressources locales existent", () => {
   const ids = new Set(attr("id"));
   for (const href of attr("href")) {

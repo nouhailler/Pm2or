@@ -78,7 +78,7 @@ La PWA sert à reconsulter la présentation, la FAQ et les instructions d'instal
 
 ## Mettre à jour le contenu
 
-**Nouvelle release** : modifier `site.config.mjs` (`VERSION`, `RELEASE_DATE`, `DEB_SIZE`), relire la section Téléchargement et la FAQ, puis lancer `npm test`, qui compare `VERSION` à `../pyproject.toml`. Les boutons pointent vers la page des releases : ils n'ont pas à changer.
+**Nouvelle release** : modifier `site.config.mjs` (`VERSION`, `RELEASE_DATE`, `DEB_SIZE`), relire la section Téléchargement et la FAQ, puis lancer `npm test`, qui compare `VERSION` à `../pyproject.toml`, et `npm run check:release`, qui vérifie en ligne que le paquet et ses empreintes existent et que `VERSION` est bien la dernière release. Les commandes `curl` se régénèrent à partir de `VERSION`. Les boutons pointent vers la page des releases : ils n'ont pas à changer. Modifier aussi la section d'installation du `README.md` racine, dont la version est écrite en dur.
 
 **Nouvelle fonctionnalité** : l'ajouter à `src/index.html` seulement après vérification dans le code, et compléter [AUDIT.md](AUDIT.md).
 

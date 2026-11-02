@@ -216,10 +216,16 @@ code { font: 0.88em/1.4 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospa
 .install__facts > div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 12px; padding-block: 8px; border-bottom: 1px solid var(--line); line-height: 1.4; }
 .install__facts dt { font-weight: 650; }
 .install__facts dd { margin: 0; color: var(--muted); }
-.install__label { margin-bottom: 8px; font-weight: 600; }
+.install__label { margin-bottom: 8px; font-size: 1.1rem; }
+.install__text { margin-bottom: 14px; color: var(--muted); font-size: 1.02rem; line-height: 1.5; }
+.install__text code { color: var(--ink); }
 pre { margin: 0 0 16px; padding: 16px; background: var(--ink); color: #eaf2fa; border-radius: 10px; overflow-x: auto; }
 pre code { background: none; padding: 0; color: inherit; overflow-wrap: normal; }
-.install__warn { color: var(--muted); font-size: 1.02rem; line-height: 1.5; }
+.command { position: relative; }
+.command__copy, .command__copy:hover { position: absolute; top: 8px; right: 8px; min-height: 36px; padding: 0.25em 0.8em; background: var(--white); color: var(--ink); }
+.command__copy[hidden] { display: none; }
+.command__copy:not([hidden]) + pre { padding-top: 52px; }
+.install__warn { padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 1.02rem; line-height: 1.5; }
 @media (max-width: 900px) { .download__grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* FAQ */

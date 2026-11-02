@@ -132,6 +132,18 @@ test("agrandissement d'une capture : ouverture, focus, Échap", async () => {
   await context.close();
 });
 
+test("copie des commandes d'installation : texte exact et annonce", async () => {
+  const { context, page } = await open({ width: 390, height: 844 });
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.locator("[data-copy]").click();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  assert.match(copied, /^curl -fLO https:\/\/github\.com\/nouhailler\/Pm2or\/releases\/download\/v/);
+  assert.match(copied, /--ignore-missing/);
+  assert.match(copied, /&& sudo apt install \.\/pm2-desktop_[\d.]+_amd64\.deb$/);
+  assert.equal(await page.locator("[data-copy-status]").innerText(), "Commandes copiées");
+  await context.close();
+});
+
 test("mouvement réduit : aucune animation active", async () => {
   const { context, page } = await open({ width: 1280, height: 800 }, { reducedMotion: "reduce" });
   assert.equal(await page.evaluate(() => document.getAnimations().length), 0);

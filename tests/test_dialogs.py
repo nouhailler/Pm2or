@@ -129,7 +129,7 @@ def test_trace_link_dialog_validation_and_values(qtbot: Any, warnings: list[str]
     assert warnings[-1] == "Les deux identifiants sont obligatoires."
     dialog.source_id.setText(" source ")
     dialog.target_id.setText(" target ")
-    dialog.relation.setCurrentText("verifies")
+    dialog.relation.setCurrentIndex(dialog.relation.findData("verifies"))
     dialog._validate()
     assert dialog.result() == QDialog.DialogCode.Accepted
     assert dialog.values()["relation_type"] == "verifies"

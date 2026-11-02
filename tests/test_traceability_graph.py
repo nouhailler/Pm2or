@@ -4,6 +4,8 @@ from datetime import date
 from decimal import Decimal
 from typing import Any
 
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QGraphicsLineItem, QGraphicsPathItem, QGraphicsTextItem
 from sqlalchemy.orm import Session
 
 from pm2.application.acceptance_services import AcceptanceService
@@ -174,3 +176,128 @@ def test_traceability_page_renders_graph_and_actionable_orphans(
 
     page.chain_filter.setCurrentIndex(1)
     assert "relations" in page.graph_summary.text()
+
+
+def test_traceability_graph_labels_stay_inside_their_nodes(
+    qtbot: Any, session: Session, project: ProjectModel
+) -> None:
+    _seed_traceability(session, project)
+    page = TraceabilityPage(session, project)
+    qtbot.addWidget(page)
+    page.resize(1400, 900)
+    page.show()
+    destinations: list[str] = []
+    page.navigate_requested.connect(destinations.append)
+
+    nodes = [item for item in page.scene.items() if item.data(1)]
+    assert len(nodes) > 1
+    assert len({(node.pos().x(), node.pos().y()) for node in nodes}) == len(nodes)
+    for node in nodes:
+        labels = node.childItems()
+        assert len(labels) == 1
+        assert labels[0].scenePos() == node.pos() + labels[0].pos()
+        assert node.sceneBoundingRect().contains(labels[0].sceneBoundingRect().topLeft())
+
+    relation_labels = [
+        item
+        for item in page.scene.items()
+        if isinstance(item, QGraphicsTextItem)
+        and item.parentItem() is None
+        and item.toPlainText() in {"a pour critère", "vérifié par"}
+    ]
+    assert relation_labels
+    for label in relation_labels:
+        assert not any(
+            node.sceneBoundingRect().intersects(label.sceneBoundingRect()) for node in nodes
+        )
+
+    target = next(node for node in nodes if node.data(0) == "requirement")
+    page.graph_view.centerOn(target)
+    click = page.graph_view.mapFromScene(target.sceneBoundingRect().center())
+    qtbot.mouseClick(page.graph_view.viewport(), Qt.MouseButton.LeftButton, pos=click)
+
+    assert page.scene.selectedItems() == [target]
+    page._navigate_graph()
+    assert destinations == [target.data(2)]
+
+
+def test_traceability_graph_links_do_not_cross_other_nodes(
+    qtbot: Any, session: Session, project: ProjectModel
+) -> None:
+    _seed_traceability(session, project)
+    page = TraceabilityPage(session, project)
+    qtbot.addWidget(page)
+
+    items = page.scene.items()
+    nodes = [item.sceneBoundingRect().adjusted(3, 3, -3, -3) for item in items if item.data(1)]
+    points = []
+    for item in items:
+        if isinstance(item, QGraphicsPathItem):
+            path = item.path()
+            points += [path.pointAtPercent(step / 400) for step in range(401)]
+        elif isinstance(item, QGraphicsLineItem):
+            line = item.line()
+            points += [line.pointAt(step / 400) for step in range(401)]
+
+    assert any(isinstance(item, QGraphicsPathItem) for item in items)
+    assert not [point for point in points if any(node.contains(point) for node in nodes)]
+
+
+def test_traceability_graph_shortens_titles_and_translates_labels(
+    qtbot: Any, session: Session, project: ProjectModel
+) -> None:
+    _seed_traceability(session, project)
+    full_title = "Réserver une activité avec confirmation par courriel"
+    RequirementService(session).create(project.id, "REQ-LONG", full_title)
+    page = TraceabilityPage(session, project)
+    qtbot.addWidget(page)
+
+    node = next(
+        item
+        for item in page.scene.items()
+        if item.data(1) and "REQ-LONG" in item.childItems()[0].toPlainText()
+    )
+    label = node.childItems()[0].toPlainText()
+    assert label.endswith("avec…")
+    assert full_title in node.toolTip()
+
+    texts = "\n".join(
+        item.toPlainText() for item in page.scene.items() if isinstance(item, QGraphicsTextItem)
+    )
+    assert "mise en œuvre par" in texts
+    assert "Planning — " in texts
+    for english in ("implemented by", "has criterion", "Schedule"):
+        assert english not in texts
+
+    page.filter.setCurrentIndex(page.filter.findData("produces"))
+    assert page.table.rowCount() == 1
+    assert page.table.item(0, 1).text() == "produit"
+
+
+def test_traceability_chain_filter_hides_objects_outside_the_chain(
+    qtbot: Any, session: Session, project: ProjectModel
+) -> None:
+    seeded = _seed_traceability(session, project)
+    page = TraceabilityPage(session, project)
+    qtbot.addWidget(page)
+
+    page.chain_filter.setCurrentIndex(page.chain_filter.findData("risks"))
+    shown = {item.data(1) for item in page.scene.items() if item.data(1)}
+    assert {seeded["risk"].id, seeded["orphan_risk"].id, seeded["task"].id} <= shown
+    assert seeded["deliverable"].id in shown
+    assert seeded["root_task"].id not in shown
+    assert seeded["orphan_deliverable"].id not in shown
+
+
+def test_traceability_chain_filter_explains_an_empty_chain(
+    qtbot: Any, session: Session, project: ProjectModel
+) -> None:
+    session.add(RiskModel(project_id=project.id, code="R-001", title="Sans réponse"))
+    RequirementService(session).create(project.id, "REQ-001", "Hors chaîne")
+    session.flush()
+    page = TraceabilityPage(session, project)
+    qtbot.addWidget(page)
+
+    page.chain_filter.setCurrentIndex(page.chain_filter.findData("risks"))
+
+    assert page.graph_summary.text().startswith("1 objets · 0 relations — aucune relation")

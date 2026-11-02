@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import QPointF, Qt, Signal
-from PySide6.QtGui import QBrush, QColor, QPen, QPolygonF
+from PySide6.QtGui import QBrush, QColor, QPainterPath, QPen, QPolygonF
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QComboBox,
@@ -29,7 +29,7 @@ from pm2.application.traceability import (
     TraceGraphNode,
 )
 from pm2.infrastructure.orm import ProjectModel, TraceLinkModel
-from pm2.ui.dialogs import TraceLinkDialog
+from pm2.ui.dialogs import RELATION_LABELS, TraceLinkDialog
 from pm2.ui.page_base import Page
 
 TYPE_LABELS = {
@@ -60,6 +60,16 @@ TYPE_COLORS = {
     "change_impact": "#f0e8ff",
 }
 
+IMPACT_LABELS = {
+    "Schedule": "Planning",
+    "Cost": "Coût",
+    "Scope": "Périmètre",
+    "Quality": "Qualité",
+    "Risk": "Risque",
+}
+
+CHAIN_ROOTS = {"requirements": "requirement", "risks": "risk", "changes": "change"}
+
 CHAIN_TYPES = {
     "requirements": {
         "requirement",
@@ -78,6 +88,25 @@ CHAIN_TYPES = {
         "deliverable",
     },
 }
+
+
+def _relation_label(relation: str) -> str:
+    return RELATION_LABELS.get(relation, relation)
+
+
+def _node_label(node: TraceGraphNode) -> str:
+    if node.entity_type == "change_impact":
+        return IMPACT_LABELS.get(node.label, node.label)
+    return node.label
+
+
+def _shorten(text: str, limit: int = 38) -> str:
+    if len(text) <= limit:
+        return text
+    cut = text[: limit - 1]
+    if " " in cut:
+        cut = cut.rsplit(" ", 1)[0]
+    return f"{cut.rstrip()}…"
 
 
 class TraceabilityPage(Page):
@@ -150,7 +179,8 @@ class TraceabilityPage(Page):
         toolbar = QHBoxLayout()
         self.filter = QComboBox()
         self.filter.addItem("Toutes les relations", "")
-        self.filter.addItems(sorted(TraceabilityService.RELATION_TYPES))
+        for relation_type in sorted(TraceabilityService.RELATION_TYPES, key=_relation_label):
+            self.filter.addItem(_relation_label(relation_type), relation_type)
         self.filter.currentIndexChanged.connect(self.reload)
         navigate = QPushButton("Aller à la cible")
         navigate.clicked.connect(self._navigate)
@@ -261,7 +291,7 @@ class TraceabilityPage(Page):
             target = labels.get(f"{link.target_type}:{link.target_id}")
             values = (
                 self._node_text(source, link.source_type, link.source_id),
-                link.relation_type,
+                _relation_label(link.relation_type),
                 self._node_text(target, link.target_type, link.target_id),
                 "Oui" if link.critical else "Non",
                 str(link.created_at),
@@ -285,13 +315,18 @@ class TraceabilityPage(Page):
             for node in self._graph.nodes
             if allowed_types is None or node.entity_type in allowed_types
         ]
+        if chain:
+            nodes = self._chain_nodes(nodes, CHAIN_ROOTS[str(chain)])
         node_keys = {node.key for node in nodes}
         edges = [
             edge
             for edge in self._graph.edges
             if edge.source in node_keys and edge.target in node_keys
         ]
-        self.graph_summary.setText(f"{len(nodes)} objets · {len(edges)} relations")
+        summary = f"{len(nodes)} objets · {len(edges)} relations"
+        if chain and not edges:
+            summary += " — aucune relation pour cette chaîne : complétez les registres ou créez un lien"
+        self.graph_summary.setText(summary)
         layer_order = {
             "requirement": 0,
             "risk": 0,
@@ -315,9 +350,10 @@ class TraceabilityPage(Page):
             grouped.setdefault(layer, []).append(node)
         positions: dict[str, tuple[float, float]] = {}
         width, height = 190.0, 70.0
+        column_step, row_step = 330.0, 105.0
         for layer, layer_nodes in grouped.items():
             for row, node in enumerate(layer_nodes):
-                positions[node.key] = (30.0 + layer * 250.0, 30.0 + row * 105.0)
+                positions[node.key] = (30.0 + layer * column_step, 30.0 + row * row_step)
         edge_pen = QPen(QColor("#718096"), 1.6)
         for edge in edges:
             if edge.source not in positions or edge.target not in positions:
@@ -326,7 +362,21 @@ class TraceabilityPage(Page):
             target_x, target_y = positions[edge.target]
             start = QPointF(source_x + width, source_y + height / 2)
             end = QPointF(target_x, target_y + height / 2)
-            self.scene.addLine(start.x(), start.y(), end.x(), end.y(), edge_pen)
+            if target_x - source_x == column_step:
+                self.scene.addLine(start.x(), start.y(), end.x(), end.y(), edge_pen)
+                label_center = QPointF((start.x() + end.x()) / 2, (start.y() + end.y()) / 2)
+            else:
+                # Les colonnes et les rangées laissent des couloirs libres : le lien les
+                # emprunte pour ne passer derrière aucun nœud intermédiaire.
+                gutter = source_y + height + (row_step - height) / 2
+                path = QPainterPath(start)
+                path.lineTo(start.x() + 20, start.y())
+                path.lineTo(start.x() + 20, gutter)
+                path.lineTo(end.x() - 20, gutter)
+                path.lineTo(end.x() - 20, end.y())
+                path.lineTo(end)
+                self.scene.addPath(path, edge_pen)
+                label_center = QPointF((start.x() + end.x()) / 2, gutter)
             arrow = QPolygonF(
                 [
                     QPointF(end.x(), end.y()),
@@ -335,18 +385,19 @@ class TraceabilityPage(Page):
                 ]
             )
             self.scene.addPolygon(arrow, edge_pen, QBrush(QColor("#718096")))
-            relation = self.scene.addText(edge.relation)
+            relation = self.scene.addText(_relation_label(edge.relation))
             relation.setDefaultTextColor(QColor("#5b677a"))
             relation.setPos(
-                (start.x() + end.x()) / 2 - 30,
-                (start.y() + end.y()) / 2 - 20,
+                label_center.x() - relation.boundingRect().width() / 2,
+                label_center.y() - 20,
             )
         for node in nodes:
             x, y = positions[node.key]
             color = QColor(TYPE_COLORS.get(node.entity_type, "#eef2f7"))
             rectangle = self.scene.addRect(
-                x, y, width, height, QPen(QColor("#52677a"), 1.4), QBrush(color)
+                0, 0, width, height, QPen(QColor("#52677a"), 1.4), QBrush(color)
             )
+            rectangle.setPos(x, y)
             rectangle.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
             rectangle.setData(0, node.entity_type)
             rectangle.setData(1, node.entity_id)
@@ -354,7 +405,9 @@ class TraceabilityPage(Page):
             title = TYPE_LABELS.get(
                 node.entity_type, node.entity_type.replace("_", " ").title()
             )
-            text = self.scene.addText(f"{title}\n{node.label} — {node.title[:38]}")
+            label = _node_label(node)
+            rectangle.setToolTip(f"{title}\n{label} — {node.title}")
+            text = self.scene.addText(f"{title}\n{label} — {_shorten(node.title)}")
             text.setDefaultTextColor(QColor("#172033"))
             text.setTextWidth(width - 14)
             text.setParentItem(rectangle)
@@ -362,6 +415,21 @@ class TraceabilityPage(Page):
             text.setAcceptedMouseButtons(Qt.MouseButton.NoButton)
         bounds = self.scene.itemsBoundingRect().adjusted(-20, -20, 20, 20)
         self.scene.setSceneRect(bounds)
+
+    def _chain_nodes(
+        self, nodes: list[TraceGraphNode], root_type: str
+    ) -> list[TraceGraphNode]:
+        """Keep the chain's root objects and what can be reached from them."""
+        keys = {node.key for node in nodes}
+        reached = {node.key for node in nodes if node.entity_type == root_type}
+        pending = list(reached)
+        while pending:
+            current = pending.pop()
+            for edge in self._graph.edges:
+                if edge.source == current and edge.target in keys and edge.target not in reached:
+                    reached.add(edge.target)
+                    pending.append(edge.target)
+        return [node for node in nodes if node.key in reached]
 
     def _reload_orphans(self, service: TraceabilityService) -> None:
         findings = service.orphan_findings(self.project.id)
@@ -394,7 +462,7 @@ class TraceabilityPage(Page):
     ) -> str:
         if node is not None:
             label = TYPE_LABELS.get(entity_type, entity_type)
-            return f"{label} · {node.label} — {node.title}"
+            return f"{label} · {_node_label(node)} — {node.title}"
         return f"{entity_type} · {entity_id}"
 
     @staticmethod

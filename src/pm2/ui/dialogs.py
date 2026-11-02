@@ -18,6 +18,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from pm2.application.traceability import TraceabilityService
+
 
 class ProjectDialog(QDialog):
     def __init__(self, parent: Any = None) -> None:
@@ -259,6 +261,30 @@ class WbsNodeDialog(QDialog):
         }
 
 
+RELATION_LABELS = {
+    "supports": "soutient",
+    "derives_from": "découle de",
+    "impacts": "impacte",
+    "mitigates": "atténue",
+    "resolves": "résout",
+    "decides": "décide",
+    "implements": "met en œuvre",
+    "verifies": "vérifie",
+    "accepted_by": "accepté par",
+    "produces": "produit",
+    "depends_on": "dépend de",
+    "assigned_to": "assigné à",
+    "discussed_in": "discuté dans",
+    "referenced_by": "référencé par",
+    "has criterion": "a pour critère",
+    "verified by": "vérifié par",
+    "implemented by": "mise en œuvre par",
+    "delivered by": "livrée par",
+    "mitigated by": "atténué par",
+    "includes": "comprend",
+}
+
+
 class TraceLinkDialog(QDialog):
     def __init__(self, parent: Any = None) -> None:
         super().__init__(parent)
@@ -305,24 +331,9 @@ class TraceLinkDialog(QDialog):
         )
         self.target_id = QLineEdit()
         self.relation = QComboBox()
-        self.relation.addItems(
-            [
-                "supports",
-                "derives_from",
-                "impacts",
-                "mitigates",
-                "resolves",
-                "decides",
-                "implements",
-                "verifies",
-                "accepted_by",
-                "produces",
-                "depends_on",
-                "assigned_to",
-                "discussed_in",
-                "referenced_by",
-            ]
-        )
+        for relation_type, relation_label in RELATION_LABELS.items():
+            if relation_type in TraceabilityService.RELATION_TYPES:
+                self.relation.addItem(relation_label, relation_type)
         for label, widget in (
             ("Type source", self.source_type),
             ("Identifiant source *", self.source_id),
@@ -353,5 +364,5 @@ class TraceLinkDialog(QDialog):
             "source_id": self.source_id.text().strip(),
             "target_type": self.target_type.currentText(),
             "target_id": self.target_id.text().strip(),
-            "relation_type": self.relation.currentText(),
+            "relation_type": str(self.relation.currentData()),
         }

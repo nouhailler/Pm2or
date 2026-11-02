@@ -33,7 +33,6 @@
     "name": "PM² Desktop",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Debian 13 (amd64)",
-    "softwareVersion": "{{VERSION}}",
     "inLanguage": "fr",
     "downloadUrl": "https://github.com/nouhailler/Pm2or/releases",
     "license": "https://github.com/nouhailler/Pm2or/blob/main/LICENSE"
@@ -77,7 +76,7 @@
   <section class="hero" aria-labelledby="hero-titre">
     <div class="wrap hero__grid">
       <div class="hero__text">
-        <p class="eyebrow">Application de bureau · Version {{VERSION}}</p>
+        <p class="eyebrow">Application de bureau · Licence EUPL-1.2</p>
         <h1 id="hero-titre">Pilotez vos projets avec méthode. <em>Gardez le contrôle en&nbsp;local.</em></h1>
         <p class="hero__lead">PM² Desktop est une application de gestion de projets en français, fondée sur la méthodologie PM² v3.1 de la Commission européenne. Organisez et suivez vos projets depuis votre poste de travail, du lancement à la clôture.</p>
         <div class="actions">
@@ -396,22 +395,18 @@
       <div class="install">
         <h3>Ce qui est publié aujourd'hui</h3>
         <dl class="install__facts">
-          <div><dt>Version</dt><dd>{{VERSION}}, du {{RELEASE_DATE}}</dd></div>
           <div><dt>Système</dt><dd>Debian 13 amd64, glibc 2.41 ou ultérieure</dd></div>
-          <div><dt>Format</dt><dd>Paquet <code>.deb</code> d'environ {{DEB_SIZE}}, Python inclus</dd></div>
+          <div><dt>Format</dt><dd>Paquet <code>.deb</code>, Python inclus</dd></div>
           <div><dt>Contrôle</dt><dd>Empreintes SHA-256 et inventaire SBOM publiés</dd></div>
         </dl>
         <h4 class="install__label" id="installer-curl">Installer depuis un terminal</h4>
-        <p class="install__text">Ces commandes visent précisément la version {{VERSION}}. Le paquet n'est installé que si son empreinte SHA-256 est correcte.</p>
+        <p class="install__text">Cette commande interroge GitHub pour trouver la dernière version, contrôle l'empreinte SHA-256 du paquet, puis l'installe avec <code>apt</code>.</p>
         <div class="command">
           <button class="btn btn--small btn--ghost command__copy" type="button" data-copy hidden>Copier</button>
-          <pre tabindex="0" aria-labelledby="installer-curl"><code>curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v{{VERSION}}/pm2-desktop_{{VERSION}}_amd64.deb \
-  &amp;&amp; curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v{{VERSION}}/SHA256SUMS-{{VERSION}} \
-  &amp;&amp; sha256sum -c --ignore-missing SHA256SUMS-{{VERSION}} \
-  &amp;&amp; sudo apt install ./pm2-desktop_{{VERSION}}_amd64.deb</code></pre>
+          <pre tabindex="0" aria-labelledby="installer-curl"><code>curl -fsSL https://raw.githubusercontent.com/nouhailler/Pm2or/main/scripts/install.sh | bash</code></pre>
         </div>
-        <p class="install__text">Lancez ensuite l'application avec <code>pm2-desktop</code>. Si <code>curl</code> manque : <code>sudo apt install curl</code>.</p>
-        <p class="install__text">L'empreinte détecte un fichier incomplet ou modifié après sa publication. Elle provient du même dépôt GitHub que le paquet : elle ne remplace pas une signature. Une version plus récente peut exister sur la page des releases.</p>
+        <p class="install__text">Lancez ensuite l'application avec <code>pm2-desktop</code>. Si <code>curl</code> manque : <code>sudo apt install curl</code>. Vous préférez lire le code avant de l'exécuter&nbsp;? <a href="https://github.com/nouhailler/Pm2or/blob/main/scripts/install.sh" target="_blank" rel="noopener">Consultez le script<span class="sr-only"> (GitHub, nouvel onglet)</span></a>, qui permet aussi de choisir une version précise.</p>
+        <p class="install__text">L'empreinte détecte un fichier incomplet ou modifié après sa publication. Elle provient du même dépôt GitHub que le paquet : elle ne remplace pas une signature.</p>
         <p class="install__warn">Aucun paquet n'est publié pour Windows, macOS, Android ou iOS. La compatibilité avec Debian 12 et Ubuntu 24.04 n'est pas assurée. Une <a href="https://github.com/nouhailler/Pm2or#%EF%B8%8F-installation-d%C3%A9veloppeur" target="_blank" rel="noopener">installation depuis les sources<span class="sr-only"> (GitHub, nouvel onglet)</span></a> est documentée (Python 3.12 ou ultérieur).</p>
       </div>
     </div>

@@ -13,7 +13,7 @@
     "build": "node scripts/build.mjs",
     "preview": "npm run build && node scripts/serve.mjs",
     "check:html": "html-validate dist/index.html dist/offline.html dist/404.html",
-    "test": "npm run build && npm run check:html && node --test tests/static.test.mjs tests/browser.test.mjs",
+    "test": "npm run build && npm run check:html && node --test tests/static.test.mjs tests/install-script.test.mjs tests/browser.test.mjs",
     "og-image": "node scripts/og-image.mjs",
     "check:release": "node scripts/check-release.mjs"
   },

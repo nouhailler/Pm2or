@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEB_SIZE, GALLERY, RELEASE_DATE, VERSION } from "../site.config.mjs";
+import { GALLERY, VERSION } from "../site.config.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "src");
@@ -82,9 +82,7 @@ for (const page of ["index.html", "offline.html", "404.html"]) {
     .replace("<!--GALLERY-->", galleryHtml())
     .replace("<!--SEO_LINKS-->", seoLinks)
     .replaceAll("{{ORIGIN}}", siteUrl)
-    .replaceAll("{{VERSION}}", VERSION)
-    .replaceAll("{{RELEASE_DATE}}", RELEASE_DATE)
-    .replaceAll("{{DEB_SIZE}}", DEB_SIZE);
+    .replaceAll("{{VERSION}}", VERSION);
   await writeFile(join(out, page), rewrite(html));
 }
 

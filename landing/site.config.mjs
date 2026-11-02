@@ -1,8 +1,6 @@
-// Faits affichés sur le site, à revérifier à chaque nouvelle release.
-// tests/static.test.mjs contrôle que VERSION correspond à ../pyproject.toml.
+// Version à laquelle correspondent les captures et l'audit (AUDIT.md). Ce n'est pas
+// la version téléchargée : scripts/install.sh et les boutons visent toujours la dernière.
 export const VERSION = "0.1.8";
-export const RELEASE_DATE = "1er novembre 2026";
-export const DEB_SIZE = "109 Mo";
 
 export const GALLERY = [
   ["plan-de-travail", "Plan de travail", "Structure des tâches, Gantt simple, dépendances et chemin critique.", "Écran Plan de travail : arborescence des tâches, Gantt simple, tableau des dépendances et calcul du chemin critique, avec les tâches critiques surlignées."],

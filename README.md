@@ -68,13 +68,20 @@ Le code est distribué sous la [European Union Public Licence 1.2](LICENSE).
 
 ## 📥 Installation Debian
 
-Ces commandes téléchargent exactement la version 0.1.8 depuis les [releases GitHub](https://github.com/nouhailler/Pm2or/releases), et n'installent le paquet **Debian 13 amd64** que si son empreinte SHA-256 est correcte :
+Sur **Debian 13 amd64**, cette commande installe la dernière version publiée dans les [releases GitHub](https://github.com/nouhailler/Pm2or/releases) :
 
 ```bash
-curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v0.1.8/pm2-desktop_0.1.8_amd64.deb \
-  && curl -fLO https://github.com/nouhailler/Pm2or/releases/download/v0.1.8/SHA256SUMS-0.1.8 \
-  && sha256sum -c --ignore-missing SHA256SUMS-0.1.8 \
-  && sudo apt install ./pm2-desktop_0.1.8_amd64.deb
+curl -fsSL https://raw.githubusercontent.com/nouhailler/Pm2or/main/scripts/install.sh | bash
+```
+
+Le [script](scripts/install.sh) lit la dernière version sur l'API GitHub, télécharge le paquet et n'appelle `apt` que si son empreinte SHA-256 est correcte. Pour le lire avant de l'exécuter, ou pour choisir une version précise :
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/nouhailler/Pm2or/main/scripts/install.sh
+```
+
+```bash
+bash install.sh --version 0.1.8
 ```
 
 Lancez ensuite l'application :

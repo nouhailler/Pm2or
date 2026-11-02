@@ -12,11 +12,11 @@ const RELEASES = "https://github.com/nouhailler/Pm2or/releases";
 const attr = (name) => [...html.matchAll(new RegExp(`\\s${name}="([^"]*)"`, "g"))].map((match) => match[1]);
 const anchors = [...html.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
 
-test("la version affichée correspond à l'application", () => {
-  const pyproject = readFileSync(join(root, "..", "pyproject.toml"), "utf8");
-  assert.equal(pyproject.match(/^version = "(.+)"$/m)[1], VERSION);
-  assert.ok(html.includes(`pm2-desktop_${VERSION}_amd64.deb`));
+test("aucune version téléchargée n'est codée en dur", () => {
   assert.ok(!html.includes("{{"), "espace réservé non remplacé");
+  assert.ok(!/_amd64\.deb|SHA256SUMS-\d|softwareVersion/.test(html), "version ou nom de fichier en dur");
+  const text = html.replace(/<[^>]+>/g, " ");
+  assert.ok([...text.matchAll(/\d+\.\d+\.\d+/g)].every((match) => match[0] === VERSION), "version autre que celle de l'audit");
 });
 
 test("les boutons de téléchargement pointent tous vers les releases", () => {
@@ -26,13 +26,11 @@ test("les boutons de téléchargement pointent tous vers les releases", () => {
   assert.ok(!/href="[^"]*\.(deb|AppImage|exe|dmg|msi)"/.test(html), "lien direct vers un binaire");
 });
 
-test("l'installation curl vise la version et s'arrête si l'empreinte échoue", () => {
-  const block = html.match(/<pre[^>]*aria-labelledby="installer-curl"[^>]*>([\s\S]*?)<\/pre>/)[1].replace(/<[^>]+>/g, "").replaceAll("&amp;", "&");
-  const base = `https://github.com/nouhailler/Pm2or/releases/download/v${VERSION}`;
-  assert.ok(block.includes(`curl -fLO ${base}/pm2-desktop_${VERSION}_amd64.deb`));
-  assert.ok(block.includes(`curl -fLO ${base}/SHA256SUMS-${VERSION}`));
-  assert.ok(block.includes(`&& sha256sum -c --ignore-missing SHA256SUMS-${VERSION} \\\n  && sudo apt install ./pm2-desktop_${VERSION}_amd64.deb`));
-  assert.ok(!/releases\/latest|\|\s*(sudo\s+)?(ba)?sh/.test(block));
+test("la commande d'installation vise le script du dépôt", () => {
+  const block = html.match(/<pre[^>]*aria-labelledby="installer-curl"[^>]*>([\s\S]*?)<\/pre>/)[1].replace(/<[^>]+>/g, "");
+  assert.equal(block, "curl -fsSL https://raw.githubusercontent.com/nouhailler/Pm2or/main/scripts/install.sh | bash");
+  assert.ok(existsSync(join(root, "..", "scripts/install.sh")));
+  assert.ok(html.includes('href="https://github.com/nouhailler/Pm2or/blob/main/scripts/install.sh"'));
 });
 
 test("les ancres internes et les ressources locales existent", () => {

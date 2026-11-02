@@ -42,7 +42,7 @@ npm run preview
 npm test
 ```
 
-Enchaîne le build, la validation HTML, les contrôles statiques (`tests/static.test.mjs`) et les tests navigateur (`tests/browser.test.mjs`) : largeurs de 320 à 1920 px, axe-core, clavier, sans JavaScript, hors ligne, mise à jour du service worker. Ces tests appliquent la politique CSP de production.
+Enchaîne le build, la validation HTML, les contrôles statiques (`tests/static.test.mjs`), les tests du script d'installation avec des commandes simulées (`tests/install-script.test.mjs`) et les tests navigateur (`tests/browser.test.mjs`) : largeurs de 320 à 1920 px, axe-core, clavier, sans JavaScript, hors ligne, mise à jour du service worker. Ces tests appliquent la politique CSP de production.
 
 Le service worker ne s'active qu'en HTTPS ou sur `localhost`. En développement, s'il sert une ancienne version, désinscrivez-le dans les outils du navigateur.
 
@@ -78,7 +78,9 @@ La PWA sert à reconsulter la présentation, la FAQ et les instructions d'instal
 
 ## Mettre à jour le contenu
 
-**Nouvelle release** : modifier `site.config.mjs` (`VERSION`, `RELEASE_DATE`, `DEB_SIZE`), relire la section Téléchargement et la FAQ, puis lancer `npm test`, qui compare `VERSION` à `../pyproject.toml`, et `npm run check:release`, qui vérifie en ligne que le paquet et ses empreintes existent et que `VERSION` est bien la dernière release. Les commandes `curl` se régénèrent à partir de `VERSION`. Les boutons pointent vers la page des releases : ils n'ont pas à changer. Modifier aussi la section d'installation du `README.md` racine, dont la version est écrite en dur.
+**Nouvelle release** : rien à changer pour le téléchargement. Les boutons visent la page des releases, et `scripts/install.sh` lit la dernière version sur l'API GitHub. Il suffit que la release publie **un seul** fichier `*_amd64.deb` et **un seul** `SHA256SUMS*` ; `npm run check:release` le vérifie en ligne.
+
+**Nouvelles fonctions ou nouveaux prérequis** : mettre à jour le texte, les captures, `AUDIT.md`, puis `VERSION` dans `site.config.mjs`. `VERSION` indique seulement de quelle version datent les captures et l'audit. Sans cela, le site reste exact sur ce qu'il date, mais ne présente pas les nouveautés.
 
 **Nouvelle fonctionnalité** : l'ajouter à `src/index.html` seulement après vérification dans le code, et compléter [AUDIT.md](AUDIT.md).
 
